@@ -9,8 +9,11 @@
   },
   "author": "",
   "license": "ISC",
-  "dependencies": {},
+  "dependencies": {
+    "pg": "^7.4.1"
+  },
   "devDependencies": {
+    "dotenv": "^5.0.1",
     "eslint": "^4.19.1",
     "eslint-config-airbnb-base": "^12.1.0",
     "eslint-plugin-import": "^2.11.0",
