@@ -7,6 +7,7 @@ provider:
   memorySize: 1024
   region: eu-west-2
   stage: dev
+  endpointType: REGIONAL
   profile: serverless-admin-profile
   role: arn:aws:iam::671123374425:role/lambda-vpc-execution-role
   vpc:
