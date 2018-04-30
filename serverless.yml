@@ -1,5 +1,8 @@
 service: celsus-core
 
+plugins:
+  - serverless-domain-manager # plugin for custom domain name management
+
 provider:
   name: aws
   runtime: nodejs8.10
@@ -9,6 +12,7 @@ provider:
   stage: dev
   endpointType: REGIONAL
   profile: serverless-admin-profile
+  # >>> Connection to RDS instance
   role: arn:aws:iam::671123374425:role/lambda-vpc-execution-role
   vpc:
     securityGroupIds:
@@ -17,6 +21,7 @@ provider:
       - subnet-a5cafae8
       - subnet-5cf05835
       - subnet-a8b456d2
+  # <<< Connection to RDS instance
   environment:
     PGUSER: ${ssm:PG_USERNAME~true}
     PGPASSWORD: ${ssm:PG_PASSWORD~true}
@@ -24,39 +29,16 @@ provider:
     PGPORT: ${ssm:PG_PORT~true}
     PGDATABASE: ${ssm:PG_DB_NAME~true}
 
-
-# you can overwrite defaults here
-#  stage: dev
-#  region: us-east-1
-
-# you can add statements to the Lambda function's IAM Role here
-#  iamRoleStatements:
-#    - Effect: "Allow"
-#      Action:
-#        - "s3:ListBucket"
-#      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ServerlessDeploymentBucket" } ] ]  }
-#    - Effect: "Allow"
-#      Action:
-#        - "s3:PutObject"
-#      Resource:
-#        Fn::Join:
-#          - ""
-#          - - "arn:aws:s3:::"
-#            - "Ref" : "ServerlessDeploymentBucket"
-#            - "/*"
-
-# you can define service wide environment variables here
-#  environment:
-#    variable1: value1
-
-# you can add packaging information here
-#package:
-#  include:
-#    - include-me.js
-#    - include-me-dir/**
-#  exclude:
-#    - exclude-me.js
-#    - exclude-me-dir/**
+custom:
+  # >>> Custom domain name
+  customDomain:
+    domainName: celsus.isnan.eu
+    stage: ${self:provider.stage}
+    createRoute53Record: true
+    endpointType: regional
+    certificateName: '*.isnan.eu'
+    hostedZoneId: ZWC66FN0XU6P9
+  # <<< Custom domain name
 
 functions:
   getLibraries:
@@ -64,52 +46,5 @@ functions:
     name: get-libraries
     events:
       - http:
-          path: libraries
+          path: api/v1/libraries
           method: get
-
-          
-
-#    The following are a few example events you can configure
-#    NOTE: Please make sure to change your handler code to work with those events
-#    Check the event documentation for details
-#    events:
-#      - http:
-#          path: users/create
-#          method: get
-#      - s3: ${env:BUCKET}
-#      - schedule: rate(10 minutes)
-#      - sns: greeter-topic
-#      - stream: arn:aws:dynamodb:region:XXXXXX:table/foo/stream/1970-01-01T00:00:00.000
-#      - alexaSkill
-#      - alexaSmartHome: amzn1.ask.skill.xx-xx-xx-xx
-#      - iot:
-#          sql: "SELECT * FROM 'some_topic'"
-#      - cloudwatchEvent:
-#          event:
-#            source:
-#              - "aws.ec2"
-#            detail-type:
-#              - "EC2 Instance State-change Notification"
-#            detail:
-#              state:
-#                - pending
-#      - cloudwatchLog: '/aws/lambda/hello'
-#      - cognitoUserPool:
-#          pool: MyUserPool
-#          trigger: PreSignUp
-
-#    Define function environment variables here
-#    environment:
-#      variable2: value2
-
-# you can add CloudFormation resource templates here
-#resources:
-#  Resources:
-#    NewResource:
-#      Type: AWS::S3::Bucket
-#      Properties:
-#        BucketName: my-new-bucket
-#  Outputs:
-#     NewOutput:
-#       Description: "Description for the output"
-#       Value: "Some output value"
