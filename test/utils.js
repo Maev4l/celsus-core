@@ -1,4 +1,4 @@
-function newMockEvent(sub) {
+function newMockEvent(sub, body) {
   const mockEvent = {
     requestContext: {
       authorizer: {
@@ -7,6 +7,7 @@ function newMockEvent(sub) {
         },
       },
     },
+    body: JSON.stringify(body),
   };
 
   return mockEvent;
