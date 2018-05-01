@@ -3,3 +3,14 @@ node_js:
   - "8.10.0"
 notifications:
   email: false # Disable all mail notifications
+services:
+  - postgresql
+addons:
+  postgresql: "9.6"
+env:
+  global:
+  -  PGUSER=postgres
+  -  PGPASSWORD=
+  -  PGHOST=localhost
+  -  PGPORT=5432
+  -  PGDATABASE=postgres

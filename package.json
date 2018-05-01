@@ -1,5 +1,5 @@
 {
-  "name": "celsus-core-serverless",
+  "name": "celsus-core",
   "version": "1.0.0",
   "description": "",
   "main": "lib/main.js",
