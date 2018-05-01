@@ -1,6 +1,6 @@
 /**
  * As npm posttest is not triggered when tests fail,
- * it is more robust to rely on Mocha root hooks to povision and
+ * it is more robust to rely on Mocha root hooks to provision and
  * clean up the database after tests
  */
 

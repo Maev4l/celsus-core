@@ -11,4 +11,4 @@ WITH (
 )
 TABLESPACE pg_default;
 
-INSERT INTO "celsus"."library" ("id", "user_id", "name", "description")	VALUES ('1', '', 'My Book Title', 'My Book description');
+INSERT INTO "celsus"."library" ("id", "user_id", "name", "description")	VALUES ('1', 'user1', 'My Book Title', 'My Book description');

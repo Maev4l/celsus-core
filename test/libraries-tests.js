@@ -2,11 +2,14 @@ const assert = require('assert');
 require('dotenv').config();
 
 const { getLibraries } = require('../handler');
+const { newMockEvent } = require('./utils');
 
 describe('Libraries Tests', () => {
   describe('Simple Fetch libraries', () => {
     it('Returns list of libraries', async () => {
-      const response = await getLibraries();
+      const event = newMockEvent('user1');
+
+      const response = await getLibraries(event);
       const { statusCode, body } = response;
       assert.strictEqual(statusCode, 200);
       const result = JSON.parse(body);
@@ -15,7 +18,6 @@ describe('Libraries Tests', () => {
         libraries: [
           {
             id: '1',
-            userid: '',
             name: 'My Book Title',
             description: 'My Book description',
           },

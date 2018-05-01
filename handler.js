@@ -2,8 +2,8 @@ const librariesManager = require('./lib/libraries-manager');
 
 
 exports.getLibraries = async (event) => {
-  // const { claims } = event.requestContext.authorizer;
-  const result = await librariesManager.getLibraries();
+  const { sub } = event.requestContext.authorizer.claims;
+  const result = await librariesManager.getLibraries(sub);
   /* const result = {
     libraries,
     username: claims['cognito:username'],
