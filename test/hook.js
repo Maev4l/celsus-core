@@ -6,10 +6,12 @@
 
 const childProcess = require('child_process');
 
-before('Initialiaze database', () => {
-  childProcess.execFileSync('./scripts/before_test.sh', [], { shell: true });
+before('Initialize database', () => {
+  const cmd = `psql --host ${process.env.PGHOST} --dbname ${process.env.PGDATABASE} --username ${process.env.PGUSER} --port ${process.env.PGPORT} --file scripts/initialize.sql`;
+  childProcess.execSync(cmd);
 });
 
 after('Clean up database', () => {
-  childProcess.execFileSync('./scripts/after_test.sh', [], { shell: true });
+  const cmd = `psql --host ${process.env.PGHOST} --dbname ${process.env.PGDATABASE} --username ${process.env.PGUSER} --port ${process.env.PGPORT} --command 'DROP SCHEMA "celsus" CASCADE'`;
+  childProcess.execSync(cmd);
 });
