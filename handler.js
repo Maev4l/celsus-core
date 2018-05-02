@@ -15,11 +15,20 @@ exports.getLibraries = async (event) => {
 exports.postLibrary = async (event) => {
   const library = JSON.parse(event.body);
   const { sub } = event.requestContext.authorizer.claims;
-  let result;
+  let result = '';
   let statusCode;
+
+  // If a library does not have an existing id, it means we are trying to create it
   if (!library.id) {
     result = await librariesManager.createLibrary(sub, library);
     statusCode = 201;
+  } else {
+    const updated = await librariesManager.updateLibrary(sub, library);
+    if (updated) {
+      statusCode = 204;
+    } else {
+      statusCode = 400;
+    }
   }
 
   const response = {
