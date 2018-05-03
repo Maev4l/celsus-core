@@ -52,11 +52,21 @@ functions:
             arn: arn:aws:cognito-idp:eu-west-2:671123374425:userpool/eu-west-2_ocAf57dZ3
   postLibrary: 
     handler: handler.postLibrary
-    name: post-libraries
+    name: post-library
     events:
       - http:
           path: api/v1/libraries
           method: post
           authorizer:
             arn: arn:aws:cognito-idp:eu-west-2:671123374425:userpool/eu-west-2_ocAf57dZ3
+  deleteLibrary:
+    handler: handler.deleteLibrary
+    name: delete-library
+    events:
+      - http:
+          path: api/v1/libraries/{id}
+          method: delete
+          authorizer:
+            arn: arn:aws:cognito-idp:eu-west-2:671123374425:userpool/eu-west-2_ocAf57dZ3
+
 

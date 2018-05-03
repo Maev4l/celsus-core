@@ -40,3 +40,18 @@ exports.postLibrary = async (event) => {
 
   return response;
 };
+
+exports.deleteLibrary = async (event) => {
+  const { sub } = event.requestContext.authorizer.claims;
+
+  const libraryId = event.pathParameters.id;
+  const manager = new LibraryManager();
+  const result = await manager.deleteLibrary(sub, libraryId);
+  const statusCode = result ? 204 : 404;
+
+  const response = {
+    statusCode,
+  };
+
+  return response;
+};
