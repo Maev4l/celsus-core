@@ -1,9 +1,10 @@
-const librariesManager = require('./lib/libraries-manager');
+const LibraryManager = require('./lib/library-manager');
 
 
 exports.getLibraries = async (event) => {
   const { sub } = event.requestContext.authorizer.claims;
-  const result = await librariesManager.getLibraries(sub);
+  const manager = new LibraryManager();
+  const result = await manager.getLibraries(sub);
 
   const response = {
     statusCode: 200,
@@ -19,11 +20,12 @@ exports.postLibrary = async (event) => {
   let statusCode;
 
   // If a library does not have an existing id, it means we are trying to create it
+  const manager = new LibraryManager();
   if (!library.id) {
-    result = await librariesManager.createLibrary(sub, library);
+    result = await manager.createLibrary(sub, library);
     statusCode = 201;
   } else {
-    const updated = await librariesManager.updateLibrary(sub, library);
+    const updated = await manager.updateLibrary(sub, library);
     if (updated) {
       statusCode = 204;
     } else {
