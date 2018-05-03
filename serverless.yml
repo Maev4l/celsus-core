@@ -68,5 +68,14 @@ functions:
           method: delete
           authorizer:
             arn: arn:aws:cognito-idp:eu-west-2:671123374425:userpool/eu-west-2_ocAf57dZ3
+  getLibrary:
+    handler: handler.getLibrary
+    name: get-library
+    events:
+      - http:
+          path: api/v1/libraries/{id}
+          method: get
+          authorizer:
+            arn: arn:aws:cognito-idp:eu-west-2:671123374425:userpool/eu-west-2_ocAf57dZ3
 
 

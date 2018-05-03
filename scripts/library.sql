@@ -15,3 +15,4 @@ INSERT INTO "celsus"."library" ("id", "user_id", "name", "description")	VALUES (
 INSERT INTO "celsus"."library" ("id", "user_id", "name", "description")	VALUES ('2', 'user2', 'My Book Title for user 2', 'My Book description for user 2');
 INSERT INTO "celsus"."library" ("id", "user_id", "name", "description")	VALUES ('3', 'user2', 'My Book Title for user 2 for update test', 'To be updated');
 INSERT INTO "celsus"."library" ("id", "user_id", "name", "description")	VALUES ('4', 'user2', 'My Book Title for user 2 for delete test', 'To be deleted');
+INSERT INTO "celsus"."library" ("id", "user_id", "name", "description")	VALUES ('5', 'user3', 'My Book Title for user 3', 'To be read');

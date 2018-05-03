@@ -2,7 +2,9 @@ const { assert } = require('chai');
 const { Pool } = require('pg');
 require('dotenv').config();
 
-const { getLibraries, postLibrary, deleteLibrary } = require('../handler');
+const {
+  getLibraries, postLibrary, deleteLibrary, getLibrary,
+} = require('../handler');
 const { newMockEvent } = require('./utils');
 
 describe('Libraries Tests', async () => {
@@ -144,5 +146,45 @@ describe('Libraries Tests', async () => {
     assert.strictEqual(rows.length, 1);
     client.release();
     await pool.end();
+  });
+
+  it('Returns a single library', async () => {
+    const id = '5';
+    const event = newMockEvent('user3', '', { id });
+
+    const response = await getLibrary(event);
+    const { statusCode, body } = response;
+    assert.strictEqual(statusCode, 200);
+    const result = JSON.parse(body);
+    const expected = {
+      id: '5',
+      name: 'My Book Title for user 3',
+      description: 'To be read',
+    };
+    assert.deepEqual(result, expected);
+  });
+
+  it('Fails when fetching an unknown library', async () => {
+    const id = 'xxx';
+    const event = newMockEvent('user2', '', { id });
+    const response = await getLibrary(event);
+    const { statusCode } = response;
+    assert.strictEqual(statusCode, 404);
+  });
+
+  it('Fails when fetching a library belonging to an unknown user', async () => {
+    const id = '5';
+    const event = newMockEvent('xxx', '', { id });
+    const response = await getLibrary(event);
+    const { statusCode } = response;
+    assert.strictEqual(statusCode, 404);
+  });
+
+  it('Fails when fetching a library not belonging to user', async () => {
+    const id = '5';
+    const event = newMockEvent('user2', '', { id });
+    const response = await getLibrary(event);
+    const { statusCode } = response;
+    assert.strictEqual(statusCode, 404);
   });
 });

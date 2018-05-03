@@ -55,3 +55,30 @@ exports.deleteLibrary = async (event) => {
 
   return response;
 };
+
+exports.getLibrary = async (event) => {
+  const { sub } = event.requestContext.authorizer.claims;
+
+  const libraryId = event.pathParameters.id;
+  const manager = new LibraryManager();
+  const result = await manager.getLibrary(sub, libraryId);
+  let statusCode;
+  let body = '';
+  if (result.length === 1) {
+    statusCode = 200;
+    body = JSON.stringify(result[0]);
+  } else if (result.length === 0) {
+    statusCode = 404;
+  } else {
+    // We have several libraries with the same identifiers
+    statusCode = 500;
+  }
+
+  const response = {
+    statusCode,
+    body,
+  };
+
+  return response;
+};
+
