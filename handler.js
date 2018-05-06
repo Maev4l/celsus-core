@@ -8,6 +8,10 @@ exports.getLibraries = async (event) => {
 
   const response = {
     statusCode: 200,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Credentials': true,
+    },
     body: JSON.stringify(result),
   };
   return response;
@@ -35,6 +39,10 @@ exports.postLibrary = async (event) => {
 
   const response = {
     statusCode,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Credentials': true,
+    },
     body: JSON.stringify(result),
   };
 
@@ -51,6 +59,10 @@ exports.deleteLibrary = async (event) => {
 
   const response = {
     statusCode,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Credentials': true,
+    },
   };
 
   return response;
@@ -76,6 +88,10 @@ exports.getLibrary = async (event) => {
 
   const response = {
     statusCode,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Credentials': true,
+    },
     body,
   };
 

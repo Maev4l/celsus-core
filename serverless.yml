@@ -1,7 +1,7 @@
 service: celsus-core
 
-plugins:
-  - serverless-domain-manager # plugin for custom domain name management
+# plugins:
+#  - serverless-domain-manager # plugin for custom domain name management
 
 provider:
   name: aws
@@ -29,16 +29,26 @@ provider:
     PGPORT: ${ssm:PG_PORT~true}
     PGDATABASE: ${ssm:PG_DB_NAME~true}
 
-custom:
-  # >>> Custom domain name
-  customDomain:
-    domainName: api.celsus.isnan.eu
-    stage: ${self:provider.stage}
-    createRoute53Record: true
-    endpointType: regional
-    certificateName: '*.isnan.eu'
-    hostedZoneId: ZWC66FN0XU6P9
-  # <<< Custom domain name
+package:
+  exclude:
+    - .env
+    - .vscode/**
+    - .travis.yml
+    - coverage/**
+    - test/**
+    - scripts/**
+    - run-local-postgres.sh
+    - secrets.txt
+
+#custom:
+#  # >>> Custom domain name
+#  customDomain:
+#    domainName: api.celsus.isnan.eu
+#    stage: ${self:provider.stage}
+#    createRoute53Record: true
+#    certificateName: 'api.celsus.isnan.eu'
+#    hostedZoneId: ZWC66FN0XU6P9
+#  # <<< Custom domain name
 
 functions:
   getLibraries:
@@ -48,6 +58,7 @@ functions:
       - http:
           path: v1/libraries
           method: get
+          cors: true
           authorizer:
             arn: arn:aws:cognito-idp:eu-west-2:671123374425:userpool/eu-west-2_ocAf57dZ3
   postLibrary: 
@@ -57,6 +68,7 @@ functions:
       - http:
           path: v1/libraries
           method: post
+          cors: true
           authorizer:
             arn: arn:aws:cognito-idp:eu-west-2:671123374425:userpool/eu-west-2_ocAf57dZ3
   deleteLibrary:
@@ -66,6 +78,7 @@ functions:
       - http:
           path: v1/libraries/{id}
           method: delete
+          cors: true
           authorizer:
             arn: arn:aws:cognito-idp:eu-west-2:671123374425:userpool/eu-west-2_ocAf57dZ3
   getLibrary:
@@ -75,6 +88,7 @@ functions:
       - http:
           path: v1/libraries/{id}
           method: get
+          cors: true
           authorizer:
             arn: arn:aws:cognito-idp:eu-west-2:671123374425:userpool/eu-west-2_ocAf57dZ3
 
