@@ -1,20 +1,28 @@
 const LibraryManager = require('./lib/library-manager');
 
 
-exports.getLibraries = async (event) => {
-  const { sub } = event.requestContext.authorizer.claims;
-  const manager = new LibraryManager();
-  const result = await manager.getLibraries(sub);
-
+const makeResponse = (statusCode, result) => {
+  let body = '';
+  if (result) {
+    body = JSON.stringify(result);
+  }
   const response = {
-    statusCode: 200,
+    statusCode,
     headers: {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Credentials': true,
     },
-    body: JSON.stringify(result),
+    body,
   };
+
   return response;
+};
+
+exports.getLibraries = async (event) => {
+  const { sub } = event.requestContext.authorizer.claims;
+  const manager = new LibraryManager();
+  const result = await manager.getLibraries(sub);
+  return makeResponse(200, result);
 };
 
 exports.postLibrary = async (event) => {
@@ -36,17 +44,7 @@ exports.postLibrary = async (event) => {
       statusCode = 400;
     }
   }
-
-  const response = {
-    statusCode,
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Credentials': true,
-    },
-    body: JSON.stringify(result),
-  };
-
-  return response;
+  return makeResponse(statusCode, result);
 };
 
 exports.deleteLibrary = async (event) => {
@@ -57,15 +55,7 @@ exports.deleteLibrary = async (event) => {
   const result = await manager.deleteLibrary(sub, libraryId);
   const statusCode = result ? 204 : 404;
 
-  const response = {
-    statusCode,
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Credentials': true,
-    },
-  };
-
-  return response;
+  return makeResponse(statusCode);
 };
 
 exports.getLibrary = async (event) => {
@@ -75,10 +65,8 @@ exports.getLibrary = async (event) => {
   const manager = new LibraryManager();
   const result = await manager.getLibrary(sub, libraryId);
   let statusCode;
-  let body = '';
   if (result.length === 1) {
     statusCode = 200;
-    body = JSON.stringify(result[0]);
   } else if (result.length === 0) {
     statusCode = 404;
   } else {
@@ -86,15 +74,6 @@ exports.getLibrary = async (event) => {
     statusCode = 500;
   }
 
-  const response = {
-    statusCode,
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Credentials': true,
-    },
-    body,
-  };
-
-  return response;
+  return makeResponse(statusCode, result.length === 1 ? result[0] : null);
 };
 
