@@ -8,7 +8,7 @@ const {
 const { newMockEvent } = require('./utils');
 
 describe('Libraries Tests', async () => {
-  it('Returns list of libraries', async () => {
+  it('Returns list of libraries with no books', async () => {
     const event = newMockEvent('user1');
 
     const response = await getLibraries(event);
@@ -20,8 +20,30 @@ describe('Libraries Tests', async () => {
       libraries: [
         {
           id: '1',
-          name: 'My Book Title',
-          description: 'My Book description',
+          booksCount: 0,
+          name: 'My Library Name',
+          description: 'My Library description',
+        },
+      ],
+    };
+    assert.deepEqual(result, expected);
+  });
+
+  it('Returns list of libraries with some books', async () => {
+    const event = newMockEvent('user4');
+
+    const response = await getLibraries(event);
+    const { statusCode, body } = response;
+    assert.strictEqual(statusCode, 200);
+    const result = JSON.parse(body);
+    assert.strictEqual(1, result.libraries.length);
+    const expected = {
+      libraries: [
+        {
+          id: '6',
+          booksCount: 2,
+          name: 'My Library Name',
+          description: 'My Library description',
         },
       ],
     };
@@ -112,8 +134,10 @@ describe('Libraries Tests', async () => {
     assert.strictEqual(statusCode, 204);
     const pool = new Pool();
     const client = await pool.connect();
-    const { rows } = await client.query('SELECT "id", "name", "description" FROM "celsus"."library" WHERE "id"=$1;', [id]);
-    assert.strictEqual(rows.length, 0);
+    const librariesResult = await client.query('SELECT "id", "name", "description" FROM "celsus"."library" WHERE "id"=$1;', [id]);
+    assert.strictEqual(librariesResult.rows.length, 0);
+    const booksResult = await client.query('SELECT "id" FROM "celsus"."book" WHERE "library_id"=$1;', [id]);
+    assert.strictEqual(booksResult.rows.length, 0);
     client.release();
     await pool.end();
   });
@@ -158,7 +182,8 @@ describe('Libraries Tests', async () => {
     const result = JSON.parse(body);
     const expected = {
       id: '5',
-      name: 'My Book Title for user 3',
+      booksCount: 0,
+      name: 'My Library Name for user 3',
       description: 'To be read',
     };
     assert.deepEqual(result, expected);
