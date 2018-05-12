@@ -1,4 +1,4 @@
-function newMockEvent(sub, body, pathParameters) {
+function newMockEvent(sub, body, pathParameters, queryStringParameters) {
   const mockEvent = {
     requestContext: {
       authorizer: {
@@ -9,6 +9,7 @@ function newMockEvent(sub, body, pathParameters) {
     },
     body: JSON.stringify(body),
     pathParameters,
+    queryStringParameters,
   };
 
   return mockEvent;

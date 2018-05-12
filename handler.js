@@ -1,5 +1,5 @@
 const LibraryManager = require('./lib/library-manager');
-
+const BookManager = require('./lib/book-manager');
 
 const makeResponse = (statusCode, result) => {
   let body = '';
@@ -39,7 +39,7 @@ exports.postLibrary = async (event) => {
       statusCode = 201;
     } catch (e) {
       statusCode = 400;
-      const { message } = e.details[0];
+      const { message } = e;
       result = { message };
     }
   } else {
@@ -83,3 +83,12 @@ exports.getLibrary = async (event) => {
   return makeResponse(statusCode, result.length === 1 ? result[0] : null);
 };
 
+exports.getBooks = async (event) => {
+  const { sub } = event.requestContext.authorizer.claims;
+  const { queryStringParameters } = event;
+  const manager = new BookManager();
+  const offset = queryStringParameters ? (queryStringParameters.offset || 0) : 0;
+
+  const result = await manager.getBooks(sub, offset);
+  return makeResponse(200, result);
+};
