@@ -69,6 +69,114 @@ describe('Libraries Tests', async () => {
     await pool.end();
   });
 
+  it('Fails when adding a library with empty name for user1', async () => {
+    const event = newMockEvent('user1', { name: '', description: 'new description' });
+
+    const pool = new Pool();
+    const client = await pool.connect();
+    const initialState = await client.query('SELECT * FROM "celsus"."library";');
+    const initialCount = initialState.rowCount;
+
+    const response = await postLibrary(event);
+    const { statusCode, body } = response;
+    assert.strictEqual(statusCode, 400);
+    assert.isNotNull(body);
+    assert.isNotEmpty(body);
+
+    const actualState = await client.query('SELECT * FROM "celsus"."library";');
+    const actualCount = actualState.rowCount;
+    assert.strictEqual(initialCount, actualCount);
+    client.release();
+    await pool.end();
+  });
+
+  it('Fails when adding a library without name field for user1', async () => {
+    const event = newMockEvent('user1', { description: 'no_name_library' });
+
+    const pool = new Pool();
+    const client = await pool.connect();
+    const initialState = await client.query('SELECT * FROM "celsus"."library";');
+    const initialCount = initialState.rowCount;
+
+    const response = await postLibrary(event);
+    const { statusCode, body } = response;
+    assert.strictEqual(statusCode, 400);
+    assert.isNotNull(body);
+    assert.isNotEmpty(body);
+
+    const actualState = await client.query('SELECT * FROM "celsus"."library";');
+    const actualCount = actualState.rowCount;
+    assert.strictEqual(initialCount, actualCount);
+    client.release();
+    await pool.end();
+  });
+
+  it('Fails when adding a library without description field for user1', async () => {
+    const event = newMockEvent('user1', { name: 'no_description_library' });
+
+    const pool = new Pool();
+    const client = await pool.connect();
+    const initialState = await client.query('SELECT * FROM "celsus"."library";');
+    const initialCount = initialState.rowCount;
+
+    const response = await postLibrary(event);
+    const { statusCode, body } = response;
+    assert.strictEqual(statusCode, 400);
+    assert.isNotNull(body);
+    assert.isNotEmpty(body);
+
+    const actualState = await client.query('SELECT * FROM "celsus"."library";');
+    const actualCount = actualState.rowCount;
+    assert.strictEqual(initialCount, actualCount);
+    client.release();
+    await pool.end();
+  });
+
+
+  it('Fails when adding a library with too long name for user1', async () => {
+    const longValue = `${'abcde'.repeat(20)}a`;
+    const event = newMockEvent('user1', { name: longValue, description: '' });
+
+    const pool = new Pool();
+    const client = await pool.connect();
+    const initialState = await client.query('SELECT * FROM "celsus"."library";');
+    const initialCount = initialState.rowCount;
+
+    const response = await postLibrary(event);
+    const { statusCode, body } = response;
+    assert.strictEqual(statusCode, 400);
+    assert.isNotNull(body);
+    assert.isNotEmpty(body);
+
+    const actualState = await client.query('SELECT * FROM "celsus"."library";');
+    const actualCount = actualState.rowCount;
+    assert.strictEqual(initialCount, actualCount);
+    client.release();
+    await pool.end();
+  });
+
+  it('Fails when adding a library with too long description for user1', async () => {
+    const longValue = `${'abcde'.repeat(110)}a`;
+    const event = newMockEvent('user1', { name: 'long_desc_library', description: longValue });
+
+    const pool = new Pool();
+    const client = await pool.connect();
+    const initialState = await client.query('SELECT * FROM "celsus"."library";');
+    const initialCount = initialState.rowCount;
+
+    const response = await postLibrary(event);
+    const { statusCode, body } = response;
+    assert.strictEqual(statusCode, 400);
+    assert.isNotNull(body);
+    assert.isNotEmpty(body);
+
+    const actualState = await client.query('SELECT * FROM "celsus"."library";');
+    const actualCount = actualState.rowCount;
+    assert.strictEqual(initialCount, actualCount);
+    client.release();
+    await pool.end();
+  });
+
   it('Updates an existing library', async () => {
     const library = { id: '3', name: 'My Updated Book Title for user2', description: 'My Updated Book Description for user 2' };
     const event = newMockEvent('user2', library);

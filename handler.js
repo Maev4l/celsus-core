@@ -34,8 +34,14 @@ exports.postLibrary = async (event) => {
   // If a library does not have an existing id, it means we are trying to create it
   const manager = new LibraryManager();
   if (!library.id) {
-    result = await manager.createLibrary(sub, library);
-    statusCode = 201;
+    try {
+      result = await manager.createLibrary(sub, library);
+      statusCode = 201;
+    } catch (e) {
+      statusCode = 400;
+      const { message } = e.details[0];
+      result = { message };
+    }
   } else {
     const updated = await manager.updateLibrary(sub, library);
     if (updated) {
