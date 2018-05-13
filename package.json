@@ -5,7 +5,8 @@
   "main": "lib/main.js",
   "scripts": {
     "test": "./node_modules/mocha/bin/mocha ./test/*",
-    "lint": "./node_modules/.bin/eslint ."
+    "lint": "./node_modules/.bin/eslint .",
+    "deploy": "npx sls deploy"
   },
   "author": "",
   "license": "ISC",

@@ -92,3 +92,14 @@ exports.getBooks = async (event) => {
   const result = await manager.getBooks(sub, offset);
   return makeResponse(200, result);
 };
+
+exports.deleteBook = async (event) => {
+  const { sub } = event.requestContext.authorizer.claims;
+
+  const bookId = event.pathParameters.id;
+  const manager = new BookManager();
+  const result = await manager.deleteBook(sub, bookId);
+  const statusCode = result ? 204 : 404;
+
+  return makeResponse(statusCode);
+};

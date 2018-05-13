@@ -24,6 +24,11 @@ INSERT INTO "celsus"."book"("id", "user_id", "library_id", "title", "description
 INSERT INTO "celsus"."book"("id", "user_id", "library_id", "title", "description", "isbn10", "isbn13", "thumbnail", "authors", "tags", "hash")
   VALUES ('2', 'user4', '6', 'Book Title2', 'Book Desc', 'Book isbn10', 'Book isbn13', 'Book thumbnal', 'Book authors', 'Book tags', 'Book hash');
 
-  -- Belong to library with id 4 (for deletion test)
+-- Belong to library with id 4 (for deletion test)
 INSERT INTO "celsus"."book"("id", "user_id", "library_id", "title", "description", "isbn10", "isbn13", "thumbnail", "authors", "tags", "hash")
   VALUES ('3', 'user2', '4', 'Book Title', 'Book Desc', 'Book isbn10', 'Book isbn13', 'Book thumbnal', 'Book authors', 'Book tags', 'Book hash');
+
+-- Belong to library with id 7 (for deletion test)
+INSERT INTO "celsus"."book"("id", "user_id", "library_id", "title", "description", "isbn10", "isbn13", "thumbnail", "authors", "tags", "hash")
+  VALUES ('4', 'user5', '7', 'Book Title', 'Book Desc', 'Book isbn10', 'Book isbn13', 'Book thumbnal', 'Book authors', 'Book tags', 'Book hash');
+

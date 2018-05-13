@@ -9,7 +9,7 @@ const { newMockEvent } = require('./utils');
 
 const { BooksPerPage } = require('../lib/book-manager');
 
-describe('Books Tests', async () => {
+describe('Books Tests (READ)', async () => {
   it('Returns list of books belonging to user4 without a defined offset', async () => {
     const expected = {
       itemsPerPage: BooksPerPage,

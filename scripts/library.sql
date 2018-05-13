@@ -17,3 +17,5 @@ INSERT INTO "celsus"."library" ("id", "user_id", "name", "description")	VALUES (
 INSERT INTO "celsus"."library" ("id", "user_id", "name", "description")	VALUES ('4', 'user2', 'My Library Name for user 2 for delete test', 'To be deleted');
 INSERT INTO "celsus"."library" ("id", "user_id", "name", "description")	VALUES ('5', 'user3', 'My Library Name for user 3', 'To be read');
 INSERT INTO "celsus"."library" ("id", "user_id", "name", "description")	VALUES ('6', 'user4', 'My Library Name', 'My Library description'); -- Contains some books
+
+INSERT INTO "celsus"."library" ("id", "user_id", "name", "description")	VALUES ('7', 'user5', 'My Library Name', 'My Library description'); -- Contains some books
