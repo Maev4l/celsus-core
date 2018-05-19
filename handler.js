@@ -103,3 +103,31 @@ exports.deleteBook = async (event) => {
 
   return makeResponse(statusCode);
 };
+
+exports.postBook = async (event) => {
+  const book = JSON.parse(event.body);
+  const { sub } = event.requestContext.authorizer.claims;
+  let result = '';
+  let statusCode;
+
+  // If a library does not have an existing id, it means we are trying to create it
+  const manager = new BookManager();
+  if (!book.id) {
+    try {
+      result = await manager.createBook(sub, book);
+      statusCode = 201;
+    } catch (e) {
+      statusCode = 400;
+      const { message } = e;
+      result = { message };
+    }
+  }/* else {
+    const updated = await manager.updateLibrary(sub, library);
+    if (updated) {
+      statusCode = 204;
+    } else {
+      statusCode = 400;
+    }
+  }*/
+  return makeResponse(statusCode, result);
+};
