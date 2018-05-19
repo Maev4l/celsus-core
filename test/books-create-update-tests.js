@@ -43,6 +43,7 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
     assert.strictEqual(expectedBook.description, newBook.description);
     assert.strictEqual(expectedBook.authors, newBook.authors.join(';'));
     assert.strictEqual(expectedBook.tags, newBook.tags.join(';'));
+    assert.isNotEmpty(expectedBook.hash);
 
     await client.query('DELETE FROM "celsus"."book" WHERE "id"=$1', [result.id]);
     client.release();
