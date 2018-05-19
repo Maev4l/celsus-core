@@ -117,7 +117,7 @@ functions:
             arn: arn:aws:cognito-idp:eu-west-2:671123374425:userpool/eu-west-2_ocAf57dZ3
   postBook:
     handler: handler.postBook
-    name: delete-book
+    name: post-book
     events:
       - http:
           path: v1/books

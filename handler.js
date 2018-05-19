@@ -110,7 +110,7 @@ exports.postBook = async (event) => {
   let result = '';
   let statusCode;
 
-  // If a library does not have an existing id, it means we are trying to create it
+  // If a book does not have an existing id, it means we are trying to create it
   const manager = new BookManager();
   if (!book.id) {
     try {
@@ -121,13 +121,19 @@ exports.postBook = async (event) => {
       const { message } = e;
       result = { message };
     }
-  }/* else {
-    const updated = await manager.updateLibrary(sub, library);
-    if (updated) {
-      statusCode = 204;
-    } else {
+  } else {
+    try {
+      const updated = await manager.updateBook(sub, book);
+      if (updated) {
+        statusCode = 204;
+      } else {
+        statusCode = 400;
+      }
+    } catch (e) {
       statusCode = 400;
+      const { message } = e;
+      result = { message };
     }
-  }*/
+  }
   return makeResponse(statusCode, result);
 };

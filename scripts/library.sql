@@ -21,3 +21,5 @@ INSERT INTO "celsus"."library" ("id", "user_id", "name", "description")	VALUES (
 INSERT INTO "celsus"."library" ("id", "user_id", "name", "description")	VALUES ('7', 'user5', 'My Library Name', 'My Library description'); -- Contains some books
 
 INSERT INTO "celsus"."library" ("id", "user_id", "name", "description")	VALUES ('af9da085-4562-475f-baa5-38c3e5115c09', 'user6', 'My Library Name', 'My Library description'); -- Container for add books tests
+
+INSERT INTO "celsus"."library" ("id", "user_id", "name", "description")	VALUES ('73b57d71-4938-45cc-9880-51db8ebf3e7a', 'user7', 'My Library Name', 'My Library description'); -- Container for update books tests

@@ -1,6 +1,7 @@
 const { assert } = require('chai');
 const { Pool } = require('pg');
 require('dotenv').config();
+const Utils = require('../lib/utils');
 
 const {
   postBook,
@@ -8,7 +9,7 @@ const {
 const { newMockEvent } = require('./utils');
 
 describe('Books Tests (CREATE - UPDATE)', async () => {
-  it('Adds a new book for user1 in library id=1', async () => {
+  it('Adds a new book for user6', async () => {
     const libraryId = 'af9da085-4562-475f-baa5-38c3e5115c09';
     const newBook = {
       title: 'new book',
@@ -87,6 +88,119 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
     const event = newMockEvent(
       'user6',
       newBook,
+    );
+
+    const response = await postBook(event);
+    const { statusCode } = response;
+    assert.strictEqual(statusCode, 400);
+  });
+
+  it('Update an existing book for user7', async () => {
+    const libraryId = '73b57d71-4938-45cc-9880-51db8ebf3e7a';
+    const id = '2894d16a-78fe-4dfc-a2b0-0a080898a490';
+    const updateBook = {
+      id,
+      title: 'new book updated',
+      libraryId,
+      description: 'new description updated',
+      thumbnail: '',
+      authors: ['author1', 'author2'],
+      tags: [],
+      isbn10: '',
+      isbn13: '',
+    };
+    const event = newMockEvent(
+      'user7',
+      updateBook,
+    );
+
+    const response = await postBook(event);
+    const { statusCode } = response;
+    assert.strictEqual(statusCode, 204);
+
+    const pool = new Pool();
+    const client = await pool.connect();
+    const { rows } = await client.query('SELECT * FROM "celsus"."book" WHERE "id"=$1;', [id]);
+    assert.strictEqual(rows.length, 1);
+    const expectedBook = rows[0];
+
+    assert.strictEqual(expectedBook.library_id, libraryId);
+    assert.strictEqual(expectedBook.title, updateBook.title);
+    assert.strictEqual(expectedBook.description, updateBook.description);
+    assert.strictEqual(expectedBook.authors, updateBook.authors.join(';'));
+    assert.strictEqual(expectedBook.tags, updateBook.tags.join(';'));
+    assert.strictEqual(expectedBook.hash, Utils.hashBook(updateBook));
+
+    client.release();
+    await pool.end();
+  });
+
+  it('Fails when updating an unknown book for user7', async () => {
+    const libraryId = '73b57d71-4938-45cc-9880-51db8ebf3e7a';
+    const id = 'a798b3ee-ca87-4bdc-83ea-7824739df88c';
+    const updateBook = {
+      id,
+      title: 'new book updated',
+      libraryId,
+      description: 'new description updated',
+      thumbnail: '',
+      authors: ['author1', 'author2'],
+      tags: [],
+      isbn10: '',
+      isbn13: '',
+    };
+    const event = newMockEvent(
+      'user7',
+      updateBook,
+    );
+
+    const response = await postBook(event);
+    const { statusCode } = response;
+    assert.strictEqual(statusCode, 400);
+  });
+
+  it('Fails when updating a book to an unknown library', async () => {
+    const libraryId = 'af9da085-4562-475f-baa5-38c3e5115c09';
+    const id = '2894d16a-78fe-4dfc-a2b0-0a080898a490';
+    const updateBook = {
+      id,
+      title: 'new book updated',
+      libraryId,
+      description: 'new description updated',
+      thumbnail: '',
+      authors: ['author1', 'author2'],
+      tags: [],
+      isbn10: '',
+      isbn13: '',
+    };
+    const event = newMockEvent(
+      'user7',
+      updateBook,
+    );
+
+    const response = await postBook(event);
+    const { statusCode } = response;
+    assert.strictEqual(statusCode, 400);
+  });
+
+
+  it('Fails when updating a book in a library belonging to another user', async () => {
+    const libraryId = '73b57d71-4938-45cc-9880-51db8ebf3e7a';
+    const id = '2894d16a-78fe-4dfc-a2b0-0a080898a490';
+    const updateBook = {
+      id,
+      title: 'new book updated',
+      libraryId,
+      description: 'new description updated',
+      thumbnail: '',
+      authors: ['author1', 'author2'],
+      tags: [],
+      isbn10: '',
+      isbn13: '',
+    };
+    const event = newMockEvent(
+      'user1',
+      updateBook,
     );
 
     const response = await postBook(event);

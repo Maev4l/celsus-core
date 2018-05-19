@@ -32,3 +32,6 @@ INSERT INTO "celsus"."book"("id", "user_id", "library_id", "title", "description
 INSERT INTO "celsus"."book"("id", "user_id", "library_id", "title", "description", "isbn10", "isbn13", "thumbnail", "authors", "tags", "hash")
   VALUES ('4', 'user5', '7', 'Book Title', 'Book Desc', 'Book isbn10', 'Book isbn13', 'Book thumbnal', 'Book authors', 'Book tags', 'Book hash');
 
+-- Belong to user 7 (for update book test)
+INSERT INTO "celsus"."book"("id", "user_id", "library_id", "title", "description", "isbn10", "isbn13", "thumbnail", "authors", "tags", "hash")
+  VALUES ('2894d16a-78fe-4dfc-a2b0-0a080898a490', 'user7', '73b57d71-4938-45cc-9880-51db8ebf3e7a', 'Book Title', 'Book Desc', 'Book isbn10', 'Book isbn13', '', 'Book authors', 'Book tags', 'Book hash');
