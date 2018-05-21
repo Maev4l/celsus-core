@@ -8,6 +8,8 @@ const {
 } = require('../handler');
 const { newMockEvent } = require('./utils');
 
+const images = require('./images.json');
+
 describe('Books Tests (CREATE - UPDATE)', async () => {
   it('Adds a new book for user6', async () => {
     const libraryId = 'af9da085-4562-475f-baa5-38c3e5115c09';
@@ -206,5 +208,83 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
     const response = await postBook(event);
     const { statusCode } = response;
     assert.strictEqual(statusCode, 400);
+  });
+
+  it('Adds a new book for user8 with thumbnail', async () => {
+    const libraryId = 'e0d7422f-ca44-4dac-bb56-51fe67cc3809';
+
+    const thumbnail = images.image1;
+
+    const newBook = {
+      title: 'new book',
+      libraryId,
+      description: 'new description',
+      thumbnail,
+      authors: ['author1', 'author2'],
+      tags: [],
+      isbn10: '',
+      isbn13: '',
+    };
+    const event = newMockEvent(
+      'user8',
+      newBook,
+    );
+
+    const response = await postBook(event);
+    const { statusCode, body } = response;
+    assert.strictEqual(statusCode, 201);
+    const result = JSON.parse(body);
+    assert.exists(result.id);
+    assert.notEqual(result.id, '');
+
+    const pool = new Pool();
+    const client = await pool.connect();
+    const { rows } = await client.query('SELECT thumbnail FROM "celsus"."book" WHERE "id"=$1;', [result.id]);
+    assert.strictEqual(rows.length, 1);
+    const expectedBook = rows[0];
+    assert.notStrictEqual(expectedBook.thumbnail, thumbnail);
+    assert.notStrictEqual(expectedBook.thumbnail, '');
+
+    await client.query('DELETE FROM "celsus"."book" WHERE "id"=$1', [result.id]);
+    client.release();
+    await pool.end();
+  });
+
+  it('Updates an existing book for user9 with new thumbnail', async () => {
+    const libraryId = '979ed879-b3c0-40fa-83ff-5f4442052217';
+    const id = '341e5d68-4682-4b91-9058-200a60d4ad75';
+
+    const thumbnail = images.image2;
+
+    const updateBook = {
+      id,
+      title: 'new book',
+      libraryId,
+      description: 'new description',
+      thumbnail,
+      authors: ['author1', 'author2'],
+      tags: [],
+      isbn10: '',
+      isbn13: '',
+    };
+    const event = newMockEvent(
+      'user9',
+      updateBook,
+    );
+
+    const response = await postBook(event);
+    const { statusCode } = response;
+    assert.strictEqual(statusCode, 204);
+
+    const pool = new Pool();
+    const client = await pool.connect();
+    const { rows } = await client.query('SELECT thumbnail FROM "celsus"."book" WHERE "id"=$1;', [id]);
+    assert.strictEqual(rows.length, 1);
+    const expectedBook = rows[0];
+    assert.notStrictEqual(expectedBook.thumbnail, '');
+    assert.notStrictEqual(expectedBook.thumbnail, thumbnail);
+
+    client.release();
+    await pool.end();
   });
 });
