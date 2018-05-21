@@ -2,7 +2,6 @@
   "name": "celsus-core",
   "version": "1.0.0",
   "description": "",
-  "main": "lib/main.js",
   "scripts": {
     "test": "./node_modules/mocha/bin/mocha ./test/*",
     "lint": "./node_modules/.bin/eslint .",
@@ -26,7 +25,6 @@
     "istanbul": "^1.0.0-alpha.2",
     "mocha": "^5.1.1",
     "mocha-lcov-reporter": "^1.3.0",
-    "serverless": "^1.27.2",
-    "serverless-domain-manager": "^2.3.6"
+    "serverless": "^1.27.2"
   }
 }
