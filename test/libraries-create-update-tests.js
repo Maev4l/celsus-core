@@ -7,6 +7,8 @@ const {
 } = require('../handler');
 const { newMockEvent } = require('./utils');
 
+const schemaName = process.env.PGSCHEMA;
+
 describe('Libraries Tests (CREATE - UPDATE)', async () => {
   it('Adds a new library for user1', async () => {
     const event = newMockEvent('user1', { name: 'newLibrary', description: 'new description' });
@@ -20,9 +22,9 @@ describe('Libraries Tests (CREATE - UPDATE)', async () => {
 
     const pool = new Pool();
     const client = await pool.connect();
-    const { rows } = await client.query('SELECT "id", "name", "description" FROM "celsus"."library" WHERE "id"=$1;', [result.id]);
+    const { rows } = await client.query(`SELECT "id", "name", "description" FROM "${schemaName}"."library" WHERE "id"=$1;`, [result.id]);
     assert.strictEqual(rows.length, 1);
-    await client.query('DELETE FROM "celsus"."library" WHERE "id"=$1', [result.id]);
+    await client.query(`DELETE FROM "${schemaName}"."library" WHERE "id"=$1`, [result.id]);
     client.release();
     await pool.end();
   });
@@ -32,7 +34,7 @@ describe('Libraries Tests (CREATE - UPDATE)', async () => {
 
     const pool = new Pool();
     const client = await pool.connect();
-    const initialState = await client.query('SELECT * FROM "celsus"."library";');
+    const initialState = await client.query(`SELECT * FROM "${schemaName}"."library";`);
     const initialCount = initialState.rowCount;
 
     const response = await postLibrary(event);
@@ -41,7 +43,7 @@ describe('Libraries Tests (CREATE - UPDATE)', async () => {
     assert.isNotNull(body);
     assert.isNotEmpty(body);
 
-    const actualState = await client.query('SELECT * FROM "celsus"."library";');
+    const actualState = await client.query(`SELECT * FROM "${schemaName}"."library";`);
     const actualCount = actualState.rowCount;
     assert.strictEqual(initialCount, actualCount);
     client.release();
@@ -53,7 +55,7 @@ describe('Libraries Tests (CREATE - UPDATE)', async () => {
 
     const pool = new Pool();
     const client = await pool.connect();
-    const initialState = await client.query('SELECT * FROM "celsus"."library";');
+    const initialState = await client.query(`SELECT * FROM "${schemaName}"."library";`);
     const initialCount = initialState.rowCount;
 
     const response = await postLibrary(event);
@@ -62,7 +64,7 @@ describe('Libraries Tests (CREATE - UPDATE)', async () => {
     assert.isNotNull(body);
     assert.isNotEmpty(body);
 
-    const actualState = await client.query('SELECT * FROM "celsus"."library";');
+    const actualState = await client.query(`SELECT * FROM "${schemaName}"."library";`);
     const actualCount = actualState.rowCount;
     assert.strictEqual(initialCount, actualCount);
     client.release();
@@ -74,7 +76,7 @@ describe('Libraries Tests (CREATE - UPDATE)', async () => {
 
     const pool = new Pool();
     const client = await pool.connect();
-    const initialState = await client.query('SELECT * FROM "celsus"."library";');
+    const initialState = await client.query(`SELECT * FROM "${schemaName}"."library";`);
     const initialCount = initialState.rowCount;
 
     const response = await postLibrary(event);
@@ -83,7 +85,7 @@ describe('Libraries Tests (CREATE - UPDATE)', async () => {
     assert.isNotNull(body);
     assert.isNotEmpty(body);
 
-    const actualState = await client.query('SELECT * FROM "celsus"."library";');
+    const actualState = await client.query(`SELECT * FROM "${schemaName}"."library";`);
     const actualCount = actualState.rowCount;
     assert.strictEqual(initialCount, actualCount);
     client.release();
@@ -97,7 +99,7 @@ describe('Libraries Tests (CREATE - UPDATE)', async () => {
 
     const pool = new Pool();
     const client = await pool.connect();
-    const initialState = await client.query('SELECT * FROM "celsus"."library";');
+    const initialState = await client.query(`SELECT * FROM "${schemaName}"."library";`);
     const initialCount = initialState.rowCount;
 
     const response = await postLibrary(event);
@@ -106,7 +108,7 @@ describe('Libraries Tests (CREATE - UPDATE)', async () => {
     assert.isNotNull(body);
     assert.isNotEmpty(body);
 
-    const actualState = await client.query('SELECT * FROM "celsus"."library";');
+    const actualState = await client.query(`SELECT * FROM "${schemaName}"."library";`);
     const actualCount = actualState.rowCount;
     assert.strictEqual(initialCount, actualCount);
     client.release();
@@ -119,7 +121,7 @@ describe('Libraries Tests (CREATE - UPDATE)', async () => {
 
     const pool = new Pool();
     const client = await pool.connect();
-    const initialState = await client.query('SELECT * FROM "celsus"."library";');
+    const initialState = await client.query(`SELECT * FROM "${schemaName}"."library";`);
     const initialCount = initialState.rowCount;
 
     const response = await postLibrary(event);
@@ -128,7 +130,7 @@ describe('Libraries Tests (CREATE - UPDATE)', async () => {
     assert.isNotNull(body);
     assert.isNotEmpty(body);
 
-    const actualState = await client.query('SELECT * FROM "celsus"."library";');
+    const actualState = await client.query(`SELECT * FROM "${schemaName}"."library";`);
     const actualCount = actualState.rowCount;
     assert.strictEqual(initialCount, actualCount);
     client.release();
@@ -143,7 +145,7 @@ describe('Libraries Tests (CREATE - UPDATE)', async () => {
     assert.strictEqual(statusCode, 204);
     const pool = new Pool();
     const client = await pool.connect();
-    const { rows } = await client.query('SELECT "id", "name", "description" FROM "celsus"."library" WHERE "id"=$1;', [library.id]);
+    const { rows } = await client.query(`SELECT "id", "name", "description" FROM "${schemaName}"."library" WHERE "id"=$1;`, [library.id]);
     assert.strictEqual(rows.length, 1);
     assert.deepEqual(rows[0], library);
     client.release();
@@ -158,7 +160,7 @@ describe('Libraries Tests (CREATE - UPDATE)', async () => {
     assert.strictEqual(statusCode, 400);
     const pool = new Pool();
     const client = await pool.connect();
-    const { rows } = await client.query('SELECT "id", "name", "description" FROM "celsus"."library" WHERE "id"=$1;', [library.id]);
+    const { rows } = await client.query(`SELECT "id", "name", "description" FROM "${schemaName}"."library" WHERE "id"=$1;`, [library.id]);
     assert.strictEqual(rows.length, 0);
     client.release();
     await pool.end();
@@ -172,7 +174,7 @@ describe('Libraries Tests (CREATE - UPDATE)', async () => {
     assert.strictEqual(statusCode, 400);
     const pool = new Pool();
     const client = await pool.connect();
-    const { rows } = await client.query('SELECT "id", "name", "description" FROM "celsus"."library" WHERE "id"=$1;', [library.id]);
+    const { rows } = await client.query(`SELECT "id", "name", "description" FROM "${schemaName}"."library" WHERE "id"=$1;`, [library.id]);
     assert.notDeepEqual(rows[0], library);
     client.release();
     await pool.end();
@@ -186,7 +188,7 @@ describe('Libraries Tests (CREATE - UPDATE)', async () => {
     assert.strictEqual(statusCode, 400);
     const pool = new Pool();
     const client = await pool.connect();
-    const { rows } = await client.query('SELECT "id", "name", "description" FROM "celsus"."library" WHERE "id"=$1;', [library.id]);
+    const { rows } = await client.query(`SELECT "id", "name", "description" FROM "${schemaName}"."library" WHERE "id"=$1;`, [library.id]);
     assert.notDeepEqual(rows[0], library);
     client.release();
     await pool.end();

@@ -7,6 +7,8 @@ const {
 } = require('../handler');
 const { newMockEvent } = require('./utils');
 
+const schemaName = process.env.PGSCHEMA;
+
 describe('Libraries Tests (DELETE)', async () => {
   it('Deletes an existing library', async () => {
     const id = '4';
@@ -16,9 +18,9 @@ describe('Libraries Tests (DELETE)', async () => {
     assert.strictEqual(statusCode, 204);
     const pool = new Pool();
     const client = await pool.connect();
-    const librariesResult = await client.query('SELECT "id", "name", "description" FROM "celsus"."library" WHERE "id"=$1;', [id]);
+    const librariesResult = await client.query(`SELECT "id", "name", "description" FROM "${schemaName}"."library" WHERE "id"=$1;`, [id]);
     assert.strictEqual(librariesResult.rows.length, 0);
-    const booksResult = await client.query('SELECT "id" FROM "celsus"."book" WHERE "library_id"=$1;', [id]);
+    const booksResult = await client.query(`SELECT "id" FROM "${schemaName}"."book" WHERE "library_id"=$1;`, [id]);
     assert.strictEqual(booksResult.rows.length, 0);
     client.release();
     await pool.end();
@@ -40,7 +42,7 @@ describe('Libraries Tests (DELETE)', async () => {
     assert.strictEqual(statusCode, 404);
     const pool = new Pool();
     const client = await pool.connect();
-    const { rows } = await client.query('SELECT "id", "name", "description" FROM "celsus"."library" WHERE "id"=$1;', [id]);
+    const { rows } = await client.query(`SELECT "id", "name", "description" FROM "${schemaName}"."library" WHERE "id"=$1;`, [id]);
     assert.strictEqual(rows.length, 1);
     client.release();
     await pool.end();
@@ -54,7 +56,7 @@ describe('Libraries Tests (DELETE)', async () => {
     assert.strictEqual(statusCode, 404);
     const pool = new Pool();
     const client = await pool.connect();
-    const { rows } = await client.query('SELECT "id", "name", "description" FROM "celsus"."library" WHERE "id"=$1;', [id]);
+    const { rows } = await client.query(`SELECT "id", "name", "description" FROM "${schemaName}"."library" WHERE "id"=$1;`, [id]);
     assert.strictEqual(rows.length, 1);
     client.release();
     await pool.end();

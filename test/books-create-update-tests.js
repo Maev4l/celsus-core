@@ -8,6 +8,8 @@ const {
 } = require('../handler');
 const { newMockEvent } = require('./utils');
 
+const schemaName = process.env.PGSCHEMA;
+
 describe('Books Tests (CREATE - UPDATE)', async () => {
   it('Adds a new book for user6', async () => {
     const libraryId = 'af9da085-4562-475f-baa5-38c3e5115c09';
@@ -35,7 +37,7 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
 
     const pool = new Pool();
     const client = await pool.connect();
-    const { rows } = await client.query('SELECT * FROM "celsus"."book" WHERE "id"=$1;', [result.id]);
+    const { rows } = await client.query(`SELECT * FROM "${schemaName}"."book" WHERE "id"=$1;`, [result.id]);
     assert.strictEqual(rows.length, 1);
     const expectedBook = rows[0];
 
@@ -46,7 +48,7 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
     assert.strictEqual(expectedBook.tags, newBook.tags.join(';'));
     assert.isNotEmpty(expectedBook.hash);
 
-    await client.query('DELETE FROM "celsus"."book" WHERE "id"=$1', [result.id]);
+    await client.query(`DELETE FROM "${schemaName}"."book" WHERE "id"=$1`, [result.id]);
     client.release();
     await pool.end();
   });
@@ -120,7 +122,7 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
 
     const pool = new Pool();
     const client = await pool.connect();
-    const { rows } = await client.query('SELECT * FROM "celsus"."book" WHERE "id"=$1;', [id]);
+    const { rows } = await client.query(`SELECT * FROM "${schemaName}"."book" WHERE "id"=$1;`, [id]);
     assert.strictEqual(rows.length, 1);
     const expectedBook = rows[0];
 

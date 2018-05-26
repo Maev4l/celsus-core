@@ -28,6 +28,7 @@ provider:
     PGHOST: ${ssm:PG_HOSTNAME~true}
     PGPORT: ${ssm:PG_PORT~true}
     PGDATABASE: ${ssm:PG_DB_NAME~true}
+    PGSCHEMA: ${ssm:PG_CORE_SCHEMA~true}
 
 package:
   exclude:
