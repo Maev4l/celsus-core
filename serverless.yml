@@ -12,16 +12,18 @@ provider:
   stage: dev
   endpointType: REGIONAL
   profile: serverless-admin-profile
-  # >>> Connection to RDS instance
+  # >>> Lambda has to live in VPC in order to access RDS
   role: arn:aws:iam::671123374425:role/lambda-vpc-execution-role
   vpc:
     securityGroupIds:
-      - sg-06c688947d175cf8d
+      - sg-06c688947d175cf8d # To access the RDS instance
+      - sg-a59484cd # To publish to SNS via the VPC Endpoint
     subnetIds:
       - subnet-a5cafae8
       - subnet-5cf05835
       - subnet-a8b456d2
-  # <<< Connection to RDS instance
+  # <<< Lambda has to live in VPC in order to access RDS
+
   environment:
     PGUSER: ${ssm:PG_USERNAME~true}
     PGPASSWORD: ${ssm:PG_PASSWORD~true}
@@ -29,6 +31,8 @@ provider:
     PGPORT: ${ssm:PG_PORT~true}
     PGDATABASE: ${ssm:PG_DB_NAME~true}
     PGSCHEMA: ${ssm:PG_CORE_SCHEMA~true}
+    REGION: ${self:provider.region}
+    LOG_LEVEL: info
 
 package:
   exclude:

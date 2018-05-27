@@ -1,16 +1,33 @@
+/* eslint-disable global-require */
 const { assert } = require('chai');
 const { Pool } = require('pg');
+const mockery = require('mockery');
 require('dotenv').config();
 const Utils = require('../lib/utils');
 
-const {
-  postBook,
-} = require('../handler');
 const { newMockEvent } = require('./utils');
 
 const schemaName = process.env.PGSCHEMA;
 
 describe('Books Tests (CREATE - UPDATE)', async () => {
+  before('Setup mock', () => {
+    mockery.enable({
+      useCleanCache: true,
+      warnOnReplace: false,
+      warnOnUnregistered: false,
+    });
+    const messagingMock = {
+      publish: () => { /* Nothing to do in mock */ },
+    };
+    mockery.registerMock('./messaging', messagingMock);
+  });
+
+  after('Unregister mocks', () => {
+    mockery.deregisterAll();
+    mockery.resetCache();
+    mockery.disable();
+  });
+
   it('Adds a new book for user6', async () => {
     const libraryId = 'af9da085-4562-475f-baa5-38c3e5115c09';
     const newBook = {
@@ -27,6 +44,10 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
       'user6',
       newBook,
     );
+
+    const {
+      postBook,
+    } = require('../handler');
 
     const response = await postBook(event);
     const { statusCode, body } = response;
@@ -70,6 +91,10 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
       newBook,
     );
 
+    const {
+      postBook,
+    } = require('../handler');
+
     const response = await postBook(event);
     const { statusCode } = response;
     assert.strictEqual(statusCode, 400);
@@ -91,6 +116,10 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
       'user6',
       newBook,
     );
+
+    const {
+      postBook,
+    } = require('../handler');
 
     const response = await postBook(event);
     const { statusCode } = response;
@@ -115,6 +144,10 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
       'user7',
       updateBook,
     );
+
+    const {
+      postBook,
+    } = require('../handler');
 
     const response = await postBook(event);
     const { statusCode } = response;
@@ -156,6 +189,10 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
       updateBook,
     );
 
+    const {
+      postBook,
+    } = require('../handler');
+
     const response = await postBook(event);
     const { statusCode } = response;
     assert.strictEqual(statusCode, 400);
@@ -179,6 +216,10 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
       'user7',
       updateBook,
     );
+
+    const {
+      postBook,
+    } = require('../handler');
 
     const response = await postBook(event);
     const { statusCode } = response;
@@ -204,6 +245,10 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
       'user1',
       updateBook,
     );
+
+    const {
+      postBook,
+    } = require('../handler');
 
     const response = await postBook(event);
     const { statusCode } = response;
