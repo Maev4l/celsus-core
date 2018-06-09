@@ -6,5 +6,6 @@ module.exports = {
     },
     "rules": {
         "class-methods-use-this": ["off"],
+        "max-len": ["error", { "code": 200 }],
     }
 };

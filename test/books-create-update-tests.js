@@ -65,8 +65,8 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
     assert.strictEqual(expectedBook.library_id, libraryId);
     assert.strictEqual(expectedBook.title, newBook.title);
     assert.strictEqual(expectedBook.description, newBook.description);
-    assert.strictEqual(expectedBook.authors, newBook.authors.join(';'));
-    assert.strictEqual(expectedBook.tags, newBook.tags.join(';'));
+    assert.deepEqual(expectedBook.authors, newBook.authors);
+    assert.deepEqual(expectedBook.tags, newBook.tags);
     assert.isNotEmpty(expectedBook.hash);
 
     await client.query(`DELETE FROM "${schemaName}"."book" WHERE "id"=$1`, [result.id]);
@@ -162,8 +162,8 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
     assert.strictEqual(expectedBook.library_id, libraryId);
     assert.strictEqual(expectedBook.title, updateBook.title);
     assert.strictEqual(expectedBook.description, updateBook.description);
-    assert.strictEqual(expectedBook.authors, updateBook.authors.join(';'));
-    assert.strictEqual(expectedBook.tags, updateBook.tags.join(';'));
+    assert.deepEqual(expectedBook.authors, updateBook.authors);
+    assert.deepEqual(expectedBook.tags, updateBook.tags);
     assert.strictEqual(expectedBook.hash, Utils.hashBook(updateBook));
 
     client.release();
