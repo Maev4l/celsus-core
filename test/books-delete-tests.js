@@ -1,18 +1,39 @@
+/* eslint-disable global-require */
 const { assert } = require('chai');
 const { Pool } = require('pg');
+const mockery = require('mockery');
 require('dotenv').config();
 
-const {
-  deleteBook,
-} = require('../handler');
 const { newMockEvent } = require('./utils');
 
 const schemaName = process.env.PGSCHEMA;
 
 describe('Books Tests (DELETE)', async () => {
+  before('Setup mock', () => {
+    mockery.enable({
+      useCleanCache: true,
+      warnOnReplace: false,
+      warnOnUnregistered: false,
+    });
+    const messagingMock = {
+      publish: () => { /* Nothing to do in mock */ },
+    };
+    mockery.registerMock('./messaging', messagingMock);
+  });
+
+  after('Unregister mocks', () => {
+    mockery.deregisterAll();
+    mockery.resetCache();
+    mockery.disable();
+  });
+
   it('Deletes an existing book', async () => {
     const id = '4';
     const event = newMockEvent('user5', '', { id });
+    const {
+      deleteBook,
+    } = require('../handler');
+
     const response = await deleteBook(event);
     const { statusCode } = response;
     assert.strictEqual(statusCode, 204);
@@ -27,6 +48,11 @@ describe('Books Tests (DELETE)', async () => {
   it('Fails when deleting an unknown book', async () => {
     const id = 'xxx';
     const event = newMockEvent('user2', '', { id });
+
+    const {
+      deleteBook,
+    } = require('../handler');
+
     const response = await deleteBook(event);
     const { statusCode } = response;
     assert.strictEqual(statusCode, 404);
@@ -35,6 +61,11 @@ describe('Books Tests (DELETE)', async () => {
   it('Fails when deleting a book belonging to an unknown user', async () => {
     const id = '1';
     const event = newMockEvent('xxx', '', { id });
+
+    const {
+      deleteBook,
+    } = require('../handler');
+
     const response = await deleteBook(event);
     const { statusCode } = response;
     assert.strictEqual(statusCode, 404);
@@ -49,6 +80,11 @@ describe('Books Tests (DELETE)', async () => {
   it('Fails when deleting a library not belonging to user', async () => {
     const id = '1';
     const event = newMockEvent('user2', '', { id });
+
+    const {
+      deleteBook,
+    } = require('../handler');
+
     const response = await deleteBook(event);
     const { statusCode } = response;
     assert.strictEqual(statusCode, 404);
