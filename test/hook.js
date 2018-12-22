@@ -7,11 +7,15 @@
 const childProcess = require('child_process');
 
 before('Initialize database', () => {
-  const cmd = `psql --host ${process.env.PGHOST} --dbname ${process.env.PGDATABASE} --username ${process.env.PGUSER} --port ${process.env.PGPORT} --file scripts/initialize.sql`;
+  const cmd = `psql --host ${process.env.PGHOST} --dbname ${process.env.PGDATABASE} --username ${
+    process.env.PGUSER
+  } --port ${process.env.PGPORT} --file scripts/initialize.sql`;
   childProcess.execSync(cmd);
 });
 
 after('Clean up database', () => {
-  const cmd = `psql --host ${process.env.PGHOST} --dbname ${process.env.PGDATABASE} --username ${process.env.PGUSER} --port ${process.env.PGPORT} --command 'DROP SCHEMA "${process.env.PGSCHEMA}" CASCADE'`;
+  const cmd = `psql --host ${process.env.PGHOST} --dbname ${process.env.PGDATABASE} --username ${
+    process.env.PGUSER
+  } --port ${process.env.PGPORT} --command 'DROP SCHEMA "${process.env.PGSCHEMA}" CASCADE'`;
   childProcess.execSync(cmd);
 });

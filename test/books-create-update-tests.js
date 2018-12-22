@@ -17,7 +17,9 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
       warnOnUnregistered: false,
     });
     const messagingMock = {
-      publish: () => { /* Nothing to do in mock */ },
+      publish: () => {
+        /* Nothing to do in mock */
+      },
     };
     mockery.registerMock('./messaging', messagingMock);
   });
@@ -40,14 +42,9 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
       isbn10: '',
       isbn13: '',
     };
-    const event = newMockEvent(
-      'user6',
-      newBook,
-    );
+    const event = newMockEvent('user6', newBook);
 
-    const {
-      postBook,
-    } = require('../handler');
+    const { postBook } = require('../handler');
 
     const response = await postBook(event);
     const { statusCode, body } = response;
@@ -58,7 +55,9 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
 
     const pool = new Pool();
     const client = await pool.connect();
-    const { rows } = await client.query(`SELECT * FROM "${schemaName}"."book" WHERE "id"=$1;`, [result.id]);
+    const { rows } = await client.query(`SELECT * FROM "${schemaName}"."book" WHERE "id"=$1;`, [
+      result.id,
+    ]);
     assert.strictEqual(rows.length, 1);
     const expectedBook = rows[0];
 
@@ -86,14 +85,9 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
       isbn10: '',
       isbn13: '',
     };
-    const event = newMockEvent(
-      'user1',
-      newBook,
-    );
+    const event = newMockEvent('user1', newBook);
 
-    const {
-      postBook,
-    } = require('../handler');
+    const { postBook } = require('../handler');
 
     const response = await postBook(event);
     const { statusCode } = response;
@@ -112,14 +106,9 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
       isbn10: '',
       isbn13: '',
     };
-    const event = newMockEvent(
-      'user6',
-      newBook,
-    );
+    const event = newMockEvent('user6', newBook);
 
-    const {
-      postBook,
-    } = require('../handler');
+    const { postBook } = require('../handler');
 
     const response = await postBook(event);
     const { statusCode } = response;
@@ -140,14 +129,9 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
       isbn10: '',
       isbn13: '',
     };
-    const event = newMockEvent(
-      'user7',
-      updateBook,
-    );
+    const event = newMockEvent('user7', updateBook);
 
-    const {
-      postBook,
-    } = require('../handler');
+    const { postBook } = require('../handler');
 
     const response = await postBook(event);
     const { statusCode } = response;
@@ -155,7 +139,9 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
 
     const pool = new Pool();
     const client = await pool.connect();
-    const { rows } = await client.query(`SELECT * FROM "${schemaName}"."book" WHERE "id"=$1;`, [id]);
+    const { rows } = await client.query(`SELECT * FROM "${schemaName}"."book" WHERE "id"=$1;`, [
+      id,
+    ]);
     assert.strictEqual(rows.length, 1);
     const expectedBook = rows[0];
 
@@ -184,14 +170,9 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
       isbn10: '',
       isbn13: '',
     };
-    const event = newMockEvent(
-      'user7',
-      updateBook,
-    );
+    const event = newMockEvent('user7', updateBook);
 
-    const {
-      postBook,
-    } = require('../handler');
+    const { postBook } = require('../handler');
 
     const response = await postBook(event);
     const { statusCode } = response;
@@ -212,20 +193,14 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
       isbn10: '',
       isbn13: '',
     };
-    const event = newMockEvent(
-      'user7',
-      updateBook,
-    );
+    const event = newMockEvent('user7', updateBook);
 
-    const {
-      postBook,
-    } = require('../handler');
+    const { postBook } = require('../handler');
 
     const response = await postBook(event);
     const { statusCode } = response;
     assert.strictEqual(statusCode, 400);
   });
-
 
   it('Fails when updating a book in a library belonging to another user', async () => {
     const libraryId = '73b57d71-4938-45cc-9880-51db8ebf3e7a';
@@ -241,14 +216,9 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
       isbn10: '',
       isbn13: '',
     };
-    const event = newMockEvent(
-      'user1',
-      updateBook,
-    );
+    const event = newMockEvent('user1', updateBook);
 
-    const {
-      postBook,
-    } = require('../handler');
+    const { postBook } = require('../handler');
 
     const response = await postBook(event);
     const { statusCode } = response;

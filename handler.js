@@ -18,14 +18,14 @@ const makeResponse = (statusCode, result) => {
   return response;
 };
 
-exports.getLibraries = async (event) => {
+exports.getLibraries = async event => {
   const { sub } = event.requestContext.authorizer.claims;
   const manager = new LibraryManager();
   const result = await manager.getLibraries(sub);
   return makeResponse(200, result);
 };
 
-exports.postLibrary = async (event) => {
+exports.postLibrary = async event => {
   const library = JSON.parse(event.body);
   const { sub } = event.requestContext.authorizer.claims;
   let result = '';
@@ -53,7 +53,7 @@ exports.postLibrary = async (event) => {
   return makeResponse(statusCode, result);
 };
 
-exports.deleteLibrary = async (event) => {
+exports.deleteLibrary = async event => {
   const { sub } = event.requestContext.authorizer.claims;
 
   const libraryId = event.pathParameters.id;
@@ -64,7 +64,7 @@ exports.deleteLibrary = async (event) => {
   return makeResponse(statusCode);
 };
 
-exports.getLibrary = async (event) => {
+exports.getLibrary = async event => {
   const { sub } = event.requestContext.authorizer.claims;
 
   const libraryId = event.pathParameters.id;
@@ -83,17 +83,17 @@ exports.getLibrary = async (event) => {
   return makeResponse(statusCode, result.length === 1 ? result[0] : null);
 };
 
-exports.getBooks = async (event) => {
+exports.getBooks = async event => {
   const { sub } = event.requestContext.authorizer.claims;
   const { queryStringParameters } = event;
   const manager = new BookManager();
-  const offset = queryStringParameters ? (queryStringParameters.offset || 0) : 0;
+  const offset = queryStringParameters ? queryStringParameters.offset || 0 : 0;
 
   const result = await manager.getBooks(sub, offset);
   return makeResponse(200, result);
 };
 
-exports.deleteBook = async (event) => {
+exports.deleteBook = async event => {
   const { sub } = event.requestContext.authorizer.claims;
 
   const bookId = event.pathParameters.id;
@@ -104,7 +104,7 @@ exports.deleteBook = async (event) => {
   return makeResponse(statusCode);
 };
 
-exports.postBook = async (event) => {
+exports.postBook = async event => {
   const book = JSON.parse(event.body);
   const { sub } = event.requestContext.authorizer.claims;
   let result = '';

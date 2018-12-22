@@ -2,9 +2,7 @@ const { assert } = require('chai');
 
 require('dotenv').config();
 
-const {
-  getBooks,
-} = require('../handler');
+const { getBooks } = require('../handler');
 const { newMockEvent } = require('./utils');
 
 const { BooksPerPage } = require('../lib/book-manager');
@@ -28,7 +26,8 @@ describe('Books Tests (READ)', async () => {
           thumbnail: 'Book thumbnal',
           authors: ['Book authors'],
           tags: ['Book tags'],
-        }, {
+        },
+        {
           id: '2',
           library: {
             id: '6',
@@ -41,7 +40,8 @@ describe('Books Tests (READ)', async () => {
           thumbnail: 'Book thumbnal',
           authors: ['Book authors'],
           tags: ['Book tags'],
-        }],
+        },
+      ],
     };
 
     const event = newMockEvent('user4');

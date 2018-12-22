@@ -16,7 +16,9 @@ describe('Books Tests (DELETE)', async () => {
       warnOnUnregistered: false,
     });
     const messagingMock = {
-      publish: () => { /* Nothing to do in mock */ },
+      publish: () => {
+        /* Nothing to do in mock */
+      },
     };
     mockery.registerMock('./messaging', messagingMock);
   });
@@ -30,16 +32,16 @@ describe('Books Tests (DELETE)', async () => {
   it('Deletes an existing book', async () => {
     const id = '4';
     const event = newMockEvent('user5', '', { id });
-    const {
-      deleteBook,
-    } = require('../handler');
+    const { deleteBook } = require('../handler');
 
     const response = await deleteBook(event);
     const { statusCode } = response;
     assert.strictEqual(statusCode, 204);
     const pool = new Pool();
     const client = await pool.connect();
-    const { rows } = await client.query(`SELECT "id" FROM "${schemaName}"."book" WHERE "id"=$1;`, [id]);
+    const { rows } = await client.query(`SELECT "id" FROM "${schemaName}"."book" WHERE "id"=$1;`, [
+      id,
+    ]);
     assert.strictEqual(rows.length, 0);
     client.release();
     await pool.end();
@@ -49,9 +51,7 @@ describe('Books Tests (DELETE)', async () => {
     const id = 'xxx';
     const event = newMockEvent('user2', '', { id });
 
-    const {
-      deleteBook,
-    } = require('../handler');
+    const { deleteBook } = require('../handler');
 
     const response = await deleteBook(event);
     const { statusCode } = response;
@@ -62,16 +62,16 @@ describe('Books Tests (DELETE)', async () => {
     const id = '1';
     const event = newMockEvent('xxx', '', { id });
 
-    const {
-      deleteBook,
-    } = require('../handler');
+    const { deleteBook } = require('../handler');
 
     const response = await deleteBook(event);
     const { statusCode } = response;
     assert.strictEqual(statusCode, 404);
     const pool = new Pool();
     const client = await pool.connect();
-    const { rows } = await client.query(`SELECT "id" FROM "${schemaName}"."book" WHERE "id"=$1;`, [id]);
+    const { rows } = await client.query(`SELECT "id" FROM "${schemaName}"."book" WHERE "id"=$1;`, [
+      id,
+    ]);
     assert.strictEqual(rows.length, 1);
     client.release();
     await pool.end();
@@ -81,19 +81,18 @@ describe('Books Tests (DELETE)', async () => {
     const id = '1';
     const event = newMockEvent('user2', '', { id });
 
-    const {
-      deleteBook,
-    } = require('../handler');
+    const { deleteBook } = require('../handler');
 
     const response = await deleteBook(event);
     const { statusCode } = response;
     assert.strictEqual(statusCode, 404);
     const pool = new Pool();
     const client = await pool.connect();
-    const { rows } = await client.query(`SELECT "id" FROM "${schemaName}"."book" WHERE "id"=$1;`, [id]);
+    const { rows } = await client.query(`SELECT "id" FROM "${schemaName}"."book" WHERE "id"=$1;`, [
+      id,
+    ]);
     assert.strictEqual(rows.length, 1);
     client.release();
     await pool.end();
   });
 });
-

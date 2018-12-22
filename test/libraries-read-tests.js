@@ -1,9 +1,7 @@
 const { assert } = require('chai');
 require('dotenv').config();
 
-const {
-  getLibraries, getLibrary,
-} = require('../handler');
+const { getLibraries, getLibrary } = require('../handler');
 const { newMockEvent } = require('./utils');
 
 describe('Libraries Tests (READ)', async () => {
