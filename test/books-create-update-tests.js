@@ -1,7 +1,7 @@
 /* eslint-disable global-require */
 const { assert } = require('chai');
 const { Pool } = require('pg');
-const mockery = require('mockery');
+
 require('dotenv').config();
 const Utils = require('../lib/utils');
 
@@ -10,26 +10,6 @@ const { newMockEvent } = require('./utils');
 const schemaName = process.env.PGSCHEMA;
 
 describe('Books Tests (CREATE - UPDATE)', async () => {
-  before('Setup mock', () => {
-    mockery.enable({
-      useCleanCache: true,
-      warnOnReplace: false,
-      warnOnUnregistered: false,
-    });
-    const messagingMock = {
-      publish: () => {
-        /* Nothing to do in mock */
-      },
-    };
-    mockery.registerMock('./messaging', messagingMock);
-  });
-
-  after('Unregister mocks', () => {
-    mockery.deregisterAll();
-    mockery.resetCache();
-    mockery.disable();
-  });
-
   it('Adds a new book for user6', async () => {
     const libraryId = 'af9da085-4562-475f-baa5-38c3e5115c09';
     const newBook = {
@@ -41,6 +21,7 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
       tags: [],
       isbn10: '',
       isbn13: '',
+      language: 'en',
     };
     const event = newMockEvent('user6', newBook);
 
@@ -67,6 +48,7 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
     assert.deepEqual(expectedBook.authors, newBook.authors);
     assert.deepEqual(expectedBook.tags, newBook.tags);
     assert.isNotEmpty(expectedBook.hash);
+    assert.strictEqual(Utils.fromPGLanguage(expectedBook.language), newBook.language);
 
     await client.query(`DELETE FROM "${schemaName}"."book" WHERE "id"=$1`, [result.id]);
     client.release();
@@ -128,6 +110,7 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
       tags: [],
       isbn10: '',
       isbn13: '',
+      language: 'en',
     };
     const event = newMockEvent('user7', updateBook);
 
@@ -151,6 +134,7 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
     assert.deepEqual(expectedBook.authors, updateBook.authors);
     assert.deepEqual(expectedBook.tags, updateBook.tags);
     assert.strictEqual(expectedBook.hash, Utils.hashBook(updateBook));
+    assert.strictEqual(Utils.fromPGLanguage(expectedBook.language), updateBook.language);
 
     client.release();
     await pool.end();

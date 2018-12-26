@@ -26,6 +26,7 @@ describe('Books Tests (READ)', async () => {
           thumbnail: 'Book thumbnal',
           authors: ['Book authors'],
           tags: ['Book tags'],
+          language: 'fr',
         },
         {
           id: '2',
@@ -40,6 +41,7 @@ describe('Books Tests (READ)', async () => {
           thumbnail: 'Book thumbnal',
           authors: ['Book authors'],
           tags: ['Book tags'],
+          language: 'fr',
         },
       ],
     };
