@@ -48,7 +48,7 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
     assert.deepEqual(expectedBook.authors, newBook.authors);
     assert.deepEqual(expectedBook.tags, newBook.tags);
     assert.isNotEmpty(expectedBook.hash);
-    assert.strictEqual(expectedBook.language, newBook.language);
+    assert.strictEqual(Utils.fromPGLanguage(expectedBook.language), newBook.language);
 
     await client.query(`DELETE FROM "${schemaName}"."book" WHERE "id"=$1`, [result.id]);
     client.release();
@@ -134,7 +134,7 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
     assert.deepEqual(expectedBook.authors, updateBook.authors);
     assert.deepEqual(expectedBook.tags, updateBook.tags);
     assert.strictEqual(expectedBook.hash, Utils.hashBook(updateBook));
-    assert.strictEqual(expectedBook.language, updateBook.language);
+    assert.strictEqual(Utils.fromPGLanguage(expectedBook.language), updateBook.language);
 
     client.release();
     await pool.end();

@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS "book"
 	  authors VARCHAR(1024) ARRAY,
 	  tags VARCHAR(1024) ARRAY,
 	  hash VARCHAR(64),
-    language VARCHAR(36) NOT NULL DEFAULT('fr'),
+    language VARCHAR(36) NoT NULL DEFAULT('french'),
     CONSTRAINT book_id_key UNIQUE (id)
 )
 WITH (
