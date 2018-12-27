@@ -21,7 +21,7 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
       tags: [],
       isbn10: '',
       isbn13: '',
-      language: 'en',
+      language: 'gb',
     };
     const event = newMockEvent('user6', newBook);
 
@@ -110,7 +110,7 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
       tags: [],
       isbn10: '',
       isbn13: '',
-      language: 'en',
+      language: 'gb',
     };
     const event = newMockEvent('user7', updateBook);
 
