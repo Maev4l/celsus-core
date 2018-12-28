@@ -19,10 +19,17 @@ describe('Books Tests (DELETE)', async () => {
     assert.strictEqual(statusCode, 204);
     const pool = new Pool();
     const client = await pool.connect();
-    const { rows } = await client.query(`SELECT "id" FROM "${schemaName}"."book" WHERE "id"=$1;`, [
-      id,
-    ]);
-    assert.strictEqual(rows.length, 0);
+    const { rows: rowsBooks } = await client.query(
+      `SELECT "id" FROM "${schemaName}"."book" WHERE "id"=$1;`,
+      [id],
+    );
+    assert.strictEqual(rowsBooks.length, 0);
+
+    const { rows: rowsSearch } = await client.query(
+      `SELECT * FROM "${schemaName}"."books_search" WHERE "id"=$1;`,
+      [id],
+    );
+    assert.strictEqual(rowsSearch.length, 0);
     client.release();
     await pool.end();
   });

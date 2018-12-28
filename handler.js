@@ -88,8 +88,9 @@ exports.getBooks = async event => {
   const { queryStringParameters } = event;
   const manager = new BookManager();
   const offset = queryStringParameters ? queryStringParameters.offset || 0 : 0;
+  const searchQuery = queryStringParameters ? queryStringParameters.q || '' : '';
 
-  const result = await manager.getBooks(sub, offset);
+  const result = await manager.getBooks(sub, offset, searchQuery);
   return makeResponse(200, result);
 };
 

@@ -36,11 +36,12 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
 
     const pool = new Pool();
     const client = await pool.connect();
-    const { rows } = await client.query(`SELECT * FROM "${schemaName}"."book" WHERE "id"=$1;`, [
-      result.id,
-    ]);
-    assert.strictEqual(rows.length, 1);
-    const expectedBook = rows[0];
+    const { rows: rowsBooks } = await client.query(
+      `SELECT * FROM "${schemaName}"."book" WHERE "id"=$1;`,
+      [result.id],
+    );
+    assert.strictEqual(rowsBooks.length, 1);
+    const expectedBook = rowsBooks[0];
 
     assert.strictEqual(expectedBook.library_id, libraryId);
     assert.strictEqual(expectedBook.title, newBook.title);
@@ -49,6 +50,12 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
     assert.deepEqual(expectedBook.tags, newBook.tags);
     assert.isNotEmpty(expectedBook.hash);
     assert.strictEqual(Utils.fromPGLanguage(expectedBook.language), newBook.language);
+
+    const { rows: rowsSearch } = await client.query(
+      `SELECT * FROM "${schemaName}"."books_search" WHERE "id"=$1;`,
+      [result.id],
+    );
+    assert.strictEqual(rowsSearch.length, 1);
 
     await client.query(`DELETE FROM "${schemaName}"."book" WHERE "id"=$1`, [result.id]);
     client.release();
@@ -122,11 +129,12 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
 
     const pool = new Pool();
     const client = await pool.connect();
-    const { rows } = await client.query(`SELECT * FROM "${schemaName}"."book" WHERE "id"=$1;`, [
-      id,
-    ]);
-    assert.strictEqual(rows.length, 1);
-    const expectedBook = rows[0];
+    const { rows: rowsBooks } = await client.query(
+      `SELECT * FROM "${schemaName}"."book" WHERE "id"=$1;`,
+      [id],
+    );
+    assert.strictEqual(rowsBooks.length, 1);
+    const expectedBook = rowsBooks[0];
 
     assert.strictEqual(expectedBook.library_id, libraryId);
     assert.strictEqual(expectedBook.title, updateBook.title);
@@ -135,6 +143,12 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
     assert.deepEqual(expectedBook.tags, updateBook.tags);
     assert.strictEqual(expectedBook.hash, Utils.hashBook(updateBook));
     assert.strictEqual(Utils.fromPGLanguage(expectedBook.language), updateBook.language);
+
+    const { rows: rowsSearch } = await client.query(
+      `SELECT * FROM "${schemaName}"."books_search" WHERE "id"=$1;`,
+      [id],
+    );
+    assert.strictEqual(rowsSearch.length, 1);
 
     client.release();
     await pool.end();
