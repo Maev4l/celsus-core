@@ -2,6 +2,11 @@ service: celsus-core
 
 # plugins:
 #  - serverless-domain-manager # plugin for custom domain name management
+plugins:
+  - serverless-api-compression # Enable AWS API Gateway gzip compression
+
+custom:
+  contentCompression: 1024 # API Gateway gzip compression threshold (in bytes)
 
 provider:
   name: aws
@@ -66,7 +71,7 @@ functions:
           cors: true
           authorizer:
             arn: arn:aws:cognito-idp:eu-west-2:671123374425:userpool/eu-west-2_ocAf57dZ3
-  postLibrary: 
+  postLibrary:
     handler: handler.postLibrary
     name: post-library
     events:
@@ -130,7 +135,3 @@ functions:
           cors: true
           authorizer:
             arn: arn:aws:cognito-idp:eu-west-2:671123374425:userpool/eu-west-2_ocAf57dZ3
-
-
-
-
