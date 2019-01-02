@@ -1,13 +1,5 @@
 service: celsus-core
 
-# plugins:
-#  - serverless-domain-manager # plugin for custom domain name management
-plugins:
-  - serverless-api-compression # Enable AWS API Gateway gzip compression
-
-custom:
-  contentCompression: 1024 # API Gateway gzip compression threshold (in bytes)
-
 provider:
   name: aws
   runtime: nodejs8.10
@@ -17,6 +9,10 @@ provider:
   stage: dev
   endpointType: REGIONAL
   profile: serverless-admin-profile
+  # >>> Enable Gzip compression on AWS APi Gateway
+  apiGateway:
+    minimumCompressionSize: 1024 # in bytes
+  # <<< Enable Gzip compression on AWS APi Gateway
   # >>> Lambda has to live in VPC in order to access RDS
   role: arn:aws:iam::671123374425:role/lambda-vpc-execution-role
   vpc:
