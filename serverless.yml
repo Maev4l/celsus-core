@@ -35,6 +35,19 @@ provider:
     REGION: ${self:provider.region}
     LOG_LEVEL: info
 
+plugins:
+  - serverless-domain-manager
+
+custom:
+  customDomain:
+    domainName: 'api-celsus.isnan.eu'
+    certificateName: '*.isnan.eu'
+    hostedZoneId: ZWC66FN0XU6P9
+    basePath: 'core'
+    stage: ${self:provider.stage}
+    createRoute53Record: true
+    endpointType: regional
+
 package:
   exclude:
     - .env
@@ -45,16 +58,6 @@ package:
     - scripts/**
     - run-local-postgres.sh
     - secrets.txt
-
-#custom:
-#  # >>> Custom domain name
-#  customDomain:
-#    domainName: api.celsus.isnan.eu
-#    stage: ${self:provider.stage}
-#    createRoute53Record: true
-#    certificateName: 'api.celsus.isnan.eu'
-#    hostedZoneId: ZWC66FN0XU6P9
-#  # <<< Custom domain name
 
 functions:
   getLibraries:
