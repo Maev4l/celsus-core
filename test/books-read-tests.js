@@ -26,6 +26,7 @@ describe('Books Tests (READ - SEARCH)', async () => {
           authors: ['Book authors'],
           tags: ['Book tags'],
           language: 'fr',
+          bookSet: 'book set 1',
         },
         {
           id: '2',
@@ -41,6 +42,7 @@ describe('Books Tests (READ - SEARCH)', async () => {
           authors: ['Book authors'],
           tags: ['Book tags'],
           language: 'fr',
+          bookSet: 'book set 2',
         },
       ],
     };

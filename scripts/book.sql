@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS "book"
 	  tags VARCHAR(1024) ARRAY,
 	  hash VARCHAR(64),
     language VARCHAR(36) NOT NULL DEFAULT('french'),
+		book_set VARCHAR(100) DEFAULT(''),
     CONSTRAINT book_id_key UNIQUE (id)
 )
 WITH (
@@ -59,10 +60,10 @@ AFTER INSERT OR UPDATE OR DELETE ON "celsus_core"."book"
 CREATE INDEX IF NOT EXISTS idx_fts_books ON "celsus_core"."books_search" USING gin(to_tsvector('simple',"document"));
 
 -- Belong to library with id 6 (for retrieval test)
-INSERT INTO "book"("id", "user_id", "library_id", "title", "description", "isbn10", "isbn13", "thumbnail", "authors", "tags", "hash")
-  VALUES ('1', 'user4', '6', 'Book Title1', 'Book Desc', 'Book isbn10', 'Book isbn13', 'Book thumbnal', ARRAY['Book authors'], ARRAY['Book tags'], 'Book hash');
-INSERT INTO "book"("id", "user_id", "library_id", "title", "description", "isbn10", "isbn13", "thumbnail", "authors", "tags", "hash")
-  VALUES ('2', 'user4', '6', 'Book Title2', 'Book Desc', 'Book isbn10', 'Book isbn13', 'Book thumbnal', ARRAY['Book authors'], ARRAY['Book tags'], 'Book hash');
+INSERT INTO "book"("id", "user_id", "library_id", "title", "description", "isbn10", "isbn13", "thumbnail", "authors", "tags", "hash", "book_set")
+  VALUES ('1', 'user4', '6', 'Book Title1', 'Book Desc', 'Book isbn10', 'Book isbn13', 'Book thumbnal', ARRAY['Book authors'], ARRAY['Book tags'], 'Book hash', 'book set 1');
+INSERT INTO "book"("id", "user_id", "library_id", "title", "description", "isbn10", "isbn13", "thumbnail", "authors", "tags", "hash","book_set")
+  VALUES ('2', 'user4', '6', 'Book Title2', 'Book Desc', 'Book isbn10', 'Book isbn13', 'Book thumbnal', ARRAY['Book authors'], ARRAY['Book tags'], 'Book hash', 'book set 2');
 
 -- Belong to library with id 4 (for deletion test)
 INSERT INTO "book"("id", "user_id", "library_id", "title", "description", "isbn10", "isbn13", "thumbnail", "authors", "tags", "hash")

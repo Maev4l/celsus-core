@@ -22,6 +22,7 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
       isbn10: '',
       isbn13: '',
       language: 'gb',
+      bookSet: 'my book set',
     };
     const event = newMockEvent('user6', newBook);
 
@@ -50,6 +51,7 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
     assert.deepEqual(expectedBook.tags, newBook.tags);
     assert.isNotEmpty(expectedBook.hash);
     assert.strictEqual(Utils.fromPGLanguage(expectedBook.language), newBook.language);
+    assert.strictEqual(expectedBook.book_set, newBook.bookSet);
 
     const { rows: rowsSearch } = await client.query(
       `SELECT * FROM "${schemaName}"."books_search" WHERE "id"=$1;`,
@@ -118,6 +120,7 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
       isbn10: '',
       isbn13: '',
       language: 'gb',
+      bookSet: 'my book set',
     };
     const event = newMockEvent('user7', updateBook);
 
@@ -143,6 +146,7 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
     assert.deepEqual(expectedBook.tags, updateBook.tags);
     assert.strictEqual(expectedBook.hash, Utils.hashBook(updateBook));
     assert.strictEqual(Utils.fromPGLanguage(expectedBook.language), updateBook.language);
+    assert.strictEqual(expectedBook.book_set, updateBook.bookSet);
 
     const { rows: rowsSearch } = await client.query(
       `SELECT * FROM "${schemaName}"."books_search" WHERE "id"=$1;`,
