@@ -27,6 +27,7 @@ describe('Books Tests (READ - SEARCH)', async () => {
           tags: ['Book tags'],
           language: 'fr',
           bookSet: 'book set 1',
+          bookSetOrder: 0,
         },
         {
           id: '2',
@@ -43,6 +44,7 @@ describe('Books Tests (READ - SEARCH)', async () => {
           tags: ['Book tags'],
           language: 'fr',
           bookSet: 'book set 2',
+          bookSetOrder: 0,
         },
       ],
     };
@@ -92,6 +94,8 @@ describe('Books Tests (READ - SEARCH)', async () => {
           tags: ['Book tags'],
           thumbnail: '',
           title: 'La gloire de ma mère',
+          bookSet: 'Set1',
+          bookSetOrder: 1,
         },
         {
           authors: ['Marcel Pagnol'],
@@ -108,6 +112,8 @@ describe('Books Tests (READ - SEARCH)', async () => {
           tags: ['Book tags'],
           thumbnail: '',
           title: 'Le château de ma mère',
+          bookSet: 'Set1',
+          bookSetOrder: 2,
         },
       ],
     };
@@ -140,6 +146,8 @@ describe('Books Tests (READ - SEARCH)', async () => {
           tags: ['Book tags'],
           thumbnail: '',
           title: 'La gloire de ma mère',
+          bookSet: 'Set1',
+          bookSetOrder: 1,
         },
         {
           authors: ['Marcel Pagnol'],
@@ -156,6 +164,8 @@ describe('Books Tests (READ - SEARCH)', async () => {
           tags: ['Book tags'],
           thumbnail: '',
           title: 'Le château de ma mère',
+          bookSet: 'Set1',
+          bookSetOrder: 2,
         },
       ],
     };
@@ -188,6 +198,8 @@ describe('Books Tests (READ - SEARCH)', async () => {
           tags: ['Book tags'],
           thumbnail: '',
           title: 'Le château de ma mère',
+          bookSet: 'Set1',
+          bookSetOrder: 2,
         },
       ],
     };

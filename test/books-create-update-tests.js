@@ -23,6 +23,7 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
       isbn13: '',
       language: 'gb',
       bookSet: 'my book set',
+      bookSetOrder: 1,
     };
     const event = newMockEvent('user6', newBook);
 
@@ -65,7 +66,7 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
   });
 
   it('Fails when adding a book to an unknown library', async () => {
-    const libraryId = 'af9da085-4562-475f-baa5-38c3e5115c09';
+    const libraryId = 'd94b1931-397b-4988-931f-f42ac1604577';
     const newBook = {
       title: 'new book',
       libraryId,
@@ -74,6 +75,9 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
       authors: ['author1', 'author2'],
       tags: ['tag1', 'tag2'],
       isbn10: '',
+      language: 'gb',
+      bookSet: '',
+      bookSetOrder: 0,
       isbn13: '',
     };
     const event = newMockEvent('user1', newBook);
@@ -85,8 +89,56 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
     assert.strictEqual(statusCode, 400);
   });
 
+  it('Fails when adding a book with bookset and no set order', async () => {
+    const libraryId = 'af9da085-4562-475f-baa5-38c3e5115c09';
+    const newBook = {
+      title: 'new book',
+      libraryId,
+      description: 'new description',
+      thumbnail: '',
+      authors: ['author1', 'author2'],
+      tags: [],
+      isbn10: '',
+      isbn13: '',
+      language: 'gb',
+      bookSet: 'my book set',
+      bookSetOrder: 0,
+    };
+    const event = newMockEvent('user6', newBook);
+
+    const { postBook } = require('../handler');
+
+    const response = await postBook(event);
+    const { statusCode } = response;
+    assert.strictEqual(statusCode, 400);
+  });
+
+  it('Fails when adding a book with no bookset and a set order', async () => {
+    const libraryId = 'af9da085-4562-475f-baa5-38c3e5115c09';
+    const newBook = {
+      title: 'new book',
+      libraryId,
+      description: 'new description',
+      thumbnail: '',
+      authors: ['author1', 'author2'],
+      tags: [],
+      isbn10: '',
+      isbn13: '',
+      language: 'gb',
+      bookSet: '',
+      bookSetOrder: 1,
+    };
+    const event = newMockEvent('user6', newBook);
+
+    const { postBook } = require('../handler');
+
+    const response = await postBook(event);
+    const { statusCode } = response;
+    assert.strictEqual(statusCode, 400);
+  });
+
   it('Fails when adding a book to a library belonging to another user', async () => {
-    const libraryId = 'xxx';
+    const libraryId = '73b57d71-4938-45cc-9880-51db8ebf3e7a';
     const newBook = {
       title: 'new book',
       libraryId,
@@ -96,6 +148,9 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
       tags: ['tag1', 'tag2'],
       isbn10: '',
       isbn13: '',
+      language: 'gb',
+      bookSet: '',
+      bookSetOrder: 0,
     };
     const event = newMockEvent('user6', newBook);
 
@@ -121,6 +176,7 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
       isbn13: '',
       language: 'gb',
       bookSet: 'my book set',
+      bookSetOrder: 2,
     };
     const event = newMockEvent('user7', updateBook);
 
