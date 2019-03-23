@@ -11,5 +11,8 @@ coverage
 # Editor
 .vscode
 
+# nyc
+.nyc_output
+
 # Secrets
 secrets.txt

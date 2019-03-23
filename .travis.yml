@@ -1,19 +1,18 @@
 language: node_js
 node_js:
-  - "8.10.0"
+  - '8.10.0'
 notifications:
   email: false # Disable all mail notifications
 services:
   - postgresql
 addons:
-  postgresql: "9.6"
+  postgresql: '9.6'
 env:
   global:
-  -  PGUSER=postgres
-  -  PGPASSWORD=
-  -  PGHOST=localhost
-  -  PGPORT=5432
-  -  PGDATABASE=postgres
-  -  PGSCHEMA=celsus_core
-after_script: 
-  istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage
+    - PGUSER=postgres
+    - PGPASSWORD=
+    - PGHOST=localhost
+    - PGPORT=5432
+    - PGDATABASE=postgres
+    - PGSCHEMA=celsus_core
+after_script: npm run coverage
