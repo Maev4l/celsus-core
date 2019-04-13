@@ -1,52 +1,50 @@
 service: celsus-core
 
+plugins:
+  - serverless-domain-manager
+
+custom:
+  config: ${file(./infra.json)}
+  customDomain:
+    domainName: 'api-celsus.isnan.eu'
+    certificateArn: ${self:custom.config.certificate}
+    hostedZoneId: ${self:custom.config.hostedZone}
+    basePath: 'core'
+    stage: ${self:provider.stage}
+    createRoute53Record: true
+    endpointType: edge
+
 provider:
   name: aws
   runtime: nodejs8.10
   versionFunctions: false
   memorySize: 1024
-  region: eu-west-2
-  stage: dev
-  endpointType: REGIONAL
+  region: ${self:custom.config.region}
+  stage: ${self:custom.config.environment}
+  endpointType: EDGE
   profile: serverless-admin-profile
   # >>> Enable Gzip compression on AWS APi Gateway
   apiGateway:
     minimumCompressionSize: 1024 # in bytes
   # <<< Enable Gzip compression on AWS APi Gateway
   # >>> Lambda has to live in VPC in order to access RDS
-  role: arn:aws:iam::671123374425:role/lambda-vpc-execution-role
+  role: ${self:custom.config.lambdaExecutionRoleArn}
   vpc:
     securityGroupIds:
-      - sg-06c688947d175cf8d # To access the RDS instance
-      - sg-a59484cd # To publish to SNS via the VPC Endpoint
+      - ${self:custom.config.coreStorageSecurityGroup} # To access the RDS instance
+      - ${self:custom.config.mainVPCDefaultSecurityGroup} # To publish to SNS via the VPC Endpoint
     subnetIds:
-      - subnet-a5cafae8
-      - subnet-5cf05835
-      - subnet-a8b456d2
+      - ${self:custom.config.mainVPCSubnet2}
   # <<< Lambda has to live in VPC in order to access RDS
-
   environment:
-    PGUSER: ${ssm:PG_USERNAME~true}
-    PGPASSWORD: ${ssm:PG_PASSWORD~true}
-    PGHOST: ${ssm:PG_HOSTNAME~true}
-    PGPORT: ${ssm:PG_PORT~true}
-    PGDATABASE: ${ssm:PG_DB_NAME~true}
-    PGSCHEMA: ${ssm:PG_CORE_SCHEMA~true}
-    REGION: ${self:provider.region}
+    PGUSER: ${ssm:core_storage_username_${self:provider.stage}~true}
+    PGPASSWORD: ${ssm:core_storage_password_${self:provider.stage}~true}
+    PGHOST: ${ssm:core_storage_hostname_${self:provider.stage}~true}
+    PGPORT: ${ssm:core_storage_port_${self:provider.stage}~true}
+    PGDATABASE: ${ssm:core_storage_database_${self:provider.stage}~true}
+    PGSCHEMA: ${ssm:core_storage_schema_${self:provider.stage}~true}
+    REGION: ${self:custom.config.region}
     LOG_LEVEL: info
-
-plugins:
-  - serverless-domain-manager
-
-custom:
-  customDomain:
-    domainName: 'api-celsus.isnan.eu'
-    certificateName: '*.isnan.eu'
-    hostedZoneId: ZWC66FN0XU6P9
-    basePath: 'core'
-    stage: ${self:provider.stage}
-    createRoute53Record: true
-    endpointType: regional
 
 package:
   exclude:
@@ -69,7 +67,7 @@ functions:
           method: get
           cors: true
           authorizer:
-            arn: arn:aws:cognito-idp:eu-west-2:671123374425:userpool/eu-west-2_ocAf57dZ3
+            arn: ${self:custom.config.userPoolArn}
   postLibrary:
     handler: handler.postLibrary
     name: post-library
@@ -79,7 +77,7 @@ functions:
           method: post
           cors: true
           authorizer:
-            arn: arn:aws:cognito-idp:eu-west-2:671123374425:userpool/eu-west-2_ocAf57dZ3
+            arn: ${self:custom.config.userPoolArn}
   deleteLibrary:
     handler: handler.deleteLibrary
     name: delete-library
@@ -89,7 +87,7 @@ functions:
           method: delete
           cors: true
           authorizer:
-            arn: arn:aws:cognito-idp:eu-west-2:671123374425:userpool/eu-west-2_ocAf57dZ3
+            arn: ${self:custom.config.userPoolArn}
   getLibrary:
     handler: handler.getLibrary
     name: get-library
@@ -99,7 +97,7 @@ functions:
           method: get
           cors: true
           authorizer:
-            arn: arn:aws:cognito-idp:eu-west-2:671123374425:userpool/eu-west-2_ocAf57dZ3
+            arn: ${self:custom.config.userPoolArn}
   getBooks:
     handler: handler.getBooks
     name: get-books
@@ -113,7 +111,7 @@ functions:
                 offset: false
           cors: true
           authorizer:
-            arn: arn:aws:cognito-idp:eu-west-2:671123374425:userpool/eu-west-2_ocAf57dZ3
+            arn: ${self:custom.config.userPoolArn}
   deleteBook:
     handler: handler.deleteBook
     name: delete-book
@@ -123,7 +121,7 @@ functions:
           method: delete
           cors: true
           authorizer:
-            arn: arn:aws:cognito-idp:eu-west-2:671123374425:userpool/eu-west-2_ocAf57dZ3
+            arn: ${self:custom.config.userPoolArn}
   postBook:
     handler: handler.postBook
     name: post-book
@@ -133,4 +131,4 @@ functions:
           method: post
           cors: true
           authorizer:
-            arn: arn:aws:cognito-idp:eu-west-2:671123374425:userpool/eu-west-2_ocAf57dZ3
+            arn: ${self:custom.config.userPoolArn}

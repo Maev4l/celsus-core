@@ -16,3 +16,6 @@ coverage
 
 # Secrets
 secrets.txt
+
+# Terraform infra
+infra.json

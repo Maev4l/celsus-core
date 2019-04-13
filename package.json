@@ -6,8 +6,9 @@
     "test": "nyc ./node_modules/mocha/bin/mocha ./test/*",
     "lint": "./node_modules/.bin/eslint .",
     "pretty": "prettier --write \"./**/*.js\"",
-    "deploy": "npx sls deploy",
-    "coverage": "nyc report --reporter=text-lcov | coveralls"
+    "deploy:dev": "npm run donwload-infra:dev && npx sls deploy",
+    "coverage": "nyc report --reporter=text-lcov | coveralls",
+    "donwload-infra:dev": "aws s3 cp s3://celsus-tf-state/celsus/dev/infra.json infra.json"
   },
   "author": "",
   "license": "ISC",
@@ -33,7 +34,7 @@
     "npm": "^6.5.0",
     "nyc": "^13.3.0",
     "prettier": "^1.15.3",
-    "serverless": "^1.39.1",
-    "serverless-domain-manager": "^2.6.11"
+    "serverless": "^1.40.0",
+    "serverless-domain-manager": "^3.2.1"
   }
 }
