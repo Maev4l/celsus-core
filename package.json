@@ -6,9 +6,9 @@
     "test": "nyc ./node_modules/mocha/bin/mocha ./test/*",
     "lint": "./node_modules/.bin/eslint .",
     "pretty": "prettier --write \"./**/*.js\"",
-    "deploy:dev": "npm run donwload-infra:dev && npx sls deploy",
+    "deploy:dev": "npm run download-infra:dev && npx sls deploy",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
-    "donwload-infra:dev": "aws s3 cp s3://celsus-tf-state/celsus/dev/infra.json infra.json"
+    "download-infra:dev": "aws s3 cp s3://celsus-tf-state/celsus/dev/infra.json infra.json"
   },
   "author": "",
   "license": "ISC",
