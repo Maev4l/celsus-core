@@ -1,4 +1,5 @@
-function newMockEvent(sub, body, pathParameters, queryStringParameters) {
+// eslint-disable-next-line import/prefer-default-export
+export const newMockEvent = (sub, body, pathParameters, queryStringParameters) => {
   const mockEvent = {
     requestContext: {
       authorizer: {
@@ -13,8 +14,4 @@ function newMockEvent(sub, body, pathParameters, queryStringParameters) {
   };
 
   return mockEvent;
-}
-
-module.exports = {
-  newMockEvent,
 };

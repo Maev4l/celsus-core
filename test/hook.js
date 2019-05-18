@@ -4,7 +4,7 @@
  * clean up the database after tests
  */
 
-const childProcess = require('child_process');
+import childProcess from 'child_process';
 
 before('Initialize database', () => {
   const cmd = `psql --host ${process.env.PGHOST} --dbname ${process.env.PGDATABASE} --username ${

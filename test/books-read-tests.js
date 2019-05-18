@@ -1,15 +1,17 @@
-const { assert } = require('chai');
-require('dotenv').config();
+import { assert } from 'chai';
+import dotenv from 'dotenv';
 
-const { getBooks } = require('../handler');
-const { newMockEvent } = require('./utils');
+import { getBooks } from '../src/handler';
+import { newMockEvent } from './utils';
 
-const { BooksPerPage } = require('../lib/book-manager');
+dotenv.config();
+
+const { BOOKS_PAGE_SIZE } = require('../src/lib/book-manager');
 
 describe('Books Tests (READ - SEARCH)', async () => {
   it('Returns list of books belonging to user4 without a defined offset', async () => {
     const expected = {
-      itemsPerPage: BooksPerPage,
+      itemsPerPage: BOOKS_PAGE_SIZE,
       total: 2,
       books: [
         {
@@ -60,7 +62,7 @@ describe('Books Tests (READ - SEARCH)', async () => {
 
   it('Returns list of books belonging to user4 with a defined offset to 1', async () => {
     const expected = {
-      itemsPerPage: BooksPerPage,
+      itemsPerPage: BOOKS_PAGE_SIZE,
       total: 2,
       books: [],
     };
@@ -76,7 +78,7 @@ describe('Books Tests (READ - SEARCH)', async () => {
 
   it('Returns list of books with a search simple criteria based on author', async () => {
     const expected = {
-      itemsPerPage: BooksPerPage,
+      itemsPerPage: BOOKS_PAGE_SIZE,
       total: 2,
       books: [
         {
@@ -128,7 +130,7 @@ describe('Books Tests (READ - SEARCH)', async () => {
 
   it('Returns list of books with a search simple criteria based on title', async () => {
     const expected = {
-      itemsPerPage: BooksPerPage,
+      itemsPerPage: BOOKS_PAGE_SIZE,
       total: 2,
       books: [
         {
@@ -180,7 +182,7 @@ describe('Books Tests (READ - SEARCH)', async () => {
 
   it('Returns list of books with a search multi words criteria based on title', async () => {
     const expected = {
-      itemsPerPage: BooksPerPage,
+      itemsPerPage: BOOKS_PAGE_SIZE,
       total: 1,
       books: [
         {

@@ -1,6 +1,7 @@
 service: celsus-core
 
 plugins:
+  - serverless-webpack
   - serverless-domain-manager
 
 custom:
@@ -13,6 +14,10 @@ custom:
     stage: ${self:provider.stage}
     createRoute53Record: true
     endpointType: edge
+  webpack:
+    webpackConfig: './build/webpack.base.config.js'
+    includeModules: true
+    packager: 'npm'
 
 provider:
   name: aws
@@ -59,7 +64,7 @@ package:
 
 functions:
   getLibraries:
-    handler: handler.getLibraries
+    handler: src/handler.getLibraries
     name: get-libraries
     events:
       - http:
@@ -69,7 +74,7 @@ functions:
           authorizer:
             arn: ${self:custom.config.userPoolArn}
   postLibrary:
-    handler: handler.postLibrary
+    handler: src/handler.postLibrary
     name: post-library
     events:
       - http:
@@ -79,7 +84,7 @@ functions:
           authorizer:
             arn: ${self:custom.config.userPoolArn}
   deleteLibrary:
-    handler: handler.deleteLibrary
+    handler: src/handler.deleteLibrary
     name: delete-library
     events:
       - http:
@@ -89,7 +94,7 @@ functions:
           authorizer:
             arn: ${self:custom.config.userPoolArn}
   getLibrary:
-    handler: handler.getLibrary
+    handler: src/handler.getLibrary
     name: get-library
     events:
       - http:
@@ -99,7 +104,7 @@ functions:
           authorizer:
             arn: ${self:custom.config.userPoolArn}
   getBooks:
-    handler: handler.getBooks
+    handler: src/handler.getBooks
     name: get-books
     events:
       - http:
@@ -113,7 +118,7 @@ functions:
           authorizer:
             arn: ${self:custom.config.userPoolArn}
   deleteBook:
-    handler: handler.deleteBook
+    handler: src/handler.deleteBook
     name: delete-book
     events:
       - http:
@@ -123,7 +128,7 @@ functions:
           authorizer:
             arn: ${self:custom.config.userPoolArn}
   postBook:
-    handler: handler.postBook
+    handler: src/handler.postBook
     name: post-book
     events:
       - http:

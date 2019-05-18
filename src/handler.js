@@ -1,5 +1,5 @@
-const LibraryManager = require('./lib/library-manager');
-const BookManager = require('./lib/book-manager');
+import * as LibraryManager from './lib/library-manager';
+import * as BookManager from './lib/book-manager';
 
 const makeResponse = (statusCode, result) => {
   let body = '';
@@ -18,24 +18,22 @@ const makeResponse = (statusCode, result) => {
   return response;
 };
 
-exports.getLibraries = async event => {
+export const getLibraries = async event => {
   const { sub } = event.requestContext.authorizer.claims;
-  const manager = new LibraryManager();
-  const result = await manager.getLibraries(sub);
+  const result = await LibraryManager.getLibraries(sub);
   return makeResponse(200, result);
 };
 
-exports.postLibrary = async event => {
+export const postLibrary = async event => {
   const library = JSON.parse(event.body);
   const { sub } = event.requestContext.authorizer.claims;
   let result = '';
   let statusCode;
 
   // If a library does not have an existing id, it means we are trying to create it
-  const manager = new LibraryManager();
   if (!library.id) {
     try {
-      result = await manager.createLibrary(sub, library);
+      result = await LibraryManager.createLibrary(sub, library);
       statusCode = 201;
     } catch (e) {
       statusCode = 400;
@@ -43,7 +41,7 @@ exports.postLibrary = async event => {
       result = { message };
     }
   } else {
-    const updated = await manager.updateLibrary(sub, library);
+    const updated = await LibraryManager.updateLibrary(sub, library);
     if (updated) {
       statusCode = 204;
     } else {
@@ -53,23 +51,21 @@ exports.postLibrary = async event => {
   return makeResponse(statusCode, result);
 };
 
-exports.deleteLibrary = async event => {
+export const deleteLibrary = async event => {
   const { sub } = event.requestContext.authorizer.claims;
 
   const libraryId = event.pathParameters.id;
-  const manager = new LibraryManager();
-  const result = await manager.deleteLibrary(sub, libraryId);
+  const result = await LibraryManager.deleteLibrary(sub, libraryId);
   const statusCode = result ? 204 : 404;
 
   return makeResponse(statusCode);
 };
 
-exports.getLibrary = async event => {
+export const getLibrary = async event => {
   const { sub } = event.requestContext.authorizer.claims;
 
   const libraryId = event.pathParameters.id;
-  const manager = new LibraryManager();
-  const result = await manager.getLibrary(sub, libraryId);
+  const result = await LibraryManager.getLibrary(sub, libraryId);
   let statusCode;
   if (result.length === 1) {
     statusCode = 200;
@@ -83,39 +79,36 @@ exports.getLibrary = async event => {
   return makeResponse(statusCode, result.length === 1 ? result[0] : null);
 };
 
-exports.getBooks = async event => {
+export const getBooks = async event => {
   const { sub } = event.requestContext.authorizer.claims;
   const { queryStringParameters } = event;
-  const manager = new BookManager();
   const offset = queryStringParameters ? queryStringParameters.offset || 0 : 0;
   const searchQuery = queryStringParameters ? queryStringParameters.q || '' : '';
 
-  const result = await manager.getBooks(sub, offset, searchQuery);
+  const result = await BookManager.getBooks(sub, offset, searchQuery);
   return makeResponse(200, result);
 };
 
-exports.deleteBook = async event => {
+export const deleteBook = async event => {
   const { sub } = event.requestContext.authorizer.claims;
 
   const bookId = event.pathParameters.id;
-  const manager = new BookManager();
-  const result = await manager.deleteBook(sub, bookId);
+  const result = await BookManager.deleteBook(sub, bookId);
   const statusCode = result ? 204 : 404;
 
   return makeResponse(statusCode);
 };
 
-exports.postBook = async event => {
+export const postBook = async event => {
   const book = JSON.parse(event.body);
   const { sub } = event.requestContext.authorizer.claims;
   let result = '';
   let statusCode;
 
   // If a book does not have an existing id, it means we are trying to create it
-  const manager = new BookManager();
   if (!book.id) {
     try {
-      result = await manager.createBook(sub, book);
+      result = await BookManager.createBook(sub, book);
       statusCode = 201;
     } catch (e) {
       statusCode = 400;
@@ -124,7 +117,7 @@ exports.postBook = async event => {
     }
   } else {
     try {
-      const updated = await manager.updateBook(sub, book);
+      const updated = await BookManager.updateBook(sub, book);
       if (updated) {
         statusCode = 204;
       } else {

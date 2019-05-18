@@ -1,8 +1,10 @@
-const { assert } = require('chai');
-require('dotenv').config();
+import { assert } from 'chai';
+import dotenv from 'dotenv';
 
-const { getLibraries, getLibrary } = require('../handler');
-const { newMockEvent } = require('./utils');
+import { getLibrary, getLibraries } from '../src/handler';
+import { newMockEvent } from './utils';
+
+dotenv.config();
 
 describe('Libraries Tests (READ)', async () => {
   it('Returns list of libraries with no books', async () => {

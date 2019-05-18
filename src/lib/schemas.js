@@ -1,7 +1,6 @@
-/* eslint-disable newline-per-chained-call */
-const Joi = require('joi');
+import Joi from 'joi';
 
-const librarySchema = Joi.object().keys({
+export const librarySchema = Joi.object().keys({
   id: Joi.string().guid({ version: ['uuidv4'] }),
   name: Joi.string()
     .min(1)
@@ -13,7 +12,7 @@ const librarySchema = Joi.object().keys({
     .required(),
 });
 
-const bookSchema = Joi.object().keys({
+export const bookSchema = Joi.object().keys({
   id: Joi.string().guid({ version: ['uuidv4'] }),
   libraryId: Joi.string()
     .guid({ version: ['uuidv4'] })
@@ -67,6 +66,3 @@ const bookSchema = Joi.object().keys({
       .required(),
   }),
 });
-
-exports.librarySchema = librarySchema;
-exports.bookSchema = bookSchema;
