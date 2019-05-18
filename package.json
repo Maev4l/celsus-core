@@ -4,7 +4,6 @@
   "description": "",
   "scripts": {
     "test": "nyc mochapack --webpack-config ./build/webpack.test.config.js ./test/*",
-    "build": "serverless webpack",
     "lint": "npx eslint .",
     "pretty": "prettier --write \"./**/*.js\"",
     "deploy:dev": "npm run download-infra:dev && npx sls deploy",
@@ -13,6 +12,14 @@
   },
   "author": "",
   "license": "ISC",
+  "nyc": {
+    "include": [
+      "lib/**/*.js",
+      "handler.js"
+    ],
+    "instrument": false,
+    "sourceMap": false
+  },
   "dependencies": {
     "@babel/runtime": "^7.4.4",
     "joi": "^13.3.0",
@@ -34,6 +41,7 @@
     "eslint-config-prettier": "^3.3.0",
     "eslint-plugin-import": "^2.14.0",
     "install": "^0.12.2",
+    "istanbul-instrumenter-loader": "^3.0.1",
     "mocha": "^5.1.1",
     "mocha-lcov-reporter": "^1.3.0",
     "mochapack": "^1.1.1",
