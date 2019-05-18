@@ -7,18 +7,11 @@
     "lint": "npx eslint .",
     "pretty": "prettier --write \"./**/*.js\"",
     "deploy:dev": "npm run download-infra:dev && npx sls deploy",
-    "coverage": "nyc report --reporter=text-lcov | coveralls",
+    "coverage": "nyc report | coveralls",
     "download-infra:dev": "aws s3 cp s3://celsus-tf-state/celsus/dev/infra.json infra.json"
   },
   "author": "",
   "license": "ISC",
-  "nyc": {
-    "include": [
-      "src/**/*.js"
-    ],
-    "instrument": false,
-    "sourceMap": false
-  },
   "dependencies": {
     "@babel/runtime": "^7.4.4",
     "joi": "^13.3.0",
