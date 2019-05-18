@@ -1,7 +1,7 @@
 import { assert } from 'chai';
 import dotenv from 'dotenv';
 
-import { getLibrary, getLibraries } from '../handler';
+import { getLibrary, getLibraries } from '../src/handler';
 import { newMockEvent } from './utils';
 
 dotenv.config();

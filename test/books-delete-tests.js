@@ -2,7 +2,7 @@ import { assert } from 'chai';
 import { Pool } from 'pg';
 import dotenv from 'dotenv';
 
-import { deleteBook } from '../handler';
+import { deleteBook } from '../src/handler';
 import { newMockEvent } from './utils';
 
 dotenv.config();

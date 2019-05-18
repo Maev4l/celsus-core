@@ -14,8 +14,7 @@
   "license": "ISC",
   "nyc": {
     "include": [
-      "lib/**/*.js",
-      "handler.js"
+      "src/**/*.js"
     ],
     "instrument": false,
     "sourceMap": false

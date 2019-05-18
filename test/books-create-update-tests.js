@@ -2,9 +2,9 @@ import { assert } from 'chai';
 import { Pool } from 'pg';
 import dotenv from 'dotenv';
 
-import { postBook } from '../handler';
+import { postBook } from '../src/handler';
 import { newMockEvent } from './utils';
-import { hashBook, fromPGLanguage } from '../lib/utils';
+import { hashBook, fromPGLanguage } from '../src/lib/utils';
 
 dotenv.config();
 

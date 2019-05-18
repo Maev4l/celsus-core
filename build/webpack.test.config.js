@@ -15,7 +15,7 @@ module.exports = merge(common, {
     rules: [
       {
         test: /\.(js)/,
-        include: path.resolve('lib'),
+        include: path.resolve('src'),
         loader: 'istanbul-instrumenter-loader',
         options: { esModules: true },
       },

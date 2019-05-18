@@ -1,12 +1,12 @@
 import { assert } from 'chai';
 import dotenv from 'dotenv';
 
-import { getBooks } from '../handler';
+import { getBooks } from '../src/handler';
 import { newMockEvent } from './utils';
 
 dotenv.config();
 
-const { BOOKS_PAGE_SIZE } = require('../lib/book-manager');
+const { BOOKS_PAGE_SIZE } = require('../src/lib/book-manager');
 
 describe('Books Tests (READ - SEARCH)', async () => {
   it('Returns list of books belonging to user4 without a defined offset', async () => {
