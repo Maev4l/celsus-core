@@ -1,6 +1,7 @@
 service: celsus-core
 
 plugins:
+  - serverless-webpack
   - serverless-domain-manager
 
 custom:
@@ -13,6 +14,10 @@ custom:
     stage: ${self:provider.stage}
     createRoute53Record: true
     endpointType: edge
+  webpack:
+    webpackConfig: './build/webpack.base.config.js'
+    includeModules: true
+    packager: 'npm'
 
 provider:
   name: aws

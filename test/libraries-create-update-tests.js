@@ -1,10 +1,11 @@
-const { assert } = require('chai');
-const { Pool } = require('pg');
-require('dotenv').config();
+import { assert } from 'chai';
+import { Pool } from 'pg';
+import dotenv from 'dotenv';
 
-const { postLibrary } = require('../handler');
-const { newMockEvent } = require('./utils');
+import { postLibrary } from '../handler';
+import { newMockEvent } from './utils';
 
+dotenv.config();
 const schemaName = process.env.PGSCHEMA;
 
 describe('Libraries Tests (CREATE - UPDATE)', async () => {

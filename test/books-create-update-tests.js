@@ -1,11 +1,12 @@
-/* eslint-disable global-require */
-const { assert } = require('chai');
-const { Pool } = require('pg');
+import { assert } from 'chai';
+import { Pool } from 'pg';
+import dotenv from 'dotenv';
 
-require('dotenv').config();
-const Utils = require('../lib/utils');
+import { postBook } from '../handler';
+import { newMockEvent } from './utils';
+import { hashBook, fromPGLanguage } from '../lib/utils';
 
-const { newMockEvent } = require('./utils');
+dotenv.config();
 
 const schemaName = process.env.PGSCHEMA;
 
@@ -26,8 +27,6 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
       bookSetOrder: 1,
     };
     const event = newMockEvent('user6', newBook);
-
-    const { postBook } = require('../handler');
 
     const response = await postBook(event);
     const { statusCode, body } = response;
@@ -51,7 +50,7 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
     assert.deepEqual(expectedBook.authors, newBook.authors);
     assert.deepEqual(expectedBook.tags, newBook.tags);
     assert.isNotEmpty(expectedBook.hash);
-    assert.strictEqual(Utils.fromPGLanguage(expectedBook.language), newBook.language);
+    assert.strictEqual(fromPGLanguage(expectedBook.language), newBook.language);
     assert.strictEqual(expectedBook.book_set, newBook.bookSet);
 
     const { rows: rowsSearch } = await client.query(
@@ -82,8 +81,6 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
     };
     const event = newMockEvent('user1', newBook);
 
-    const { postBook } = require('../handler');
-
     const response = await postBook(event);
     const { statusCode } = response;
     assert.strictEqual(statusCode, 400);
@@ -105,9 +102,6 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
       bookSetOrder: 0,
     };
     const event = newMockEvent('user6', newBook);
-
-    const { postBook } = require('../handler');
-
     const response = await postBook(event);
     const { statusCode } = response;
     assert.strictEqual(statusCode, 400);
@@ -130,8 +124,6 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
     };
     const event = newMockEvent('user6', newBook);
 
-    const { postBook } = require('../handler');
-
     const response = await postBook(event);
     const { statusCode } = response;
     assert.strictEqual(statusCode, 400);
@@ -153,8 +145,6 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
       bookSetOrder: 0,
     };
     const event = newMockEvent('user6', newBook);
-
-    const { postBook } = require('../handler');
 
     const response = await postBook(event);
     const { statusCode } = response;
@@ -180,8 +170,6 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
     };
     const event = newMockEvent('user7', updateBook);
 
-    const { postBook } = require('../handler');
-
     const response = await postBook(event);
     const { statusCode } = response;
     assert.strictEqual(statusCode, 204);
@@ -200,8 +188,8 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
     assert.strictEqual(expectedBook.description, updateBook.description);
     assert.deepEqual(expectedBook.authors, updateBook.authors);
     assert.deepEqual(expectedBook.tags, updateBook.tags);
-    assert.strictEqual(expectedBook.hash, Utils.hashBook(updateBook));
-    assert.strictEqual(Utils.fromPGLanguage(expectedBook.language), updateBook.language);
+    assert.strictEqual(expectedBook.hash, hashBook(updateBook));
+    assert.strictEqual(fromPGLanguage(expectedBook.language), updateBook.language);
     assert.strictEqual(expectedBook.book_set, updateBook.bookSet);
 
     const { rows: rowsSearch } = await client.query(
@@ -230,8 +218,6 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
     };
     const event = newMockEvent('user7', updateBook);
 
-    const { postBook } = require('../handler');
-
     const response = await postBook(event);
     const { statusCode } = response;
     assert.strictEqual(statusCode, 400);
@@ -253,8 +239,6 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
     };
     const event = newMockEvent('user7', updateBook);
 
-    const { postBook } = require('../handler');
-
     const response = await postBook(event);
     const { statusCode } = response;
     assert.strictEqual(statusCode, 400);
@@ -275,8 +259,6 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
       isbn13: '',
     };
     const event = newMockEvent('user1', updateBook);
-
-    const { postBook } = require('../handler');
 
     const response = await postBook(event);
     const { statusCode } = response;
