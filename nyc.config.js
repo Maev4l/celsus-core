@@ -1,6 +1,6 @@
 module.exports = {
   include: ['src/**/*.js'],
-  all: true,
+  instrument: false,
   sourceMap: false,
-  reporter: 'lcov',
+  // reporter: 'text-lcov',
 };
