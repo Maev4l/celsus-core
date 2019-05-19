@@ -1,14 +1,15 @@
 import { assert } from 'chai';
-import { Pool } from 'pg';
 import dotenv from 'dotenv';
 
 import { postBook } from '../src/handler';
 import { newMockEvent } from './utils';
-import { hashBook, fromPGLanguage } from '../src/lib/utils';
+import { fromPGLanguage, getDatabase } from '../src/lib/storage';
+import { hashBook } from '../src/lib/utils';
 
 dotenv.config();
 
 const schemaName = process.env.PGSCHEMA;
+const database = getDatabase();
 
 describe('Books Tests (CREATE - UPDATE)', async () => {
   it('Adds a new book for user6', async () => {
@@ -35,12 +36,9 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
     assert.exists(result.id);
     assert.notEqual(result.id, '');
 
-    const pool = new Pool();
-    const client = await pool.connect();
-    const { rows: rowsBooks } = await client.query(
-      `SELECT * FROM "${schemaName}"."book" WHERE "id"=$1;`,
-      [result.id],
-    );
+    const rowsBooks = await database.any(`SELECT * FROM "${schemaName}"."book" WHERE "id"=$1;`, [
+      result.id,
+    ]);
     assert.strictEqual(rowsBooks.length, 1);
     const expectedBook = rowsBooks[0];
 
@@ -49,19 +47,17 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
     assert.strictEqual(expectedBook.description, newBook.description);
     assert.deepEqual(expectedBook.authors, newBook.authors);
     assert.deepEqual(expectedBook.tags, newBook.tags);
-    assert.isNotEmpty(expectedBook.hash);
+    assert.strictEqual(expectedBook.hash, hashBook(newBook));
     assert.strictEqual(fromPGLanguage(expectedBook.language), newBook.language);
     assert.strictEqual(expectedBook.book_set, newBook.bookSet);
 
-    const { rows: rowsSearch } = await client.query(
+    const rowsSearch = await database.any(
       `SELECT * FROM "${schemaName}"."books_search" WHERE "id"=$1;`,
       [result.id],
     );
     assert.strictEqual(rowsSearch.length, 1);
 
-    await client.query(`DELETE FROM "${schemaName}"."book" WHERE "id"=$1`, [result.id]);
-    client.release();
-    await pool.end();
+    await database.none(`DELETE FROM "${schemaName}"."book" WHERE "id"=$1`, [result.id]);
   });
 
   it('Fails when adding a book to an unknown library', async () => {
@@ -174,12 +170,9 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
     const { statusCode } = response;
     assert.strictEqual(statusCode, 204);
 
-    const pool = new Pool();
-    const client = await pool.connect();
-    const { rows: rowsBooks } = await client.query(
-      `SELECT * FROM "${schemaName}"."book" WHERE "id"=$1;`,
-      [id],
-    );
+    const rowsBooks = await database.any(`SELECT * FROM "${schemaName}"."book" WHERE "id"=$1;`, [
+      id,
+    ]);
     assert.strictEqual(rowsBooks.length, 1);
     const expectedBook = rowsBooks[0];
 
@@ -192,14 +185,11 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
     assert.strictEqual(fromPGLanguage(expectedBook.language), updateBook.language);
     assert.strictEqual(expectedBook.book_set, updateBook.bookSet);
 
-    const { rows: rowsSearch } = await client.query(
+    const rowsSearch = await database.any(
       `SELECT * FROM "${schemaName}"."books_search" WHERE "id"=$1;`,
       [id],
     );
     assert.strictEqual(rowsSearch.length, 1);
-
-    client.release();
-    await pool.end();
   });
 
   it('Fails when updating an unknown book for user7', async () => {

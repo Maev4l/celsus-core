@@ -1,13 +1,15 @@
 import { assert } from 'chai';
-import { Pool } from 'pg';
+
 import dotenv from 'dotenv';
 
 import { deleteLibrary } from '../src/handler';
 import { newMockEvent } from './utils';
+import { getDatabase } from '../src/lib/storage';
 
 dotenv.config();
 
 const schemaName = process.env.PGSCHEMA;
+const database = getDatabase();
 
 describe('Libraries Tests (DELETE)', async () => {
   it('Deletes an existing library', async () => {
@@ -16,20 +18,17 @@ describe('Libraries Tests (DELETE)', async () => {
     const response = await deleteLibrary(event);
     const { statusCode } = response;
     assert.strictEqual(statusCode, 204);
-    const pool = new Pool();
-    const client = await pool.connect();
-    const librariesResult = await client.query(
+
+    const librariesResult = await database.query(
       `SELECT "id", "name", "description" FROM "${schemaName}"."library" WHERE "id"=$1;`,
       [id],
     );
-    assert.strictEqual(librariesResult.rows.length, 0);
-    const booksResult = await client.query(
+    assert.strictEqual(librariesResult.length, 0);
+    const booksResult = await database.any(
       `SELECT "id" FROM "${schemaName}"."book" WHERE "library_id"=$1;`,
       [id],
     );
-    assert.strictEqual(booksResult.rows.length, 0);
-    client.release();
-    await pool.end();
+    assert.strictEqual(booksResult.length, 0);
   });
 
   it('Fails when deleting an unknown library', async () => {
@@ -46,15 +45,12 @@ describe('Libraries Tests (DELETE)', async () => {
     const response = await deleteLibrary(event);
     const { statusCode } = response;
     assert.strictEqual(statusCode, 404);
-    const pool = new Pool();
-    const client = await pool.connect();
-    const { rows } = await client.query(
+
+    const rows = await database.any(
       `SELECT "id", "name", "description" FROM "${schemaName}"."library" WHERE "id"=$1;`,
       [id],
     );
     assert.strictEqual(rows.length, 1);
-    client.release();
-    await pool.end();
   });
 
   it('Fails when deleting a library not belonging to user', async () => {
@@ -63,14 +59,11 @@ describe('Libraries Tests (DELETE)', async () => {
     const response = await deleteLibrary(event);
     const { statusCode } = response;
     assert.strictEqual(statusCode, 404);
-    const pool = new Pool();
-    const client = await pool.connect();
-    const { rows } = await client.query(
+
+    const rows = await database.any(
       `SELECT "id", "name", "description" FROM "${schemaName}"."library" WHERE "id"=$1;`,
       [id],
     );
     assert.strictEqual(rows.length, 1);
-    client.release();
-    await pool.end();
   });
 });

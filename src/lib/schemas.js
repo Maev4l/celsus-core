@@ -1,7 +1,7 @@
 import Joi from 'joi';
 
 export const librarySchema = Joi.object().keys({
-  id: Joi.string().guid({ version: ['uuidv4'] }),
+  id: process.env.development ? Joi.string() : Joi.string().guid({ version: ['uuidv4'] }),
   name: Joi.string()
     .min(1)
     .max(100)

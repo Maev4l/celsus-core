@@ -20,6 +20,7 @@ const makeResponse = (statusCode, result) => {
 
 export const getLibraries = async event => {
   const { sub } = event.requestContext.authorizer.claims;
+
   const result = await LibraryManager.getLibraries(sub);
   return makeResponse(200, result);
 };
@@ -31,22 +32,22 @@ export const postLibrary = async event => {
   let statusCode;
 
   // If a library does not have an existing id, it means we are trying to create it
-  if (!library.id) {
-    try {
+  try {
+    if (!library.id) {
       result = await LibraryManager.createLibrary(sub, library);
       statusCode = 201;
-    } catch (e) {
-      statusCode = 400;
-      const { message } = e;
-      result = { message };
-    }
-  } else {
-    const updated = await LibraryManager.updateLibrary(sub, library);
-    if (updated) {
-      statusCode = 204;
     } else {
-      statusCode = 400;
+      const updated = await LibraryManager.updateLibrary(sub, library);
+      if (updated) {
+        statusCode = 204;
+      } else {
+        statusCode = 400;
+      }
     }
+  } catch (e) {
+    statusCode = 400;
+    const { message } = e;
+    result = { message };
   }
   return makeResponse(statusCode, result);
 };
@@ -65,18 +66,16 @@ export const getLibrary = async event => {
   const { sub } = event.requestContext.authorizer.claims;
 
   const libraryId = event.pathParameters.id;
-  const result = await LibraryManager.getLibrary(sub, libraryId);
   let statusCode;
-  if (result.length === 1) {
-    statusCode = 200;
-  } else if (result.length === 0) {
-    statusCode = 404;
-  } else {
-    // We have several libraries with the same identifiers
+  let result = null;
+  try {
+    result = await LibraryManager.getLibrary(sub, libraryId);
+    statusCode = result ? 200 : 404;
+  } catch (e) {
     statusCode = 500;
   }
 
-  return makeResponse(statusCode, result.length === 1 ? result[0] : null);
+  return makeResponse(statusCode, result);
 };
 
 export const getBooks = async event => {
