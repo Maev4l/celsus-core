@@ -21,7 +21,7 @@ custom:
 
 provider:
   name: aws
-  runtime: nodejs8.10
+  runtime: nodejs10.x
   versionFunctions: false
   memorySize: 1024
   region: ${self:custom.config.region}
