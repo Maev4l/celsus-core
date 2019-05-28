@@ -3,8 +3,9 @@ import Joi from 'joi';
 
 import { bookSchema as schema } from './schemas';
 import CelsusException from './exception';
-import { hashBook } from './utils';
+import { hashBook, LEND_BOOK_VALIDATION_STATUS } from './utils';
 import { fromPGLanguage, listBooks, removeBook, saveBook, modifyBook } from './storage';
+import { replyBookValidation } from './messaging';
 
 export const BOOKS_PAGE_SIZE = 5;
 
@@ -98,4 +99,11 @@ export const updateBook = async (userId, book) => {
     throw new CelsusException(`Library (id: ${libraryId}) does not exists`);
   }
   return rowCount === 1;
+};
+
+export const validateBook = async (userId, bookId, lendId, replyAddress) => {
+  // - Ensure the book exists (and belongs to the given user)
+  // - Ensure the book is not already lent (or in lending process)
+  const status = LEND_BOOK_VALIDATION_STATUS.BOOK_VALIDATED;
+  await replyBookValidation(lendId, bookId, status, replyAddress);
 };

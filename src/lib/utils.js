@@ -1,6 +1,5 @@
 import hash from 'object-hash';
 
-// eslint-disable-next-line import/prefer-default-export
 export const hashBook = book => {
   const {
     libraryId,
@@ -35,3 +34,16 @@ export const hashBook = book => {
     },
   );
 };
+
+export const LEND_BOOK_VALIDATION_STATUS = Object.freeze({
+  BOOK_VALIDATED: 'BOOK_VALIDATED',
+  BOOK_NOT_VALIDATED: 'BOOK_NOT_VALIDATED',
+});
+
+export const INCOMING_OPERATIONS = Object.freeze({
+  VALIDATE_LEND_BOOK: 'VALIDATE_LEND_BOOK',
+});
+
+export const OUTGOING_OPERATIONS = Object.freeze({
+  VALIDATE_LEND_BOOK: 'VALIDATE_LEND_BOOK',
+});

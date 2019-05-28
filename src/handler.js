@@ -1,5 +1,7 @@
 import * as LibraryManager from './lib/library-manager';
 import * as BookManager from './lib/book-manager';
+import { logger } from './lib/logger';
+import dispatch from './lib/dispatcher';
 
 const makeResponse = (statusCode, result) => {
   let body = '';
@@ -129,4 +131,27 @@ export const postBook = async event => {
     }
   }
   return makeResponse(statusCode, result);
+};
+
+/**
+ * Handle messages from SQS
+ * @param {*} event
+ */
+export const handleMessages = async event => {
+  const { Records } = event;
+
+  // FIXME: At the current stage, by design, only process 1 event at a time
+  const record = Records[0];
+  const { messageId, body, messageAttributes } = record;
+  let replyAddress = null;
+
+  if (messageAttributes.replyAddress) {
+    replyAddress = messageAttributes.replyAddress.stringValue;
+  }
+  const payload = JSON.parse(body);
+
+  logger.info(`Message received: ${messageId}`);
+
+  const { operation, ...rest } = payload;
+  await dispatch(operation, rest, replyAddress);
 };

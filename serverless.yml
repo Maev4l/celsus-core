@@ -138,3 +138,10 @@ functions:
           cors: true
           authorizer:
             arn: ${self:custom.config.userPoolArn}
+  handleMessages:
+    handler: src/handler.handleMessages
+    name: handle-core-messages
+    events:
+      - sqs:
+          arn: ${self:custom.config.coreQueueArn}
+          batchSize: 1
