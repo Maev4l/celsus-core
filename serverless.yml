@@ -16,7 +16,9 @@ custom:
     endpointType: edge
   webpack:
     webpackConfig: './build/webpack.base.config.js'
-    includeModules: true
+    includeModules:
+      forceExclude:
+        - aws-sdk
     packager: 'npm'
 
 provider:
