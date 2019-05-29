@@ -48,11 +48,12 @@ export const sendMessageWithReply = async (message, destination) => {
   }
 };
 
-export const replyBookValidation = async (lendingId, bookId, status, replyAddress) => {
+export const replyBookValidation = async (userId, lendingId, bookId, status, replyAddress) => {
   logger.info(`Reply book validation - lending: ${lendingId}`);
   await sendMessage(
     {
       operation: OUTGOING_OPERATIONS.VALIDATE_LEND_BOOK,
+      userId,
       lendingId,
       bookId,
       status,

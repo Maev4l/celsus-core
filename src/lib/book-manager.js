@@ -105,5 +105,5 @@ export const validateBook = async (userId, bookId, lendId, replyAddress) => {
   // - Ensure the book exists (and belongs to the given user)
   // - Ensure the book is not already lent (or in lending process)
   const status = LEND_BOOK_VALIDATION_STATUS.BOOK_VALIDATED;
-  await replyBookValidation(lendId, bookId, status, replyAddress);
+  await replyBookValidation(userId, lendId, bookId, status, replyAddress);
 };
