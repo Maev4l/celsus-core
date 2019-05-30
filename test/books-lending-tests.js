@@ -1,0 +1,135 @@
+import { assert } from 'chai';
+import sinon from 'sinon';
+import dotenv from 'dotenv';
+
+import { handleMessages } from '../src/handler';
+import {
+  INCOMING_OPERATIONS,
+  OUTGOING_OPERATIONS,
+  LEND_BOOK_VALIDATION_STATUS,
+} from '../src/lib/utils';
+import { newMockMessage } from './utils';
+import { getDatabase } from '../src/lib/storage';
+import sqs from '../src/lib/sqs';
+
+dotenv.config();
+
+const schemaName = process.env.PGSCHEMA;
+const database = getDatabase();
+
+describe('Books Tests (LENDING)', async () => {
+  let sinonSandbox;
+  let stubSendMessage;
+
+  beforeEach(async () => {
+    sinonSandbox = sinon.createSandbox();
+    stubSendMessage = sinonSandbox.stub(sqs, 'sendMessage');
+  });
+  afterEach(async () => sinonSandbox.restore());
+
+  it('Returns a successful book validation', async () => {
+    const lendingId = 1;
+    const userId = 'user12';
+    const bookId = '101';
+    const mockMessage = newMockMessage({
+      operation: INCOMING_OPERATIONS.VALIDATE_LEND_BOOK,
+      lendingId,
+      userId,
+      bookId,
+    });
+
+    await handleMessages(mockMessage);
+    sinon.assert.calledOnce(stubSendMessage);
+    sinon.assert.calledWith(stubSendMessage, {
+      operation: OUTGOING_OPERATIONS.VALIDATE_LEND_BOOK,
+      bookId,
+      lendingId,
+      userId,
+      status: LEND_BOOK_VALIDATION_STATUS.BOOK_VALIDATED,
+    });
+  });
+
+  it('Returns a failed book validation for a non existing book', async () => {
+    const lendingId = '1';
+    const userId = 'user12';
+    const bookId = '9999';
+    const mockMessage = newMockMessage({
+      operation: INCOMING_OPERATIONS.VALIDATE_LEND_BOOK,
+      lendingId,
+      userId,
+      bookId,
+    });
+
+    await handleMessages(mockMessage);
+    sinon.assert.calledOnce(stubSendMessage);
+    sinon.assert.calledWith(stubSendMessage, {
+      operation: OUTGOING_OPERATIONS.VALIDATE_LEND_BOOK,
+      bookId,
+      lendingId,
+      userId,
+      status: LEND_BOOK_VALIDATION_STATUS.BOOK_NOT_VALIDATED,
+    });
+  });
+
+  it('Returns a failed book validation for a lent existing book', async () => {
+    const lendingId = '1';
+    const userId = 'user12';
+    const bookId = '102';
+    const mockMessage = newMockMessage({
+      operation: INCOMING_OPERATIONS.VALIDATE_LEND_BOOK,
+      lendingId,
+      userId,
+      bookId,
+    });
+
+    await handleMessages(mockMessage);
+    sinon.assert.calledOnce(stubSendMessage);
+    sinon.assert.calledWith(stubSendMessage, {
+      operation: OUTGOING_OPERATIONS.VALIDATE_LEND_BOOK,
+      bookId,
+      lendingId,
+      userId,
+      status: LEND_BOOK_VALIDATION_STATUS.BOOK_NOT_VALIDATED,
+    });
+  });
+
+  it('Handles a book lending confirmation', async () => {
+    const lendingId = '1';
+    const userId = 'user12';
+    const bookId = '103';
+    const mockMessage = newMockMessage({
+      operation: INCOMING_OPERATIONS.CONFIRM_LEND_BOOK,
+      lendingId,
+      userId,
+      bookId,
+    });
+
+    await handleMessages(mockMessage);
+
+    const row = await database.one(
+      `SELECT "lending_id" AS "lendingId" FROM "${schemaName}"."book" WHERE id=$1`,
+      [bookId],
+    );
+    assert.strictEqual(row.lendingId, lendingId);
+  });
+
+  it('Handles a book lending cancellation', async () => {
+    const lendingId = '1';
+    const userId = 'user12';
+    const bookId = '104';
+    const mockMessage = newMockMessage({
+      operation: INCOMING_OPERATIONS.CANCEL_LEND_BOOK,
+      lendingId,
+      userId,
+      bookId,
+    });
+
+    await handleMessages(mockMessage);
+
+    const row = await database.one(
+      `SELECT "lending_id" AS "lendingId" FROM "${schemaName}"."book" WHERE id=$1`,
+      [bookId],
+    );
+    assert.isNull(row.lendingId);
+  });
+});

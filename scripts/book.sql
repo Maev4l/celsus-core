@@ -93,3 +93,9 @@ INSERT INTO "book"("id", "user_id", "library_id", "title", "description", "isbn1
 
 -- Book lending use case where it cannot be deleted
 INSERT INTO "book"("id", "user_id", "library_id", "title", "lending_id") VALUES ('100', 'user11', '100', 'Book100', 'lend1');
+
+-- Book for testing lending use case
+INSERT INTO "book"("id", "user_id", "library_id", "title") VALUES ('101', 'user12', '101', 'Book101');
+INSERT INTO "book"("id", "user_id", "library_id", "title", "lending_id") VALUES ('102', 'user12', '101', 'Book102','PENDING');
+INSERT INTO "book"("id", "user_id", "library_id", "title", "lending_id") VALUES ('103', 'user12', '101', 'Book103','PENDING');
+INSERT INTO "book"("id", "user_id", "library_id", "title", "lending_id") VALUES ('104', 'user12', '101', 'Book104','PENDING');

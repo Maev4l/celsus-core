@@ -269,7 +269,7 @@ export const modifyBook = async (userId, book) => {
       "authors"=$9, "tags"=$10, "hash"=$11, "language"=$12, "book_set"=$13, "book_set_order"=$14 WHERE "id"=$1 AND "user_id"=$2;`,
     );
 
-    const rowCount = transaction.result(
+    const rowCount = await transaction.result(
       query2,
       [
         id,
@@ -302,7 +302,7 @@ export const transitionBookToLendingPending = async (userId, bookId) => {
     [userId, bookId],
   );
 
-  const row = database.oneOrNone(query);
+  const row = await database.oneOrNone(query);
   return row;
 };
 
@@ -322,5 +322,5 @@ export const transitionBookToLendingConfirmed = async (userId, bookId, lendingId
     [lendingId, userId, bookId],
   );
 
-  database.none(query);
+  await database.none(query);
 };

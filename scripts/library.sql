@@ -32,3 +32,6 @@ INSERT INTO "library" ("id", "user_id", "name", "description")	VALUES ('4ba98133
 
 -- Library for testing lending use case where this library (nor its books) cannot be deleted
 INSERT INTO "library" ("id", "user_id", "name", "description")	VALUES ('100', 'user11', 'My Library Name', 'My Library description');
+
+-- Library for testing lending use case
+INSERT INTO "library" ("id", "user_id", "name", "description")	VALUES ('101', 'user12', 'My Library Name', 'My Library description');
