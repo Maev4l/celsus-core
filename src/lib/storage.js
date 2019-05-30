@@ -1,5 +1,7 @@
 import pgpromise, { ParameterizedQuery } from 'pg-promise';
 
+import { LENDING_STATUS } from './utils';
+
 // Initialize pg-promise
 const pgp = pgpromise();
 
@@ -84,7 +86,8 @@ export const modifyLibrary = async (userId, library) => {
 export const removeLibrary = async (userId, libraryId) => {
   const affectedRowCount = await database.tx(async transaction => {
     const query1 = new ParameterizedQuery(
-      `DELETE FROM "${schemaName}"."library" WHERE "id"=$1 AND "user_id"=$2;`,
+      `DELETE FROM "${schemaName}"."library" L WHERE "id"=$1 AND "user_id"=$2 AND
+      EXISTS (SELECT 1 FROM "${schemaName}"."book" B WHERE L."id"=B."library_id" AND B."lending_id" IS NULL);`,
     );
 
     const rowCount = await transaction.result(query1, [libraryId, userId], r => r.rowCount);
@@ -121,7 +124,7 @@ export const listBooks = async (userId, offset, pageSize, searchQuery) => {
     const query1 = new ParameterizedQuery(
       `SELECT B."id", B."library_id" AS "libraryId", L."name" AS "libraryName", B."title", B."description", B."isbn10", B."isbn13", B."thumbnail",
       array_to_json(B."authors") AS "authors", array_to_json(B."tags") AS tags, B."language",
-      B."book_set" AS "bookSet", B."book_set_order" AS "bookSetOrder"
+      B."book_set" AS "bookSet", B."book_set_order" AS "bookSetOrder", B."lending_id" AS "lendingId"
       FROM "${schemaName}"."book" B
       JOIN "${schemaName}"."library" L on B."library_id"=L."id"
       JOIN "${schemaName}"."books_search" S on S."id"=B."id"
@@ -151,7 +154,7 @@ export const listBooks = async (userId, offset, pageSize, searchQuery) => {
   const query1 = new ParameterizedQuery(
     `SELECT B."id", B."library_id" AS "libraryId", L."name" AS "libraryName", B."title", B."description", B."isbn10", B."isbn13", B."thumbnail",
         array_to_json(B."authors") AS "authors", array_to_json(B."tags") AS tags, B."language",
-        B."book_set" AS "bookSet", B."book_set_order" AS "bookSetOrder"
+        B."book_set" AS "bookSet", B."book_set_order" AS "bookSetOrder", B."lending_id" AS "lendingId"
         FROM "${schemaName}"."book" B
         JOIN "${schemaName}"."library" L on B."library_id"=L."id"
         WHERE B."user_id"=$1
@@ -173,7 +176,7 @@ export const listBooks = async (userId, offset, pageSize, searchQuery) => {
 
 export const removeBook = async (userId, bookId) => {
   const query = new ParameterizedQuery(
-    `DELETE FROM "${schemaName}"."book" WHERE "id"=$1 AND "user_id"=$2;`,
+    `DELETE FROM "${schemaName}"."book" WHERE "id"=$1 AND "user_id"=$2 AND "lending_id" IS NULL;`,
   );
   const rowCount = await database.result(query, [bookId, userId], r => r.rowCount);
   return rowCount;
@@ -289,4 +292,35 @@ export const modifyBook = async (userId, book) => {
 
     return rowCount;
   });
+};
+
+export const transitionBookToLendingPending = async (userId, bookId) => {
+  const query = new ParameterizedQuery(
+    `UPDATE "${schemaName}"."book" SET "lending_id" = '${LENDING_STATUS.PENDING}' 
+    WHERE user_id=$1 AND id=$2 AND lending_id IS NULL
+    RETURNING id`,
+    [userId, bookId],
+  );
+
+  const row = database.oneOrNone(query);
+  return row;
+};
+
+export const transitionBookToNotLent = async (userId, bookId) => {
+  const query = new ParameterizedQuery(
+    `UPDATE "${schemaName}"."book" SET "lending_id" = NULL 
+    WHERE user_id=$1 AND id=$2`,
+    [userId, bookId],
+  );
+  await database.none(query);
+};
+
+export const transitionBookToLendingConfirmed = async (userId, bookId, lendingId) => {
+  const query = new ParameterizedQuery(
+    `UPDATE "${schemaName}"."book" SET "lending_id" = $1 
+    WHERE user_id=$2 AND id=$3`,
+    [lendingId, userId, bookId],
+  );
+
+  database.none(query);
 };

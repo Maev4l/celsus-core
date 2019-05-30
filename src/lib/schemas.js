@@ -13,10 +13,12 @@ export const librarySchema = Joi.object().keys({
 });
 
 export const bookSchema = Joi.object().keys({
-  id: Joi.string().guid({ version: ['uuidv4'] }),
-  libraryId: Joi.string()
-    .guid({ version: ['uuidv4'] })
-    .required(),
+  id: process.env.development ? Joi.string() : Joi.string().guid({ version: ['uuidv4'] }),
+  libraryId: process.env.development
+    ? Joi.string()
+    : Joi.string()
+        .guid({ version: ['uuidv4'] })
+        .required(),
   title: Joi.string()
     .min(1)
     .max(100)
@@ -65,4 +67,5 @@ export const bookSchema = Joi.object().keys({
       .positive()
       .required(),
   }),
+  lendingId: process.env.development ? Joi.string() : Joi.string().guid({ version: ['uuidv4'] }),
 });

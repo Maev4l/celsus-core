@@ -63,4 +63,16 @@ describe('Books Tests (DELETE)', async () => {
     const rows = await database.any(`SELECT "id" FROM "${schemaName}"."book" WHERE "id"=$1;`, [id]);
     assert.strictEqual(rows.length, 1);
   });
+
+  it('Fails when deleting a lent book', async () => {
+    const id = '100';
+    const event = newMockEvent('user11', '', { id });
+
+    const response = await deleteBook(event);
+    const { statusCode } = response;
+    assert.strictEqual(statusCode, 404);
+
+    const rows = await database.any(`SELECT "id" FROM "${schemaName}"."book" WHERE "id"=$1;`, [id]);
+    assert.strictEqual(rows.length, 1);
+  });
 });

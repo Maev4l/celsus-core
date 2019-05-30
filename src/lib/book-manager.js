@@ -4,8 +4,17 @@ import Joi from 'joi';
 import { bookSchema as schema } from './schemas';
 import CelsusException from './exception';
 import { hashBook, LEND_BOOK_VALIDATION_STATUS } from './utils';
-import { fromPGLanguage, listBooks, removeBook, saveBook, modifyBook } from './storage';
-import { replyBookValidation } from './messaging';
+import {
+  fromPGLanguage,
+  listBooks,
+  removeBook,
+  saveBook,
+  modifyBook,
+  transitionBookToLendingPending,
+  transitionBookToNotLent,
+  transitionBookToLendingConfirmed,
+} from './storage';
+import messaging from './messaging';
 
 export const BOOKS_PAGE_SIZE = 5;
 
@@ -35,6 +44,7 @@ export const getBooks = async (userId, offset, searchQuery) => {
         language,
         bookSet,
         bookSetOrder,
+        lendingId,
       } = row;
       return {
         id,
@@ -52,6 +62,7 @@ export const getBooks = async (userId, offset, searchQuery) => {
         language: fromPGLanguage(language),
         bookSet,
         bookSetOrder,
+        lendingId,
       };
     }),
   };
@@ -101,9 +112,22 @@ export const updateBook = async (userId, book) => {
   return rowCount === 1;
 };
 
-export const validateBook = async (userId, bookId, lendId, replyAddress) => {
+export const validateBook = async (userId, bookId, lendingId, replyAddress) => {
   // - Ensure the book exists (and belongs to the given user)
   // - Ensure the book is not already lent (or in lending process)
-  const status = LEND_BOOK_VALIDATION_STATUS.BOOK_VALIDATED;
-  await replyBookValidation(userId, lendId, bookId, status, replyAddress);
+  const result = await transitionBookToLendingPending(userId, bookId);
+  const status = result
+    ? LEND_BOOK_VALIDATION_STATUS.BOOK_VALIDATED
+    : LEND_BOOK_VALIDATION_STATUS.BOOK_NOT_VALIDATED;
+  await messaging.replyBookValidation(userId, bookId, lendingId, status, replyAddress);
+};
+
+export const cancelLendBook = async (userId, bookId) => {
+  // - Update lending information accordingly
+  await transitionBookToNotLent(userId, bookId);
+};
+
+export const confirmLendBook = async (userId, bookId, lendingId) => {
+  // - Update lending information accordingly
+  await transitionBookToLendingConfirmed(userId, bookId, lendingId);
 };

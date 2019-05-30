@@ -40,8 +40,14 @@ export const LEND_BOOK_VALIDATION_STATUS = Object.freeze({
   BOOK_NOT_VALIDATED: 'BOOK_NOT_VALIDATED',
 });
 
+export const LENDING_STATUS = Object.freeze({
+  PENDING: 'PENDING',
+});
+
 export const INCOMING_OPERATIONS = Object.freeze({
   VALIDATE_LEND_BOOK: 'VALIDATE_LEND_BOOK',
+  CONFIRM_LEND_BOOK: 'CONFIRM_LEND_BOOK',
+  CANCEL_LEND_BOOK: 'CANCEL_LEND_BOOK',
 });
 
 export const OUTGOING_OPERATIONS = Object.freeze({

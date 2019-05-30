@@ -29,3 +29,6 @@ INSERT INTO "library" ("id", "user_id", "name", "description")	VALUES ('e0d7422f
 INSERT INTO "library" ("id", "user_id", "name", "description")	VALUES ('979ed879-b3c0-40fa-83ff-5f4442052217', 'user9', 'My Library Name', 'My Library description'); -- Container for update book tests with thumbnail
 
 INSERT INTO "library" ("id", "user_id", "name", "description")	VALUES ('4ba98133-ebd1-4fed-b7b2-920745b9c429', 'user10', 'My Library Name', 'My Library description'); -- Container for search books tests
+
+-- Library for testing lending use case where this library (nor its books) cannot be deleted
+INSERT INTO "library" ("id", "user_id", "name", "description")	VALUES ('100', 'user11', 'My Library Name', 'My Library description');

@@ -66,4 +66,12 @@ describe('Libraries Tests (DELETE)', async () => {
     );
     assert.strictEqual(rows.length, 1);
   });
+
+  it('Fails when deleting a library with lent books', async () => {
+    const id = '100';
+    const event = newMockEvent('user11', '', { id });
+    const response = await deleteLibrary(event);
+    const { statusCode } = response;
+    assert.strictEqual(statusCode, 404);
+  });
 });

@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS "book"
     language VARCHAR(36) NOT NULL DEFAULT('french'),
 		book_set VARCHAR(100) DEFAULT(''),
 		book_set_order INTEGER DEFAULT(0),
+		lending_id VARCHAR(36) DEFAULT(NULL),
     CONSTRAINT book_id_key UNIQUE (id)
 )
 WITH (
@@ -89,3 +90,6 @@ INSERT INTO "book"("id", "user_id", "library_id", "title", "description", "isbn1
   VALUES ('04d1f1ac-90eb-489c-b39d-71acd572b563', 'user10', '4ba98133-ebd1-4fed-b7b2-920745b9c429', 'Le Ventre de Paris', 'Le personnage principal est Florent, le demi-frère de Quenu', 'Book isbn10', 'Book isbn13', '', ARRAY['Emile Zola'], ARRAY['Book tags'], 'Book hash');
 INSERT INTO "book"("id", "user_id", "library_id", "title", "description", "isbn10", "isbn13", "thumbnail", "authors", "tags", "hash", "book_set", "book_set_order")
   VALUES ('8fe9470f-4daf-4559-b903-af9a9937ed72', 'user10', '4ba98133-ebd1-4fed-b7b2-920745b9c429', 'La gloire de ma mère', 'Je suis né dans la ville d''Aubagne, sous le Garlaban couronné de chèvres, au temps des derniers chevriers ', 'Book isbn10', 'Book isbn13', '', ARRAY['Marcel Pagnol'], ARRAY['Book tags'], 'Book hash','Set1',1);
+
+-- Book lending use case where it cannot be deleted
+INSERT INTO "book"("id", "user_id", "library_id", "title", "lending_id") VALUES ('100', 'user11', '100', 'Book100', 'lend1');
