@@ -4,7 +4,7 @@ import { logger } from './logger';
 import { OUTGOING_OPERATIONS } from './utils';
 
 const messaging = {
-  replyBookValidation: async (userId, bookId, lendingId, status, replyAddress) => {
+  replyBookValidation: async (userId, bookId, lendingId, result, replyAddress) => {
     logger.info(`Reply book validation - lending: ${lendingId}`);
     await sqs.sendMessage(
       {
@@ -12,7 +12,7 @@ const messaging = {
         userId,
         lendingId,
         bookId,
-        status,
+        result,
       },
       replyAddress,
     );

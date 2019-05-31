@@ -116,10 +116,14 @@ export const validateBook = async (userId, bookId, lendingId, replyAddress) => {
   // - Ensure the book exists (and belongs to the given user)
   // - Ensure the book is not already lent (or in lending process)
   const result = await transitionBookToLendingPending(userId, bookId);
-  const status = result
-    ? LEND_BOOK_VALIDATION_STATUS.BOOK_VALIDATED
-    : LEND_BOOK_VALIDATION_STATUS.BOOK_NOT_VALIDATED;
-  await messaging.replyBookValidation(userId, bookId, lendingId, status, replyAddress);
+
+  const validationResult = {
+    status: result
+      ? LEND_BOOK_VALIDATION_STATUS.BOOK_VALIDATED
+      : LEND_BOOK_VALIDATION_STATUS.BOOK_NOT_VALIDATED,
+    title: result ? result.title : null,
+  };
+  await messaging.replyBookValidation(userId, bookId, lendingId, validationResult, replyAddress);
 };
 
 export const cancelLendBook = async (userId, bookId) => {

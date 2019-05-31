@@ -45,7 +45,7 @@ describe('Books Tests (LENDING)', async () => {
       bookId,
       lendingId,
       userId,
-      status: LEND_BOOK_VALIDATION_STATUS.BOOK_VALIDATED,
+      result: { status: LEND_BOOK_VALIDATION_STATUS.BOOK_VALIDATED, title: 'Book101' },
     });
   });
 
@@ -67,7 +67,7 @@ describe('Books Tests (LENDING)', async () => {
       bookId,
       lendingId,
       userId,
-      status: LEND_BOOK_VALIDATION_STATUS.BOOK_NOT_VALIDATED,
+      result: { status: LEND_BOOK_VALIDATION_STATUS.BOOK_NOT_VALIDATED, title: null },
     });
   });
 
@@ -89,7 +89,7 @@ describe('Books Tests (LENDING)', async () => {
       bookId,
       lendingId,
       userId,
-      status: LEND_BOOK_VALIDATION_STATUS.BOOK_NOT_VALIDATED,
+      result: { status: LEND_BOOK_VALIDATION_STATUS.BOOK_NOT_VALIDATED, title: null },
     });
   });
 

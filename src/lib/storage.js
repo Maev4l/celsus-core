@@ -298,7 +298,7 @@ export const transitionBookToLendingPending = async (userId, bookId) => {
   const query = new ParameterizedQuery(
     `UPDATE "${schemaName}"."book" SET "lending_id" = '${LENDING_STATUS.PENDING}' 
     WHERE user_id=$1 AND id=$2 AND lending_id IS NULL
-    RETURNING id`,
+    RETURNING id, title`,
     [userId, bookId],
   );
 
