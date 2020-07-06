@@ -6,7 +6,7 @@
     "test": "nyc mochapack --webpack-config ./build/webpack.test.config.js ./test/*",
     "lint": "npx eslint .",
     "pretty": "prettier --write \"./**/*.js\"",
-    "deploy:dev": "npm run download-infra:dev && npx sls deploy",
+    "deploy:dev": "yarn download-infra:dev && npx sls deploy",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
     "download-infra:dev": "aws s3 cp s3://celsus-tf-state/celsus/dev/infra.json infra.json",
     "build:ci": "BUILD_MODE=CI nyc mochapack --webpack-config ./build/webpack.test.config.js ./test/*"
