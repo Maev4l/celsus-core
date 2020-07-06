@@ -23,7 +23,7 @@
   "dependencies": {
     "@babel/runtime": "7.10.4",
     "aws-sdk": "2.709.0",
-    "@hapi/joi": "17.1.1",
+    "joi": "14.3.1",
     "object-hash": "2.0.3",
     "pg-promise": "10.5.7",
     "uuid": "8.2.0",
