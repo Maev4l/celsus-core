@@ -1,4 +1,4 @@
-import uuidv4 from 'uuid/v4';
+import { v4 as uuidv4 } from 'uuid';
 import Joi from 'joi';
 
 import { bookSchema as schema } from './schemas';
@@ -29,7 +29,7 @@ export const getBooks = async (userId, offset, searchQuery) => {
   return {
     itemsPerPage: BOOKS_PAGE_SIZE,
     total: parseInt(rowCount, 10),
-    books: rows.map(row => {
+    books: rows.map((row) => {
       const {
         id,
         libraryId,

@@ -1,4 +1,4 @@
-import uuidv4 from 'uuid/v4';
+import { v4 as uuidv4 } from 'uuid';
 import Joi from 'joi';
 
 import { librarySchema as schema } from './schemas';
@@ -6,7 +6,7 @@ import CelsusException from './exception';
 
 import { listLibraries, saveLibrary, modifyLibrary, removeLibrary, readLibrary } from './storage';
 
-export const getLibraries = async userId => {
+export const getLibraries = async (userId) => {
   const libraries = await listLibraries(userId);
   return {
     libraries,
