@@ -1,7 +1,10 @@
 import sqs from './sqs';
 
-import { logger } from './logger';
+import loggerFactory from './logger';
+
 import { OUTGOING_OPERATIONS } from './utils';
+
+const logger = loggerFactory.getLogger('messaging');
 
 const messaging = {
   replyBookValidation: async (userId, bookId, lendingId, result, replyAddress) => {

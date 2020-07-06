@@ -1,7 +1,9 @@
 import * as LibraryManager from './lib/library-manager';
 import * as BookManager from './lib/book-manager';
-import { logger } from './lib/logger';
+import loggerFactory from './lib/logger';
 import dispatch from './lib/dispatcher';
+
+const logger = loggerFactory.getLogger('api');
 
 const makeResponse = (statusCode, result) => {
   let body = '';
@@ -20,14 +22,14 @@ const makeResponse = (statusCode, result) => {
   return response;
 };
 
-export const getLibraries = async event => {
+export const getLibraries = async (event) => {
   const { sub } = event.requestContext.authorizer.claims;
 
   const result = await LibraryManager.getLibraries(sub);
   return makeResponse(200, result);
 };
 
-export const postLibrary = async event => {
+export const postLibrary = async (event) => {
   const library = JSON.parse(event.body);
   const { sub } = event.requestContext.authorizer.claims;
   let result = '';
@@ -54,7 +56,7 @@ export const postLibrary = async event => {
   return makeResponse(statusCode, result);
 };
 
-export const deleteLibrary = async event => {
+export const deleteLibrary = async (event) => {
   const { sub } = event.requestContext.authorizer.claims;
 
   const libraryId = event.pathParameters.id;
@@ -64,7 +66,7 @@ export const deleteLibrary = async event => {
   return makeResponse(statusCode);
 };
 
-export const getLibrary = async event => {
+export const getLibrary = async (event) => {
   const { sub } = event.requestContext.authorizer.claims;
 
   const libraryId = event.pathParameters.id;
@@ -80,7 +82,7 @@ export const getLibrary = async event => {
   return makeResponse(statusCode, result);
 };
 
-export const getBooks = async event => {
+export const getBooks = async (event) => {
   const { sub } = event.requestContext.authorizer.claims;
   const { queryStringParameters } = event;
   const offset = queryStringParameters ? queryStringParameters.offset || 0 : 0;
@@ -90,7 +92,7 @@ export const getBooks = async event => {
   return makeResponse(200, result);
 };
 
-export const deleteBook = async event => {
+export const deleteBook = async (event) => {
   const { sub } = event.requestContext.authorizer.claims;
 
   const bookId = event.pathParameters.id;
@@ -100,7 +102,7 @@ export const deleteBook = async event => {
   return makeResponse(statusCode);
 };
 
-export const postBook = async event => {
+export const postBook = async (event) => {
   const book = JSON.parse(event.body);
   const { sub } = event.requestContext.authorizer.claims;
   let result = '';
@@ -137,7 +139,7 @@ export const postBook = async event => {
  * Handle messages from SQS
  * @param {*} event
  */
-export const handleMessages = async event => {
+export const handleMessages = async (event) => {
   const { Records } = event;
 
   // FIXME: At the current stage, by design, only process 1 event at a time
