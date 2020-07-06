@@ -42,14 +42,14 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
     assert.strictEqual(rowsBooks.length, 1);
     const expectedBook = rowsBooks[0];
 
-    assert.strictEqual(expectedBook.library_id, libraryId);
-    assert.strictEqual(expectedBook.title, newBook.title);
-    assert.strictEqual(expectedBook.description, newBook.description);
-    assert.deepEqual(expectedBook.authors, newBook.authors);
-    assert.deepEqual(expectedBook.tags, newBook.tags);
-    assert.strictEqual(expectedBook.hash, hashBook(newBook));
-    assert.strictEqual(fromPGLanguage(expectedBook.language), newBook.language);
-    assert.strictEqual(expectedBook.book_set, newBook.bookSet);
+    assert.strictEqual(libraryId, expectedBook.library_id);
+    assert.strictEqual(newBook.title, expectedBook.title);
+    assert.strictEqual(newBook.description, expectedBook.description);
+    assert.deepEqual(newBook.authors, expectedBook.authors);
+    assert.deepEqual(newBook.tags, expectedBook.tags);
+    assert.strictEqual(hashBook(newBook), expectedBook.hash);
+    assert.strictEqual(newBook.language, fromPGLanguage(expectedBook.language));
+    assert.strictEqual(newBook.bookSet, expectedBook.book_set);
 
     const rowsSearch = await database.any(
       `SELECT * FROM "${schemaName}"."books_search" WHERE "id"=$1;`,

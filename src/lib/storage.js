@@ -44,15 +44,15 @@ export const toPGLanguage = clientLanguage => {
 const schemaName = getDbSchemaName();
 
 export const listLibraries = async userId => {
-  const query = new ParameterizedQuery(
-    `SELECT L."id", L."name", L."description", COUNT(B."library_id") AS "booksCount"
+  const query = new ParameterizedQuery({
+    text: `SELECT L."id", L."name", L."description", COUNT(B."library_id") AS "booksCount"
   FROM "${schemaName}"."library" L 
   LEFT OUTER JOIN "${schemaName}"."book" B ON B."library_id"=L."id"
   WHERE L."user_id"=$1
   GROUP BY L."id", L."name",L."description"
   ORDER BY L."name";`,
-    [userId],
-  );
+    values: [userId],
+  });
 
   const rows = await database.any(query);
   return rows;
@@ -60,42 +60,41 @@ export const listLibraries = async userId => {
 
 export const saveLibrary = async (userId, library) => {
   const { id, name, description } = library;
-  const query = new ParameterizedQuery(
-    `INSERT INTO "${schemaName}"."library" ("id", "user_id", "name", "description") VALUES ($1, $2, $3, $4);`,
-    [id, userId, name.trim(), description.trim()],
-  );
+  const query = new ParameterizedQuery({
+    text: `INSERT INTO "${schemaName}"."library" ("id", "user_id", "name", "description") VALUES ($1, $2, $3, $4);`,
+    values: [id, userId, name.trim(), description.trim()],
+  });
 
   await database.none(query);
 };
 
 export const modifyLibrary = async (userId, library) => {
   const { name, description, id } = library;
-  const query = new ParameterizedQuery(
-    `UPDATE "${schemaName}"."library" SET "name"=$1, "description"=$2 WHERE "id"=$3 AND "user_id"=$4;`,
-  );
+  const query = new ParameterizedQuery({
+    text: `UPDATE "${schemaName}"."library" SET "name"=$1, "description"=$2 WHERE "id"=$3 AND "user_id"=$4;`,
+    values: [name.trim(), description.trim(), id, userId],
+  });
 
-  const affectedRowCount = await database.result(
-    query,
-    [name.trim(), description.trim(), id, userId],
-    r => r.rowCount,
-  );
+  const affectedRowCount = await database.result(query, null, r => r.rowCount);
 
   return affectedRowCount;
 };
 
 export const removeLibrary = async (userId, libraryId) => {
   const affectedRowCount = await database.tx(async transaction => {
-    const query1 = new ParameterizedQuery(
-      `DELETE FROM "${schemaName}"."library" L WHERE "id"=$1 AND "user_id"=$2 AND
+    const query1 = new ParameterizedQuery({
+      text: `DELETE FROM "${schemaName}"."library" L WHERE "id"=$1 AND "user_id"=$2 AND
       EXISTS (SELECT 1 FROM "${schemaName}"."book" B WHERE L."id"=B."library_id" AND B."lending_id" IS NULL);`,
-    );
+      values: [libraryId, userId],
+    });
 
-    const rowCount = await transaction.result(query1, [libraryId, userId], r => r.rowCount);
+    const rowCount = await transaction.result(query1, null, r => r.rowCount);
     if (rowCount) {
-      const query2 = new ParameterizedQuery(
-        `DELETE FROM "${schemaName}"."book" WHERE "library_id"=$1;`,
-      );
-      await transaction.none(query2, [libraryId]);
+      const query2 = new ParameterizedQuery({
+        text: `DELETE FROM "${schemaName}"."book" WHERE "library_id"=$1;`,
+        values: [libraryId],
+      });
+      await transaction.none(query2);
     }
     return rowCount;
   });
@@ -104,15 +103,15 @@ export const removeLibrary = async (userId, libraryId) => {
 };
 
 export const readLibrary = async (userId, libraryId) => {
-  const query = new ParameterizedQuery(
-    `SELECT L."id", L."name", L."description", COUNT(B."library_id") AS "booksCount"
+  const query = new ParameterizedQuery({
+    text: `SELECT L."id", L."name", L."description", COUNT(B."library_id") AS "booksCount"
                                       FROM "${schemaName}"."library" L 
                                       LEFT OUTER JOIN "${schemaName}"."book" B ON B."library_id"=L."id"
                                       WHERE L."id"=$1 AND L."user_id"=$2 
                                       GROUP BY L."id", L."name",L."description"
                                       ORDER BY L."name";`,
-    [libraryId, userId],
-  );
+    values: [libraryId, userId],
+  });
 
   const row = await database.oneOrNone(query);
   return row;
@@ -121,8 +120,8 @@ export const readLibrary = async (userId, libraryId) => {
 export const listBooks = async (userId, offset, pageSize, searchQuery) => {
   if (searchQuery) {
     const criterias = searchQuery.split(' ').join('&');
-    const query1 = new ParameterizedQuery(
-      `SELECT B."id", B."library_id" AS "libraryId", L."name" AS "libraryName", B."title", B."description", B."isbn10", B."isbn13", B."thumbnail",
+    const query1 = new ParameterizedQuery({
+      text: `SELECT B."id", B."library_id" AS "libraryId", L."name" AS "libraryName", B."title", B."description", B."isbn10", B."isbn13", B."thumbnail",
       array_to_json(B."authors") AS "authors", array_to_json(B."tags") AS tags, B."language",
       B."book_set" AS "bookSet", B."book_set_order" AS "bookSetOrder", B."lending_id" AS "lendingId"
       FROM "${schemaName}"."book" B
@@ -132,17 +131,17 @@ export const listBooks = async (userId, offset, pageSize, searchQuery) => {
       AND S."document" @@ to_tsquery('simple',unaccent($2))
       ORDER BY B."title", B."id"
       LIMIT ${pageSize} OFFSET ${pageSize * offset};`,
-      [userId, criterias],
-    );
+      values: [userId, criterias],
+    });
 
-    const query2 = new ParameterizedQuery(
-      `SELECT COUNT(*) AS total
+    const query2 = new ParameterizedQuery({
+      text: `SELECT COUNT(*) AS total
       FROM "${schemaName}"."book" B 
       JOIN "${schemaName}"."books_search" S on S."id"=B."id"
       WHERE B."user_id"=$1
       AND S."document" @@ to_tsquery('simple',unaccent($2));`,
-      [userId, criterias],
-    );
+      values: [userId, criterias],
+    });
 
     return database.task(async task => {
       const rows = await task.any(query1);
@@ -151,8 +150,8 @@ export const listBooks = async (userId, offset, pageSize, searchQuery) => {
     });
   }
 
-  const query1 = new ParameterizedQuery(
-    `SELECT B."id", B."library_id" AS "libraryId", L."name" AS "libraryName", B."title", B."description", B."isbn10", B."isbn13", B."thumbnail",
+  const query1 = new ParameterizedQuery({
+    text: `SELECT B."id", B."library_id" AS "libraryId", L."name" AS "libraryName", B."title", B."description", B."isbn10", B."isbn13", B."thumbnail",
         array_to_json(B."authors") AS "authors", array_to_json(B."tags") AS tags, B."language",
         B."book_set" AS "bookSet", B."book_set_order" AS "bookSetOrder", B."lending_id" AS "lendingId"
         FROM "${schemaName}"."book" B
@@ -160,13 +159,13 @@ export const listBooks = async (userId, offset, pageSize, searchQuery) => {
         WHERE B."user_id"=$1
         ORDER BY B."title", B."id"
         LIMIT ${pageSize} OFFSET ${pageSize * offset};`,
-    [userId],
-  );
+    values: [userId],
+  });
 
-  const query2 = new ParameterizedQuery(
-    `SELECT COUNT(*) AS total FROM "${schemaName}"."book" WHERE "user_id"=$1`,
-    [userId],
-  );
+  const query2 = new ParameterizedQuery({
+    text: `SELECT COUNT(*) AS total FROM "${schemaName}"."book" WHERE "user_id"=$1`,
+    values: [userId],
+  });
   return database.task(async task => {
     const rows = await task.any(query1);
     const { total: rowCount } = await task.one(query2);
@@ -175,10 +174,11 @@ export const listBooks = async (userId, offset, pageSize, searchQuery) => {
 };
 
 export const removeBook = async (userId, bookId) => {
-  const query = new ParameterizedQuery(
-    `DELETE FROM "${schemaName}"."book" WHERE "id"=$1 AND "user_id"=$2 AND "lending_id" IS NULL;`,
-  );
-  const rowCount = await database.result(query, [bookId, userId], r => r.rowCount);
+  const query = new ParameterizedQuery({
+    text: `DELETE FROM "${schemaName}"."book" WHERE "id"=$1 AND "user_id"=$2 AND "lending_id" IS NULL;`,
+    values: [bookId, userId],
+  });
+  const rowCount = await database.result(query, null, r => r.rowCount);
   return rowCount;
 };
 
@@ -200,21 +200,18 @@ export const saveBook = async (userId, book) => {
   } = book;
 
   return database.tx(async transaction => {
-    const query1 = new ParameterizedQuery(
-      `SELECT COUNT(*) as count from "${schemaName}"."library" WHERE "id"=$1 AND "user_id"=$2`,
-      [libraryId, userId],
-    );
+    const query1 = new ParameterizedQuery({
+      text: `SELECT COUNT(*) as count from "${schemaName}"."library" WHERE "id"=$1 AND "user_id"=$2`,
+      values: [libraryId, userId],
+    });
     const { count } = await transaction.one(query1);
     if (count === 0) {
       return count;
     }
-    const query2 = new ParameterizedQuery(
-      `INSERT INTO "${schemaName}"."book" ("id", "user_id", "library_id", "title", "description", "isbn10", "isbn13", "thumbnail", "authors", "tags", "language", "hash", "book_set", "book_set_order" )
+    const query2 = new ParameterizedQuery({
+      text: `INSERT INTO "${schemaName}"."book" ("id", "user_id", "library_id", "title", "description", "isbn10", "isbn13", "thumbnail", "authors", "tags", "language", "hash", "book_set", "book_set_order" )
     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14);`,
-    );
-    const rowCount = await transaction.result(
-      query2,
-      [
+      values: [
         id,
         userId,
         libraryId,
@@ -230,8 +227,8 @@ export const saveBook = async (userId, book) => {
         bookSet.trim(),
         bookSetOrder,
       ],
-      r => r.rowCount,
-    );
+    });
+    const rowCount = await transaction.result(query2, null, r => r.rowCount);
 
     return rowCount;
   });
@@ -255,23 +252,19 @@ export const modifyBook = async (userId, book) => {
   } = book;
 
   return database.tx(async transaction => {
-    const query1 = new ParameterizedQuery(
-      `SELECT COUNT(*) as count from "${schemaName}"."library" WHERE "id"=$1 AND "user_id"=$2`,
-      [libraryId, userId],
-    );
+    const query1 = new ParameterizedQuery({
+      text: `SELECT COUNT(*) as count from "${schemaName}"."library" WHERE "id"=$1 AND "user_id"=$2`,
+      values: [libraryId, userId],
+    });
     const { count } = await transaction.one(query1);
     if (count === 0) {
       return count;
     }
 
-    const query2 = new ParameterizedQuery(
-      `UPDATE "${schemaName}"."book" SET "library_id"=$3, "title"=$4, "description"=$5, "isbn10"=$6, "isbn13"=$7, "thumbnail"=$8,
+    const query2 = new ParameterizedQuery({
+      text: `UPDATE "${schemaName}"."book" SET "library_id"=$3, "title"=$4, "description"=$5, "isbn10"=$6, "isbn13"=$7, "thumbnail"=$8,
       "authors"=$9, "tags"=$10, "hash"=$11, "language"=$12, "book_set"=$13, "book_set_order"=$14 WHERE "id"=$1 AND "user_id"=$2;`,
-    );
-
-    const rowCount = await transaction.result(
-      query2,
-      [
+      values: [
         id,
         userId,
         libraryId,
@@ -287,40 +280,41 @@ export const modifyBook = async (userId, book) => {
         bookSet.trim(),
         bookSetOrder,
       ],
-      r => r.rowCount,
-    );
+    });
+
+    const rowCount = await transaction.result(query2, null, r => r.rowCount);
 
     return rowCount;
   });
 };
 
 export const transitionBookToLendingPending = async (userId, bookId) => {
-  const query = new ParameterizedQuery(
-    `UPDATE "${schemaName}"."book" SET "lending_id" = '${LENDING_STATUS.PENDING}' 
+  const query = new ParameterizedQuery({
+    text: `UPDATE "${schemaName}"."book" SET "lending_id" = '${LENDING_STATUS.PENDING}' 
     WHERE user_id=$1 AND id=$2 AND lending_id IS NULL
     RETURNING id, title`,
-    [userId, bookId],
-  );
+    values: [userId, bookId],
+  });
 
   const row = await database.oneOrNone(query);
   return row;
 };
 
 export const transitionBookToNotLent = async (userId, bookId) => {
-  const query = new ParameterizedQuery(
-    `UPDATE "${schemaName}"."book" SET "lending_id" = NULL 
+  const query = new ParameterizedQuery({
+    text: `UPDATE "${schemaName}"."book" SET "lending_id" = NULL 
     WHERE user_id=$1 AND id=$2`,
-    [userId, bookId],
-  );
+    values: [userId, bookId],
+  });
   await database.none(query);
 };
 
 export const transitionBookToLendingConfirmed = async (userId, bookId, lendingId) => {
-  const query = new ParameterizedQuery(
-    `UPDATE "${schemaName}"."book" SET "lending_id" = $1 
+  const query = new ParameterizedQuery({
+    text: `UPDATE "${schemaName}"."book" SET "lending_id" = $1 
     WHERE user_id=$2 AND id=$3`,
-    [lendingId, userId, bookId],
-  );
+    values: [lendingId, userId, bookId],
+  });
 
   await database.none(query);
 };
