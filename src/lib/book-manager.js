@@ -10,6 +10,7 @@ import {
   removeBook,
   saveBook,
   modifyBook,
+  readBook,
   transitionBookToLendingPending,
   transitionBookToNotLent,
   transitionBookToLendingConfirmed,
@@ -17,6 +18,11 @@ import {
 import messaging from './messaging';
 
 export const BOOKS_PAGE_SIZE = 5;
+
+export const getBook = async (userId, bookId) => {
+  const row = await readBook(userId, bookId);
+  return row;
+};
 
 /**
  * Retrieve list of books belonging to a given user

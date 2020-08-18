@@ -70,7 +70,7 @@ describe('Books Tests (DELETE)', async () => {
 
     const response = await deleteBook(event);
     const { statusCode } = response;
-    assert.strictEqual(statusCode, 404);
+    assert.strictEqual(statusCode, 400);
 
     const rows = await database.any(`SELECT "id" FROM "${schemaName}"."book" WHERE "id"=$1;`, [id]);
     assert.strictEqual(rows.length, 1);

@@ -96,10 +96,15 @@ export const deleteBook = async (event) => {
   const { sub } = event.requestContext.authorizer.claims;
 
   const bookId = event.pathParameters.id;
-  const result = await BookManager.deleteBook(sub, bookId);
-  const statusCode = result ? 204 : 404;
+  const book = await BookManager.getBook(sub, bookId);
+  if (book) {
+    const result = await BookManager.deleteBook(sub, bookId);
+    const statusCode = result ? 204 : 400;
 
-  return makeResponse(statusCode);
+    return makeResponse(statusCode);
+  }
+
+  return makeResponse(404);
 };
 
 export const postBook = async (event) => {

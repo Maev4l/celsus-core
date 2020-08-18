@@ -10,7 +10,7 @@ const pgp = pgpromise();
  *  As we are never have more than Number.MAX_VALUE of books for a given library,
  *  we assume we can convert to integer safely
  */
-pgp.pg.types.setTypeParser(20 /* int8 */, val => parseInt(val, 10));
+pgp.pg.types.setTypeParser(20 /* int8 */, (val) => parseInt(val, 10));
 
 const database = pgp({ capSQL: true });
 
@@ -18,7 +18,7 @@ export const getDatabase = () => database;
 export const getDbSchemaName = () => process.env.PGSCHEMA || 'celsus_core';
 
 /** Convert Postgress Full Text Search language to web client language */
-export const fromPGLanguage = pgLanguage => {
+export const fromPGLanguage = (pgLanguage) => {
   switch (pgLanguage) {
     case 'french':
       return 'fr';
@@ -30,7 +30,7 @@ export const fromPGLanguage = pgLanguage => {
 };
 
 /** Convert web client language to Postgress Full Text Search language */
-export const toPGLanguage = clientLanguage => {
+export const toPGLanguage = (clientLanguage) => {
   switch (clientLanguage) {
     case 'fr':
       return 'french';
@@ -43,7 +43,7 @@ export const toPGLanguage = clientLanguage => {
 
 const schemaName = getDbSchemaName();
 
-export const listLibraries = async userId => {
+export const listLibraries = async (userId) => {
   const query = new ParameterizedQuery({
     text: `SELECT L."id", L."name", L."description", COUNT(B."library_id") AS "booksCount"
   FROM "${schemaName}"."library" L 
@@ -75,20 +75,20 @@ export const modifyLibrary = async (userId, library) => {
     values: [name.trim(), description.trim(), id, userId],
   });
 
-  const affectedRowCount = await database.result(query, null, r => r.rowCount);
+  const affectedRowCount = await database.result(query, null, (r) => r.rowCount);
 
   return affectedRowCount;
 };
 
 export const removeLibrary = async (userId, libraryId) => {
-  const affectedRowCount = await database.tx(async transaction => {
+  const affectedRowCount = await database.tx(async (transaction) => {
     const query1 = new ParameterizedQuery({
       text: `DELETE FROM "${schemaName}"."library" L WHERE "id"=$1 AND "user_id"=$2 AND
       EXISTS (SELECT 1 FROM "${schemaName}"."book" B WHERE L."id"=B."library_id" AND B."lending_id" IS NULL);`,
       values: [libraryId, userId],
     });
 
-    const rowCount = await transaction.result(query1, null, r => r.rowCount);
+    const rowCount = await transaction.result(query1, null, (r) => r.rowCount);
     if (rowCount) {
       const query2 = new ParameterizedQuery({
         text: `DELETE FROM "${schemaName}"."book" WHERE "library_id"=$1;`,
@@ -113,6 +113,18 @@ export const readLibrary = async (userId, libraryId) => {
     values: [libraryId, userId],
   });
 
+  const row = await database.oneOrNone(query);
+  return row;
+};
+
+export const readBook = async (userId, bookId) => {
+  const query = new ParameterizedQuery({
+    text: `SELECT B."id", B."library_id" AS "libraryId", B."title", B."description", B."isbn10", B."isbn13", B."thumbnail",
+    array_to_json(B."authors") AS "authors", array_to_json(B."tags") AS tags, B."language",
+    B."book_set" AS "bookSet", B."book_set_order" AS "bookSetOrder", B."lending_id" AS "lendingId"
+    FROM "${schemaName}"."book" B WHERE B."user_id"=$2 AND B."id"=$1;`,
+    values: [bookId, userId],
+  });
   const row = await database.oneOrNone(query);
   return row;
 };
@@ -143,7 +155,7 @@ export const listBooks = async (userId, offset, pageSize, searchQuery) => {
       values: [userId, criterias],
     });
 
-    return database.task(async task => {
+    return database.task(async (task) => {
       const rows = await task.any(query1);
       const { total: rowCount } = await task.one(query2);
       return { rows, rowCount };
@@ -166,7 +178,7 @@ export const listBooks = async (userId, offset, pageSize, searchQuery) => {
     text: `SELECT COUNT(*) AS total FROM "${schemaName}"."book" WHERE "user_id"=$1`,
     values: [userId],
   });
-  return database.task(async task => {
+  return database.task(async (task) => {
     const rows = await task.any(query1);
     const { total: rowCount } = await task.one(query2);
     return { rows, rowCount };
@@ -178,7 +190,7 @@ export const removeBook = async (userId, bookId) => {
     text: `DELETE FROM "${schemaName}"."book" WHERE "id"=$1 AND "user_id"=$2 AND "lending_id" IS NULL;`,
     values: [bookId, userId],
   });
-  const rowCount = await database.result(query, null, r => r.rowCount);
+  const rowCount = await database.result(query, null, (r) => r.rowCount);
   return rowCount;
 };
 
@@ -199,7 +211,7 @@ export const saveBook = async (userId, book) => {
     bookSetOrder,
   } = book;
 
-  return database.tx(async transaction => {
+  return database.tx(async (transaction) => {
     const query1 = new ParameterizedQuery({
       text: `SELECT COUNT(*) as count from "${schemaName}"."library" WHERE "id"=$1 AND "user_id"=$2`,
       values: [libraryId, userId],
@@ -220,15 +232,15 @@ export const saveBook = async (userId, book) => {
         isbn10.trim(),
         isbn13.trim(),
         thumbnail.trim(),
-        authors.map(author => author.trim()),
-        tags.map(tag => tag.trim()),
+        authors.map((author) => author.trim()),
+        tags.map((tag) => tag.trim()),
         toPGLanguage(language.trim()),
         hash,
         bookSet.trim(),
         bookSetOrder,
       ],
     });
-    const rowCount = await transaction.result(query2, null, r => r.rowCount);
+    const rowCount = await transaction.result(query2, null, (r) => r.rowCount);
 
     return rowCount;
   });
@@ -251,7 +263,7 @@ export const modifyBook = async (userId, book) => {
     bookSetOrder,
   } = book;
 
-  return database.tx(async transaction => {
+  return database.tx(async (transaction) => {
     const query1 = new ParameterizedQuery({
       text: `SELECT COUNT(*) as count from "${schemaName}"."library" WHERE "id"=$1 AND "user_id"=$2`,
       values: [libraryId, userId],
@@ -273,8 +285,8 @@ export const modifyBook = async (userId, book) => {
         isbn10.trim(),
         isbn13.trim(),
         thumbnail.trim(),
-        authors.map(author => author.trim()),
-        tags.map(tag => tag.trim()),
+        authors.map((author) => author.trim()),
+        tags.map((tag) => tag.trim()),
         hash,
         toPGLanguage(language.trim()),
         bookSet.trim(),
@@ -282,7 +294,7 @@ export const modifyBook = async (userId, book) => {
       ],
     });
 
-    const rowCount = await transaction.result(query2, null, r => r.rowCount);
+    const rowCount = await transaction.result(query2, null, (r) => r.rowCount);
 
     return rowCount;
   });
