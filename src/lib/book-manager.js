@@ -140,3 +140,8 @@ export const confirmLendBook = async (userId, bookId, lendingId) => {
   // - Update lending information accordingly
   await transitionBookToLendingConfirmed(userId, bookId, lendingId);
 };
+
+export const returnLentBook = async (userId, bookId) => {
+  // - Update lending information accordingly
+  await transitionBookToNotLent(userId, bookId);
+};

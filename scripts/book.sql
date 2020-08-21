@@ -99,3 +99,6 @@ INSERT INTO "book"("id", "user_id", "library_id", "title") VALUES ('101', 'user1
 INSERT INTO "book"("id", "user_id", "library_id", "title", "lending_id") VALUES ('102', 'user12', '101', 'Book102','PENDING');
 INSERT INTO "book"("id", "user_id", "library_id", "title", "lending_id") VALUES ('103', 'user12', '101', 'Book103','PENDING');
 INSERT INTO "book"("id", "user_id", "library_id", "title", "lending_id") VALUES ('104', 'user12', '101', 'Book104','PENDING');
+
+-- Book for testing return book use case
+INSERT INTO "book"("id", "user_id", "library_id", "title", "lending_id") VALUES ('105', 'user13', '102', 'Book105','lend2');

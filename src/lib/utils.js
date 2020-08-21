@@ -1,6 +1,6 @@
 import hash from 'object-hash';
 
-export const hashBook = book => {
+export const hashBook = (book) => {
   const {
     libraryId,
     title,
@@ -48,6 +48,7 @@ export const INCOMING_OPERATIONS = Object.freeze({
   VALIDATE_LEND_BOOK: 'VALIDATE_LEND_BOOK',
   CONFIRM_LEND_BOOK: 'CONFIRM_LEND_BOOK',
   CANCEL_LEND_BOOK: 'CANCEL_LEND_BOOK',
+  RETURN_LENT_BOOK: 'RETURN_LENT_BOOK',
 });
 
 export const OUTGOING_OPERATIONS = Object.freeze({
