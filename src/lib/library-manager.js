@@ -1,5 +1,4 @@
 import { v4 as uuidv4 } from 'uuid';
-import Joi from 'joi';
 
 import { librarySchema as schema } from './schemas';
 import CelsusException from './exception';
@@ -14,7 +13,7 @@ export const getLibraries = async (userId) => {
 };
 
 export const createLibrary = async (userId, library) => {
-  const { error } = Joi.validate(library, schema);
+  const { error } = schema.validate(library);
   if (error) {
     const { message } = error.details[0];
     throw new CelsusException(message);
@@ -29,7 +28,7 @@ export const createLibrary = async (userId, library) => {
 };
 
 export const updateLibrary = async (userId, library) => {
-  const { error } = Joi.validate(library, schema);
+  const { error } = schema.validate(library);
   if (error) {
     const { message } = error.details[0];
     throw new CelsusException(message);

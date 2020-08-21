@@ -1,5 +1,4 @@
 import { v4 as uuidv4 } from 'uuid';
-import Joi from 'joi';
 
 import { bookSchema as schema } from './schemas';
 import CelsusException from './exception';
@@ -80,7 +79,7 @@ export const deleteBook = async (userId, bookId) => {
 };
 
 export const createBook = async (userId, book) => {
-  const { error } = Joi.validate(book, schema);
+  const { error } = schema.validate(book);
   if (error) {
     const { message } = error.details[0];
     throw new CelsusException(message);
@@ -104,7 +103,7 @@ export const createBook = async (userId, book) => {
 };
 
 export const updateBook = async (userId, book) => {
-  const { error } = Joi.validate(book, schema);
+  const { error } = schema.validate(book);
   if (error) {
     const { message } = error.details[0];
     throw new CelsusException(message);
