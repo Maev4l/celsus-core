@@ -69,43 +69,18 @@ functions:
   getLibraries:
     handler: src/handler.getLibraries
     name: get-libraries
-    events:
-      - http:
-          path: v1/libraries
-          method: get
-          cors: true
-          authorizer:
-            arn: ${self:custom.config.userPoolArn}
-  postLibrary:
-    handler: src/handler.postLibrary
-    name: post-library
-    events:
-      - http:
-          path: v1/libraries
-          method: post
-          cors: true
-          authorizer:
-            arn: ${self:custom.config.userPoolArn}
-  deleteLibrary:
-    handler: src/handler.deleteLibrary
-    name: delete-library
-    events:
-      - http:
-          path: v1/libraries/{id}
-          method: delete
-          cors: true
-          authorizer:
-            arn: ${self:custom.config.userPoolArn}
   getLibrary:
     handler: src/handler.getLibrary
     name: get-library
-    events:
-      - http:
-          path: v1/libraries/{id}
-          method: get
-          cors: true
-          authorizer:
-            arn: ${self:custom.config.userPoolArn}
+  postLibrary:
+    handler: src/handler.postLibrary
+    name: post-library
+  deleteLibrary:
+    handler: src/handler.deleteLibrary
+    name: delete-library
+  getBooksFromLibrary:
+    handler: src/handler.getBooksFromLibrary
+    name: get-books-from-library
   getBooks:
     handler: src/handler.getBooks
     name: get-books

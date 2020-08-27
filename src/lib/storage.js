@@ -84,7 +84,8 @@ export const removeLibrary = async (userId, libraryId) => {
   const affectedRowCount = await database.tx(async (transaction) => {
     const query1 = new ParameterizedQuery({
       text: `DELETE FROM "${schemaName}"."library" L WHERE "id"=$1 AND "user_id"=$2 AND
-      EXISTS (SELECT 1 FROM "${schemaName}"."book" B WHERE L."id"=B."library_id" AND B."lending_id" IS NULL);`,
+      (EXISTS (SELECT 1 FROM "${schemaName}"."book" B WHERE B."user_id"=$2 AND B."library_id"=$1 AND B."lending_id" IS NULL) OR
+      NOT EXISTS (SELECT 1 FROM "${schemaName}"."book" B WHERE B."user_id"=$2 AND B."library_id"=$1));`,
       values: [libraryId, userId],
     });
 
@@ -127,6 +128,21 @@ export const readBook = async (userId, bookId) => {
   });
   const row = await database.oneOrNone(query);
   return row;
+};
+
+export const listBooksFromLibrary = async (userId, libraryId) => {
+  const query = new ParameterizedQuery({
+    text: `SELECT B."id", B."library_id" AS "libraryId", L."name" AS "libraryName", B."title", B."description", B."isbn10", B."isbn13", B."thumbnail",
+        array_to_json(B."authors") AS "authors", array_to_json(B."tags") AS tags, B."language",
+        B."book_set" AS "bookSet", B."book_set_order" AS "bookSetOrder", B."lending_id" AS "lendingId"
+        FROM "${schemaName}"."book" B
+        JOIN "${schemaName}"."library" L on B."library_id"=$2
+        WHERE B."user_id"=$1
+        ORDER BY B."title", B."id";`,
+    values: [userId, libraryId],
+  });
+  const rows = await database.any(query);
+  return rows;
 };
 
 export const listBooks = async (userId, offset, pageSize, searchQuery) => {

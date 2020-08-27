@@ -6,6 +6,7 @@ import { hashBook, LEND_BOOK_VALIDATION_STATUS } from './utils';
 import {
   fromPGLanguage,
   listBooks,
+  listBooksFromLibrary,
   removeBook,
   saveBook,
   modifyBook,
@@ -21,6 +22,47 @@ export const BOOKS_PAGE_SIZE = 5;
 export const getBook = async (userId, bookId) => {
   const row = await readBook(userId, bookId);
   return row;
+};
+
+export const getBooksFromLibrary = async (userId, libraryId) => {
+  const rows = await listBooksFromLibrary(userId, libraryId);
+  return {
+    books: rows.map((row) => {
+      const {
+        id,
+        libraryName,
+        title,
+        description,
+        isbn10,
+        isbn13,
+        thumbnail,
+        authors,
+        tags,
+        language,
+        bookSet,
+        bookSetOrder,
+        lendingId,
+      } = row;
+      return {
+        id,
+        title,
+        description,
+        library: {
+          id: libraryId,
+          name: libraryName,
+        },
+        isbn10,
+        isbn13,
+        thumbnail,
+        authors,
+        tags,
+        language: fromPGLanguage(language),
+        bookSet,
+        bookSetOrder,
+        lendingId,
+      };
+    }),
+  };
 };
 
 /**

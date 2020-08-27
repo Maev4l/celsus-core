@@ -3,7 +3,7 @@ import { assert } from 'chai';
 import dotenv from 'dotenv';
 
 import { postLibrary } from '../src/handler';
-import { newMockEvent } from './utils';
+import { makeMockEvent } from './utils';
 import { getDatabase } from '../src/lib/storage';
 
 dotenv.config();
@@ -12,35 +12,42 @@ const database = getDatabase();
 
 describe('Libraries Tests (CREATE - UPDATE)', async () => {
   it('Adds a new library for user1', async () => {
-    const event = newMockEvent('user1', { name: 'newLibrary', description: 'new description' });
+    const event = makeMockEvent('user1', {
+      library: { name: 'newLibrary', description: 'new description' },
+    });
 
-    const response = await postLibrary(event);
-    const { statusCode, body } = response;
-    assert.strictEqual(statusCode, 201);
-    const result = JSON.parse(body);
-    assert.exists(result.id);
-    assert.notEqual(result.id, '');
+    const { id } = await postLibrary(event);
+    assert.exists(id);
+    assert.notEqual(id, '');
 
     const rows = await database.any(
       `SELECT "id", "name", "description" FROM "${schemaName}"."library" WHERE "id"=$1;`,
-      [result.id],
+      [id],
     );
-
     assert.strictEqual(rows.length, 1);
-    await database.none(`DELETE FROM "${schemaName}"."library" WHERE "id"=$1`, [result.id]);
+
+    const [library] = rows;
+    const { name, description } = library;
+    assert.strictEqual(name, 'newLibrary');
+    assert.strictEqual(description, 'new description');
+
+    await database.none(`DELETE FROM "${schemaName}"."library" WHERE "id"=$1`, [id]);
   });
 
   it('Fails when adding a library with empty name for user1', async () => {
-    const event = newMockEvent('user1', { name: '', description: 'new description' });
+    const event = makeMockEvent('user1', { library: { name: '', description: 'new description' } });
 
     const initialState = await database.any(`SELECT * FROM "${schemaName}"."library";`);
     const initialCount = initialState.length;
 
-    const response = await postLibrary(event);
-    const { statusCode, body } = response;
-    assert.strictEqual(statusCode, 400);
-    assert.isNotNull(body);
-    assert.isNotEmpty(body);
+    let thrown = false;
+    try {
+      await postLibrary(event);
+    } catch (e) {
+      thrown = true;
+    }
+
+    assert.isTrue(thrown);
 
     const actualState = await database.any(`SELECT * FROM "${schemaName}"."library";`);
     const actualCount = actualState.length;
@@ -48,16 +55,18 @@ describe('Libraries Tests (CREATE - UPDATE)', async () => {
   });
 
   it('Fails when adding a library without name field for user1', async () => {
-    const event = newMockEvent('user1', { description: 'no_name_library' });
+    const event = makeMockEvent('user1', { library: { description: 'no_name_library' } });
 
     const initialState = await database.any(`SELECT * FROM "${schemaName}"."library";`);
     const initialCount = initialState.length;
 
-    const response = await postLibrary(event);
-    const { statusCode, body } = response;
-    assert.strictEqual(statusCode, 400);
-    assert.isNotNull(body);
-    assert.isNotEmpty(body);
+    let thrown = false;
+    try {
+      await postLibrary(event);
+    } catch (e) {
+      thrown = true;
+    }
+    assert.isTrue(thrown);
 
     const actualState = await database.any(`SELECT * FROM "${schemaName}"."library";`);
     const actualCount = actualState.length;
@@ -65,16 +74,18 @@ describe('Libraries Tests (CREATE - UPDATE)', async () => {
   });
 
   it('Fails when adding a library without description field for user1', async () => {
-    const event = newMockEvent('user1', { name: 'no_description_library' });
+    const event = makeMockEvent('user1', { library: { name: 'no_description_library' } });
 
     const initialState = await database.any(`SELECT * FROM "${schemaName}"."library";`);
     const initialCount = initialState.length;
 
-    const response = await postLibrary(event);
-    const { statusCode, body } = response;
-    assert.strictEqual(statusCode, 400);
-    assert.isNotNull(body);
-    assert.isNotEmpty(body);
+    let thrown = false;
+    try {
+      await postLibrary(event);
+    } catch (e) {
+      thrown = true;
+    }
+    assert.isTrue(thrown);
 
     const actualState = await database.any(`SELECT * FROM "${schemaName}"."library";`);
     const actualCount = actualState.length;
@@ -83,16 +94,18 @@ describe('Libraries Tests (CREATE - UPDATE)', async () => {
 
   it('Fails when adding a library with too long name for user1', async () => {
     const longValue = `${'abcde'.repeat(20)}a`;
-    const event = newMockEvent('user1', { name: longValue, description: '' });
+    const event = makeMockEvent('user1', { library: { name: longValue, description: '' } });
 
     const initialState = await database.any(`SELECT * FROM "${schemaName}"."library";`);
     const initialCount = initialState.length;
 
-    const response = await postLibrary(event);
-    const { statusCode, body } = response;
-    assert.strictEqual(statusCode, 400);
-    assert.isNotNull(body);
-    assert.isNotEmpty(body);
+    let thrown = false;
+    try {
+      await postLibrary(event);
+    } catch (e) {
+      thrown = true;
+    }
+    assert.isTrue(thrown);
 
     const actualState = await database.any(`SELECT * FROM "${schemaName}"."library";`);
     const actualCount = actualState.length;
@@ -101,16 +114,20 @@ describe('Libraries Tests (CREATE - UPDATE)', async () => {
 
   it('Fails when adding a library with too long description for user1', async () => {
     const longValue = `${'abcde'.repeat(110)}a`;
-    const event = newMockEvent('user1', { name: 'long_desc_library', description: longValue });
+    const event = makeMockEvent('user1', {
+      library: { name: 'long_desc_library', description: longValue },
+    });
 
     const initialState = await database.any(`SELECT * FROM "${schemaName}"."library";`);
     const initialCount = initialState.length;
 
-    const response = await postLibrary(event);
-    const { statusCode, body } = response;
-    assert.strictEqual(statusCode, 400);
-    assert.isNotNull(body);
-    assert.isNotEmpty(body);
+    let thrown = false;
+    try {
+      await postLibrary(event);
+    } catch (e) {
+      thrown = true;
+    }
+    assert.isTrue(thrown);
 
     const actualState = await database.any(`SELECT * FROM "${schemaName}"."library";`);
     const actualCount = actualState.length;
@@ -123,17 +140,17 @@ describe('Libraries Tests (CREATE - UPDATE)', async () => {
       name: 'My Updated Book Title for user2',
       description: 'My Updated Book Description for user 2',
     };
-    const event = newMockEvent('user2', library);
-    const response = await postLibrary(event);
-    const { statusCode } = response;
-    assert.strictEqual(statusCode, 204);
+    const event = makeMockEvent('user2', { library });
+    const updated = await postLibrary(event);
+    assert.isTrue(updated);
 
     const rows = await database.any(
       `SELECT "id", "name", "description" FROM "${schemaName}"."library" WHERE "id"=$1;`,
       [library.id],
     );
+    const [updatedLibrary] = rows;
     assert.strictEqual(rows.length, 1);
-    assert.deepEqual(rows[0], library);
+    assert.deepEqual(updatedLibrary, library);
   });
 
   it('Fails when updating an unknown library', async () => {
@@ -142,10 +159,9 @@ describe('Libraries Tests (CREATE - UPDATE)', async () => {
       name: 'My Updated Book Title for user2',
       description: 'My Updated Book Description for user 2',
     };
-    const event = newMockEvent('user2', library);
-    const response = await postLibrary(event);
-    const { statusCode } = response;
-    assert.strictEqual(statusCode, 400);
+    const event = makeMockEvent('user2', { library });
+    const updated = await postLibrary(event);
+    assert.isFalse(updated);
 
     const rows = await database.any(
       `SELECT "id", "name", "description" FROM "${schemaName}"."library" WHERE "id"=$1;`,
@@ -160,16 +176,16 @@ describe('Libraries Tests (CREATE - UPDATE)', async () => {
       name: 'My Updated Book Title for user2',
       description: 'My Updated Book Description for user 2',
     };
-    const event = newMockEvent('xxx', library);
-    const response = await postLibrary(event);
-    const { statusCode } = response;
-    assert.strictEqual(statusCode, 400);
+    const event = makeMockEvent('xxx', { library });
+    const updated = await postLibrary(event);
+    assert.isFalse(updated);
 
     const rows = await database.any(
       `SELECT "id", "name", "description" FROM "${schemaName}"."library" WHERE "id"=$1;`,
       [library.id],
     );
-    assert.notDeepEqual(rows[0], library);
+    const [initialLibrary] = rows;
+    assert.notDeepEqual(initialLibrary, library);
   });
 
   it('Fails when updating a library not belonging to user', async () => {
@@ -178,15 +194,15 @@ describe('Libraries Tests (CREATE - UPDATE)', async () => {
       name: 'My Updated Book Title for user2',
       description: 'My Updated Book Description for user 2',
     };
-    const event = newMockEvent('user2', library);
-    const response = await postLibrary(event);
-    const { statusCode } = response;
-    assert.strictEqual(statusCode, 400);
+    const event = makeMockEvent('user2', { library });
+    const updated = await postLibrary(event);
+    assert.isFalse(updated);
 
     const rows = await database.any(
       `SELECT "id", "name", "description" FROM "${schemaName}"."library" WHERE "id"=$1;`,
       [library.id],
     );
-    assert.notDeepEqual(rows[0], library);
+    const [initialLibrary] = rows;
+    assert.notDeepEqual(initialLibrary, library);
   });
 });

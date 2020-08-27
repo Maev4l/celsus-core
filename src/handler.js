@@ -23,65 +23,57 @@ const makeResponse = (statusCode, result) => {
 };
 
 export const getLibraries = async (event) => {
-  const { sub } = event.requestContext.authorizer.claims;
+  const { userId } = event;
 
-  const result = await LibraryManager.getLibraries(sub);
-  return makeResponse(200, result);
-};
-
-export const postLibrary = async (event) => {
-  const library = JSON.parse(event.body);
-  const { sub } = event.requestContext.authorizer.claims;
-  let result = '';
-  let statusCode;
-
-  // If a library does not have an existing id, it means we are trying to create it
-  try {
-    if (!library.id) {
-      result = await LibraryManager.createLibrary(sub, library);
-      statusCode = 201;
-    } else {
-      const updated = await LibraryManager.updateLibrary(sub, library);
-      if (updated) {
-        statusCode = 204;
-      } else {
-        statusCode = 400;
-      }
-    }
-  } catch (e) {
-    statusCode = 400;
-    const { message } = e;
-    result = { message };
-  }
-  return makeResponse(statusCode, result);
-};
-
-export const deleteLibrary = async (event) => {
-  const { sub } = event.requestContext.authorizer.claims;
-
-  const libraryId = event.pathParameters.id;
-  const result = await LibraryManager.deleteLibrary(sub, libraryId);
-  const statusCode = result ? 204 : 404;
-
-  return makeResponse(statusCode);
+  const result = await LibraryManager.getLibraries(userId);
+  return result;
 };
 
 export const getLibrary = async (event) => {
-  const { sub } = event.requestContext.authorizer.claims;
-
-  const libraryId = event.pathParameters.id;
-  let statusCode;
-  let result = null;
-  try {
-    result = await LibraryManager.getLibrary(sub, libraryId);
-    statusCode = result ? 200 : 404;
-  } catch (e) {
-    statusCode = 500;
-  }
-
-  return makeResponse(statusCode, result);
+  const { userId, payload } = event;
+  const { id: libraryId } = payload;
+  const result = await LibraryManager.getLibrary(userId, libraryId);
+  return result;
 };
 
+export const postLibrary = async (event) => {
+  const { userId, payload } = event;
+  const { library } = payload;
+  const { id } = library;
+
+  let result = '';
+
+  // If a library does not have an existing id, it means we are trying to create it
+  if (!id) {
+    result = await LibraryManager.createLibrary(userId, library);
+  } else {
+    const updated = await LibraryManager.updateLibrary(userId, library);
+    result = updated;
+  }
+
+  return result;
+};
+
+export const deleteLibrary = async (event) => {
+  const { userId, payload } = event;
+  const { id: libraryId } = payload;
+
+  const deleted = await LibraryManager.deleteLibrary(userId, libraryId);
+
+  return deleted;
+};
+
+export const getBooksFromLibrary = async (event) => {
+  const { userId, payload } = event;
+  const { libraryId } = payload;
+  const result = await BookManager.getBooksFromLibrary(userId, libraryId);
+  return result;
+};
+
+/**
+ * FIXME: Should be changed  with a search semantics
+ * @param {*} event
+ */
 export const getBooks = async (event) => {
   const { sub } = event.requestContext.authorizer.claims;
   const { queryStringParameters } = event;

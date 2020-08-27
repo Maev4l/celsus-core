@@ -15,6 +15,12 @@ export const newMockEvent = (sub, body, pathParameters, queryStringParameters) =
   return mockEvent;
 };
 
+export const makeMockEvent = (userId, payload) => {
+  return {
+    userId,
+    payload,
+  };
+};
 export const newMockMessage = (message, replyAddress) => {
   let record = {
     messageId: '0',
