@@ -1,14 +1,15 @@
 import { assert } from 'chai';
 import dotenv from 'dotenv';
 
-import { getBooks, getBooksFromLibrary } from '../src/handler';
-import { newMockEvent, makeMockEvent } from './utils';
+import { searchBooks, getBooksFromLibrary } from '../src/handler';
+import { makeMockEvent } from './utils';
 
 dotenv.config();
 
 const { BOOKS_PAGE_SIZE } = require('../src/lib/book-manager');
 
 describe('Books Tests (READ - SEARCH)', async () => {
+  /*
   it('Returns list of books belonging to user4 without a defined offset', async () => {
     const expected = {
       itemsPerPage: BOOKS_PAGE_SIZE,
@@ -61,7 +62,7 @@ describe('Books Tests (READ - SEARCH)', async () => {
     assert.strictEqual(2, result.books.length);
     assert.deepEqual(result, expected);
   });
-
+*/
   it('Returns list of books from a given library', async () => {
     const event = makeMockEvent('user14', { libraryId: '104' });
 
@@ -73,7 +74,7 @@ describe('Books Tests (READ - SEARCH)', async () => {
     const { id } = book;
     assert.equal(id, 106);
   });
-
+  /*
   it('Returns list of books belonging to user4 with a defined offset to 1', async () => {
     const expected = {
       itemsPerPage: BOOKS_PAGE_SIZE,
@@ -89,7 +90,7 @@ describe('Books Tests (READ - SEARCH)', async () => {
     assert.strictEqual(0, result.books.length);
     assert.deepEqual(result, expected);
   });
-
+*/
   it('Returns list of books with a search simple criteria based on author', async () => {
     const expected = {
       itemsPerPage: BOOKS_PAGE_SIZE,
@@ -136,11 +137,9 @@ describe('Books Tests (READ - SEARCH)', async () => {
       ],
     };
 
-    const event = newMockEvent('user10', null, null, { offset: 0, q: 'pagnol' });
-    const response = await getBooks(event);
-    const { statusCode, body } = response;
-    assert.strictEqual(statusCode, 200);
-    const result = JSON.parse(body);
+    const event = makeMockEvent('user10', { page: 1, keywords: ['pagnol'] });
+    const result = await searchBooks(event);
+
     assert.deepEqual(result, expected);
   });
 
@@ -190,11 +189,8 @@ describe('Books Tests (READ - SEARCH)', async () => {
       ],
     };
 
-    const event = newMockEvent('user10', null, null, { offset: 0, q: 'mère' });
-    const response = await getBooks(event);
-    const { statusCode, body } = response;
-    assert.strictEqual(statusCode, 200);
-    const result = JSON.parse(body);
+    const event = makeMockEvent('user10', { page: 1, keywords: ['mère'] });
+    const result = await searchBooks(event);
     assert.deepEqual(result, expected);
   });
 
@@ -225,11 +221,8 @@ describe('Books Tests (READ - SEARCH)', async () => {
       ],
     };
 
-    const event = newMockEvent('user10', null, null, { offset: 0, q: 'mère chateau' });
-    const response = await getBooks(event);
-    const { statusCode, body } = response;
-    assert.strictEqual(statusCode, 200);
-    const result = JSON.parse(body);
+    const event = makeMockEvent('user10', { page: 1, keywords: ['mère', 'chateau'] });
+    const result = await searchBooks(event);
     assert.deepEqual(result, expected);
   });
 });

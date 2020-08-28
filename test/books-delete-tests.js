@@ -2,7 +2,7 @@ import { assert } from 'chai';
 import dotenv from 'dotenv';
 
 import { deleteBook } from '../src/handler';
-import { newMockEvent } from './utils';
+import { makeMockEvent } from './utils';
 import { getDatabase } from '../src/lib/storage';
 
 dotenv.config();
@@ -13,11 +13,10 @@ const database = getDatabase();
 describe('Books Tests (DELETE)', async () => {
   it('Deletes an existing book', async () => {
     const id = '4';
-    const event = newMockEvent('user5', '', { id });
+    const event = makeMockEvent('user5', { id });
 
-    const response = await deleteBook(event);
-    const { statusCode } = response;
-    assert.strictEqual(statusCode, 204);
+    const deleted = await deleteBook(event);
+    assert.isTrue(deleted);
 
     const rowsBooks = await database.any(`SELECT "id" FROM "${schemaName}"."book" WHERE "id"=$1;`, [
       id,
@@ -33,20 +32,18 @@ describe('Books Tests (DELETE)', async () => {
 
   it('Fails when deleting an unknown book', async () => {
     const id = 'xxx';
-    const event = newMockEvent('user2', '', { id });
+    const event = makeMockEvent('user2', { id });
 
-    const response = await deleteBook(event);
-    const { statusCode } = response;
-    assert.strictEqual(statusCode, 404);
+    const deleted = await deleteBook(event);
+    assert.isFalse(deleted);
   });
 
   it('Fails when deleting a book belonging to an unknown user', async () => {
     const id = '1';
-    const event = newMockEvent('xxx', '', { id });
+    const event = makeMockEvent('xxx', { id });
 
-    const response = await deleteBook(event);
-    const { statusCode } = response;
-    assert.strictEqual(statusCode, 404);
+    const deleted = await deleteBook(event);
+    assert.isFalse(deleted);
 
     const rows = await database.any(`SELECT "id" FROM "${schemaName}"."book" WHERE "id"=$1;`, [id]);
     assert.strictEqual(rows.length, 1);
@@ -54,11 +51,10 @@ describe('Books Tests (DELETE)', async () => {
 
   it('Fails when deleting a library not belonging to user', async () => {
     const id = '1';
-    const event = newMockEvent('user2', '', { id });
+    const event = makeMockEvent('user2', { id });
 
-    const response = await deleteBook(event);
-    const { statusCode } = response;
-    assert.strictEqual(statusCode, 404);
+    const deleted = await deleteBook(event);
+    assert.isFalse(deleted);
 
     const rows = await database.any(`SELECT "id" FROM "${schemaName}"."book" WHERE "id"=$1;`, [id]);
     assert.strictEqual(rows.length, 1);
@@ -66,11 +62,10 @@ describe('Books Tests (DELETE)', async () => {
 
   it('Fails when deleting a lent book', async () => {
     const id = '100';
-    const event = newMockEvent('user11', '', { id });
+    const event = makeMockEvent('user11', { id });
 
-    const response = await deleteBook(event);
-    const { statusCode } = response;
-    assert.strictEqual(statusCode, 400);
+    const deleted = await deleteBook(event);
+    assert.isFalse(deleted);
 
     const rows = await database.any(`SELECT "id" FROM "${schemaName}"."book" WHERE "id"=$1;`, [id]);
     assert.strictEqual(rows.length, 1);

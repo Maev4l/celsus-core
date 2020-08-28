@@ -2,18 +2,9 @@ service: celsus-core
 
 plugins:
   - serverless-webpack
-  - serverless-domain-manager
 
 custom:
   config: ${file(./infra.json)}
-  customDomain:
-    domainName: 'api-celsus.isnan.eu'
-    certificateArn: ${self:custom.config.certificate}
-    hostedZoneId: ${self:custom.config.hostedZone}
-    basePath: 'core'
-    stage: ${self:provider.stage}
-    createRoute53Record: true
-    endpointType: edge
   webpack:
     webpackConfig: './build/webpack.base.config.js'
     includeModules:
@@ -81,40 +72,15 @@ functions:
   getBooksFromLibrary:
     handler: src/handler.getBooksFromLibrary
     name: get-books-from-library
-  getBooks:
-    handler: src/handler.getBooks
-    name: get-books
-    events:
-      - http:
-          path: v1/books
-          method: get
-          request:
-            parameters:
-              querystrings:
-                offset: false
-          cors: true
-          authorizer:
-            arn: ${self:custom.config.userPoolArn}
+  searchBooks:
+    handler: src/handler.searchBooks
+    name: search-books
   deleteBook:
     handler: src/handler.deleteBook
     name: delete-book
-    events:
-      - http:
-          path: v1/books/{id}
-          method: delete
-          cors: true
-          authorizer:
-            arn: ${self:custom.config.userPoolArn}
   postBook:
     handler: src/handler.postBook
     name: post-book
-    events:
-      - http:
-          path: v1/books
-          method: post
-          cors: true
-          authorizer:
-            arn: ${self:custom.config.userPoolArn}
   handleMessages:
     handler: src/handler.handleMessages
     name: handle-core-messages

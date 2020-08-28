@@ -2,7 +2,7 @@ import { assert } from 'chai';
 import dotenv from 'dotenv';
 
 import { postBook } from '../src/handler';
-import { newMockEvent } from './utils';
+import { makeMockEvent } from './utils';
 import { fromPGLanguage, getDatabase } from '../src/lib/storage';
 import { hashBook } from '../src/lib/utils';
 
@@ -27,17 +27,14 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
       bookSet: 'my book set',
       bookSetOrder: 1,
     };
-    const event = newMockEvent('user6', newBook);
+    const event = makeMockEvent('user6', { book: newBook });
 
-    const response = await postBook(event);
-    const { statusCode, body } = response;
-    assert.strictEqual(statusCode, 201);
-    const result = JSON.parse(body);
-    assert.exists(result.id);
-    assert.notEqual(result.id, '');
+    const { id } = await postBook(event);
+    assert.exists(id);
+    assert.notEqual(id, '');
 
     const rowsBooks = await database.any(`SELECT * FROM "${schemaName}"."book" WHERE "id"=$1;`, [
-      result.id,
+      id,
     ]);
     assert.strictEqual(rowsBooks.length, 1);
     const expectedBook = rowsBooks[0];
@@ -53,11 +50,11 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
 
     const rowsSearch = await database.any(
       `SELECT * FROM "${schemaName}"."books_search" WHERE "id"=$1;`,
-      [result.id],
+      [id],
     );
     assert.strictEqual(rowsSearch.length, 1);
 
-    await database.none(`DELETE FROM "${schemaName}"."book" WHERE "id"=$1`, [result.id]);
+    await database.none(`DELETE FROM "${schemaName}"."book" WHERE "id"=$1`, [id]);
   });
 
   it('Fails when adding a book to an unknown library', async () => {
@@ -75,11 +72,16 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
       bookSetOrder: 0,
       isbn13: '',
     };
-    const event = newMockEvent('user1', newBook);
+    const event = makeMockEvent('user1', { book: newBook });
 
-    const response = await postBook(event);
-    const { statusCode } = response;
-    assert.strictEqual(statusCode, 400);
+    let thrown = false;
+    try {
+      await postBook(event);
+    } catch (e) {
+      thrown = true;
+    }
+
+    assert.isTrue(thrown);
   });
 
   it('Fails when adding a book with bookset and no set order', async () => {
@@ -97,10 +99,15 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
       bookSet: 'my book set',
       bookSetOrder: 0,
     };
-    const event = newMockEvent('user6', newBook);
-    const response = await postBook(event);
-    const { statusCode } = response;
-    assert.strictEqual(statusCode, 400);
+    const event = makeMockEvent('user6', { book: newBook });
+    let thrown = false;
+    try {
+      await postBook(event);
+    } catch (e) {
+      thrown = true;
+    }
+
+    assert.isTrue(thrown);
   });
 
   it('Fails when adding a book with no bookset and a set order', async () => {
@@ -118,11 +125,16 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
       bookSet: '',
       bookSetOrder: 1,
     };
-    const event = newMockEvent('user6', newBook);
+    const event = makeMockEvent('user6', { book: newBook });
 
-    const response = await postBook(event);
-    const { statusCode } = response;
-    assert.strictEqual(statusCode, 400);
+    let thrown = false;
+    try {
+      await postBook(event);
+    } catch (e) {
+      thrown = true;
+    }
+
+    assert.isTrue(thrown);
   });
 
   it('Fails when adding a book to a library belonging to another user', async () => {
@@ -140,11 +152,16 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
       bookSet: '',
       bookSetOrder: 0,
     };
-    const event = newMockEvent('user6', newBook);
+    const event = makeMockEvent('user6', { book: newBook });
 
-    const response = await postBook(event);
-    const { statusCode } = response;
-    assert.strictEqual(statusCode, 400);
+    let thrown = false;
+    try {
+      await postBook(event);
+    } catch (e) {
+      thrown = true;
+    }
+
+    assert.isTrue(thrown);
   });
 
   it('Update an existing book for user7', async () => {
@@ -164,11 +181,11 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
       bookSet: 'my book set',
       bookSetOrder: 2,
     };
-    const event = newMockEvent('user7', updateBook);
+    const event = makeMockEvent('user7', { book: updateBook });
 
-    const response = await postBook(event);
-    const { statusCode } = response;
-    assert.strictEqual(statusCode, 204);
+    const updated = await postBook(event);
+
+    assert.isTrue(updated);
 
     const rowsBooks = await database.any(`SELECT * FROM "${schemaName}"."book" WHERE "id"=$1;`, [
       id,
@@ -206,11 +223,16 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
       isbn10: '',
       isbn13: '',
     };
-    const event = newMockEvent('user7', updateBook);
+    const event = makeMockEvent('user7', { book: updateBook });
 
-    const response = await postBook(event);
-    const { statusCode } = response;
-    assert.strictEqual(statusCode, 400);
+    let thrown = false;
+    try {
+      await postBook(event);
+    } catch (e) {
+      thrown = true;
+    }
+
+    assert.isTrue(thrown);
   });
 
   it('Fails when updating a book to an unknown library', async () => {
@@ -227,11 +249,16 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
       isbn10: '',
       isbn13: '',
     };
-    const event = newMockEvent('user7', updateBook);
+    const event = makeMockEvent('user7', { book: updateBook });
 
-    const response = await postBook(event);
-    const { statusCode } = response;
-    assert.strictEqual(statusCode, 400);
+    let thrown = false;
+    try {
+      await postBook(event);
+    } catch (e) {
+      thrown = true;
+    }
+
+    assert.isTrue(thrown);
   });
 
   it('Fails when updating a book in a library belonging to another user', async () => {
@@ -248,10 +275,15 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
       isbn10: '',
       isbn13: '',
     };
-    const event = newMockEvent('user1', updateBook);
+    const event = makeMockEvent('user1', { book: updateBook });
 
-    const response = await postBook(event);
-    const { statusCode } = response;
-    assert.strictEqual(statusCode, 400);
+    let thrown = false;
+    try {
+      await postBook(event);
+    } catch (e) {
+      thrown = true;
+    }
+
+    assert.isTrue(thrown);
   });
 });

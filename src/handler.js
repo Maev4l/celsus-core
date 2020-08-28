@@ -5,23 +5,6 @@ import dispatch from './lib/dispatcher';
 
 const logger = loggerFactory.getLogger('api');
 
-const makeResponse = (statusCode, result) => {
-  let body = '';
-  if (result) {
-    body = JSON.stringify(result);
-  }
-  const response = {
-    statusCode,
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Credentials': true,
-    },
-    body,
-  };
-
-  return response;
-};
-
 export const getLibraries = async (event) => {
   const { userId } = event;
 
@@ -41,14 +24,13 @@ export const postLibrary = async (event) => {
   const { library } = payload;
   const { id } = library;
 
-  let result = '';
+  let result;
 
   // If a library does not have an existing id, it means we are trying to create it
   if (!id) {
     result = await LibraryManager.createLibrary(userId, library);
   } else {
-    const updated = await LibraryManager.updateLibrary(userId, library);
-    result = updated;
+    result = await LibraryManager.updateLibrary(userId, library);
   }
 
   return result;
@@ -70,66 +52,36 @@ export const getBooksFromLibrary = async (event) => {
   return result;
 };
 
-/**
- * FIXME: Should be changed  with a search semantics
- * @param {*} event
- */
-export const getBooks = async (event) => {
-  const { sub } = event.requestContext.authorizer.claims;
-  const { queryStringParameters } = event;
-  const offset = queryStringParameters ? queryStringParameters.offset || 0 : 0;
-  const searchQuery = queryStringParameters ? queryStringParameters.q || '' : '';
-
-  const result = await BookManager.getBooks(sub, offset, searchQuery);
-  return makeResponse(200, result);
+export const searchBooks = async (event) => {
+  const { userId, payload } = event;
+  const { page, keywords } = payload;
+  const offset = page - 1;
+  const result = await BookManager.searchBooks(userId, offset, keywords);
+  return result;
 };
 
 export const deleteBook = async (event) => {
-  const { sub } = event.requestContext.authorizer.claims;
+  const { userId, payload } = event;
+  const { id: bookId } = payload;
 
-  const bookId = event.pathParameters.id;
-  const book = await BookManager.getBook(sub, bookId);
-  if (book) {
-    const result = await BookManager.deleteBook(sub, bookId);
-    const statusCode = result ? 204 : 400;
+  const deleted = await BookManager.deleteBook(userId, bookId);
 
-    return makeResponse(statusCode);
-  }
-
-  return makeResponse(404);
+  return deleted;
 };
 
 export const postBook = async (event) => {
-  const book = JSON.parse(event.body);
-  const { sub } = event.requestContext.authorizer.claims;
-  let result = '';
-  let statusCode;
-
+  const { userId, payload } = event;
+  const { book } = payload;
+  const { id } = book;
+  let result;
   // If a book does not have an existing id, it means we are trying to create it
-  if (!book.id) {
-    try {
-      result = await BookManager.createBook(sub, book);
-      statusCode = 201;
-    } catch (e) {
-      statusCode = 400;
-      const { message } = e;
-      result = { message };
-    }
+  if (!id) {
+    result = await BookManager.createBook(userId, book);
   } else {
-    try {
-      const updated = await BookManager.updateBook(sub, book);
-      if (updated) {
-        statusCode = 204;
-      } else {
-        statusCode = 400;
-      }
-    } catch (e) {
-      statusCode = 400;
-      const { message } = e;
-      result = { message };
-    }
+    result = await BookManager.updateBook(userId, book);
   }
-  return makeResponse(statusCode, result);
+
+  return result;
 };
 
 /**

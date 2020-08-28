@@ -5,7 +5,7 @@ import CelsusException from './exception';
 import { hashBook, LEND_BOOK_VALIDATION_STATUS } from './utils';
 import {
   fromPGLanguage,
-  listBooks,
+  filterBooksFromKeywords,
   listBooksFromLibrary,
   removeBook,
   saveBook,
@@ -69,10 +69,15 @@ export const getBooksFromLibrary = async (userId, libraryId) => {
  * Retrieve list of books belonging to a given user
  * @param {string} userId Incognito id of the user
  * @param {string} offset offset is zero-based
- * @param {string} searchQuery Search query
+ * @param {string} keywords keywords to match
  */
-export const getBooks = async (userId, offset, searchQuery) => {
-  const { rows, rowCount } = await listBooks(userId, offset, BOOKS_PAGE_SIZE, searchQuery);
+export const searchBooks = async (userId, offset, keywords) => {
+  const { rows, rowCount } = await filterBooksFromKeywords(
+    userId,
+    offset,
+    BOOKS_PAGE_SIZE,
+    keywords,
+  );
   return {
     itemsPerPage: BOOKS_PAGE_SIZE,
     total: parseInt(rowCount, 10),

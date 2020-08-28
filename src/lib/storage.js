@@ -145,11 +145,10 @@ export const listBooksFromLibrary = async (userId, libraryId) => {
   return rows;
 };
 
-export const listBooks = async (userId, offset, pageSize, searchQuery) => {
-  if (searchQuery) {
-    const criterias = searchQuery.split(' ').join('&');
-    const query1 = new ParameterizedQuery({
-      text: `SELECT B."id", B."library_id" AS "libraryId", L."name" AS "libraryName", B."title", B."description", B."isbn10", B."isbn13", B."thumbnail",
+export const filterBooksFromKeywords = async (userId, offset, pageSize, keywords) => {
+  const criterias = keywords.join('&');
+  const query1 = new ParameterizedQuery({
+    text: `SELECT B."id", B."library_id" AS "libraryId", L."name" AS "libraryName", B."title", B."description", B."isbn10", B."isbn13", B."thumbnail",
       array_to_json(B."authors") AS "authors", array_to_json(B."tags") AS tags, B."language",
       B."book_set" AS "bookSet", B."book_set_order" AS "bookSetOrder", B."lending_id" AS "lendingId"
       FROM "${schemaName}"."book" B
@@ -159,25 +158,25 @@ export const listBooks = async (userId, offset, pageSize, searchQuery) => {
       AND S."document" @@ to_tsquery('simple',unaccent($2))
       ORDER BY B."title", B."id"
       LIMIT ${pageSize} OFFSET ${pageSize * offset};`,
-      values: [userId, criterias],
-    });
+    values: [userId, criterias],
+  });
 
-    const query2 = new ParameterizedQuery({
-      text: `SELECT COUNT(*) AS total
+  const query2 = new ParameterizedQuery({
+    text: `SELECT COUNT(*) AS total
       FROM "${schemaName}"."book" B 
       JOIN "${schemaName}"."books_search" S on S."id"=B."id"
       WHERE B."user_id"=$1
       AND S."document" @@ to_tsquery('simple',unaccent($2));`,
-      values: [userId, criterias],
-    });
+    values: [userId, criterias],
+  });
 
-    return database.task(async (task) => {
-      const rows = await task.any(query1);
-      const { total: rowCount } = await task.one(query2);
-      return { rows, rowCount };
-    });
-  }
+  return database.task(async (task) => {
+    const rows = await task.any(query1);
+    const { total: rowCount } = await task.one(query2);
+    return { rows, rowCount };
+  });
 
+  /*
   const query1 = new ParameterizedQuery({
     text: `SELECT B."id", B."library_id" AS "libraryId", L."name" AS "libraryName", B."title", B."description", B."isbn10", B."isbn13", B."thumbnail",
         array_to_json(B."authors") AS "authors", array_to_json(B."tags") AS tags, B."language",
@@ -199,6 +198,7 @@ export const listBooks = async (userId, offset, pageSize, searchQuery) => {
     const { total: rowCount } = await task.one(query2);
     return { rows, rowCount };
   });
+*/
 };
 
 export const removeBook = async (userId, bookId) => {
