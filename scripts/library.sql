@@ -38,3 +38,7 @@ INSERT INTO "library" ("id", "user_id", "name", "description")	VALUES ('101', 'u
 
 -- Library with no books, should be deleted
 INSERT INTO "library" ("id", "user_id", "name", "description")	VALUES ('103', 'user13', 'My Library Name', 'My Library description');
+
+-- Library for 'list-books-from-library' test
+INSERT INTO "library" ("id", "user_id", "name", "description")	VALUES ('104', 'user14', 'My Library Name 1', 'My Library description 1');
+INSERT INTO "library" ("id", "user_id", "name", "description")	VALUES ('105', 'user14', 'My Library Name 2', 'My Library description 2');

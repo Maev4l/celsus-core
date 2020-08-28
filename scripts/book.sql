@@ -4,7 +4,8 @@ CREATE TABLE IF NOT EXISTS "book"
     user_id VARCHAR(36) NOT NULL,
 	library_id VARCHAR(36) NOT NULL,
     title VARCHAR(100) NOT NULL,
-    description VARCHAR(1024) ,  isbn10 VARCHAR(30),
+    description VARCHAR(1024) ,  
+	isbn10 VARCHAR(30),
 	isbn13 VARCHAR(30),
 	thumbnail TEXT,
 	authors VARCHAR(1024) ARRAY,
@@ -101,3 +102,6 @@ INSERT INTO "book"("id", "user_id", "library_id", "title", "lending_id") VALUES 
 
 -- Book for testing return book use case
 INSERT INTO "book"("id", "user_id", "library_id", "title", "lending_id") VALUES ('105', 'user13', '102', 'Book105','lend2');
+
+-- Books for 'list-books-from-library' test
+INSERT INTO "book"("id", "user_id", "library_id", "title") VALUES ('106', 'user14', '104', 'Book106');

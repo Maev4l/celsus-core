@@ -1,8 +1,8 @@
 import { assert } from 'chai';
 import dotenv from 'dotenv';
 
-import { getBooks } from '../src/handler';
-import { newMockEvent } from './utils';
+import { getBooks, getBooksFromLibrary } from '../src/handler';
+import { newMockEvent, makeMockEvent } from './utils';
 
 dotenv.config();
 
@@ -60,6 +60,18 @@ describe('Books Tests (READ - SEARCH)', async () => {
     const result = JSON.parse(body);
     assert.strictEqual(2, result.books.length);
     assert.deepEqual(result, expected);
+  });
+
+  it('Returns list of books from a given library', async () => {
+    const event = makeMockEvent('user14', { libraryId: '104' });
+
+    const { books } = await getBooksFromLibrary(event);
+    assert.strictEqual(1, books.length);
+
+    const [book] = books;
+
+    const { id } = book;
+    assert.equal(id, 106);
   });
 
   it('Returns list of books belonging to user4 with a defined offset to 1', async () => {
