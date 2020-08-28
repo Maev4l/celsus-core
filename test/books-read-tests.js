@@ -64,7 +64,7 @@ describe('Books Tests (READ - SEARCH)', async () => {
   });
 */
   it('Returns list of books from a given library', async () => {
-    const event = makeMockEvent('user14', { libraryId: '104' });
+    const event = makeMockEvent('user14', { libraryId: '104', page: 1 });
 
     const { books } = await getBooksFromLibrary(event);
     assert.strictEqual(1, books.length);

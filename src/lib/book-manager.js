@@ -24,8 +24,48 @@ export const getBook = async (userId, bookId) => {
   return row;
 };
 
-export const getBooksFromLibrary = async (userId, libraryId) => {
-  const rows = await listBooksFromLibrary(userId, libraryId);
+export const getBooksFromLibrary = async (userId, libraryId, offset) => {
+  const { rows, rowCount } = await listBooksFromLibrary(userId, libraryId, offset, BOOKS_PAGE_SIZE);
+  return {
+    itemsPerPage: BOOKS_PAGE_SIZE,
+    total: parseInt(rowCount, 10),
+    books: rows.map((row) => {
+      const {
+        id,
+        libraryName,
+        title,
+        description,
+        isbn10,
+        isbn13,
+        thumbnail,
+        authors,
+        tags,
+        language,
+        bookSet,
+        bookSetOrder,
+        lendingId,
+      } = row;
+      return {
+        id,
+        title,
+        description,
+        library: {
+          id: libraryId,
+          name: libraryName,
+        },
+        isbn10,
+        isbn13,
+        thumbnail,
+        authors,
+        tags,
+        language: fromPGLanguage(language),
+        bookSet,
+        bookSetOrder,
+        lendingId,
+      };
+    }),
+  };
+  /*
   return {
     books: rows.map((row) => {
       const {
@@ -63,6 +103,7 @@ export const getBooksFromLibrary = async (userId, libraryId) => {
       };
     }),
   };
+  */
 };
 
 /**
