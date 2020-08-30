@@ -65,45 +65,7 @@ export const getBooksFromLibrary = async (userId, libraryId, offset) => {
       };
     }),
   };
-  /*
-  return {
-    books: rows.map((row) => {
-      const {
-        id,
-        libraryName,
-        title,
-        description,
-        isbn10,
-        isbn13,
-        thumbnail,
-        authors,
-        tags,
-        language,
-        bookSet,
-        bookSetOrder,
-        lendingId,
-      } = row;
-      return {
-        id,
-        title,
-        description,
-        library: {
-          id: libraryId,
-          name: libraryName,
-        },
-        isbn10,
-        isbn13,
-        thumbnail,
-        authors,
-        tags,
-        language: fromPGLanguage(language),
-        bookSet,
-        bookSetOrder,
-        lendingId,
-      };
-    }),
-  };
-  */
+
 };
 
 /**
