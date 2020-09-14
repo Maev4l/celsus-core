@@ -17,17 +17,29 @@ import {
 } from './storage';
 import messaging from './messaging';
 
-export const BOOKS_PAGE_SIZE = 5;
+export const MAX_BOOKS_PAGE_SIZE = 50;
 
 export const getBook = async (userId, bookId) => {
   const row = await readBook(userId, bookId);
   return row;
 };
 
-export const getBooksFromLibrary = async (userId, libraryId, offset) => {
-  const { rows, rowCount } = await listBooksFromLibrary(userId, libraryId, offset, BOOKS_PAGE_SIZE);
+export const getBooksFromLibrary = async (
+  userId,
+  libraryId,
+  offset,
+  pageSize = MAX_BOOKS_PAGE_SIZE,
+) => {
+  const effectivePageSize = pageSize > MAX_BOOKS_PAGE_SIZE ? MAX_BOOKS_PAGE_SIZE : pageSize;
+
+  const { rows, rowCount } = await listBooksFromLibrary(
+    userId,
+    libraryId,
+    offset,
+    effectivePageSize,
+  );
   return {
-    itemsPerPage: BOOKS_PAGE_SIZE,
+    itemsPerPage: effectivePageSize,
     total: parseInt(rowCount, 10),
     books: rows.map((row) => {
       const {
@@ -65,7 +77,6 @@ export const getBooksFromLibrary = async (userId, libraryId, offset) => {
       };
     }),
   };
-
 };
 
 /**
@@ -74,15 +85,16 @@ export const getBooksFromLibrary = async (userId, libraryId, offset) => {
  * @param {string} offset offset is zero-based
  * @param {string} keywords keywords to match
  */
-export const searchBooks = async (userId, offset, keywords) => {
+export const searchBooks = async (userId, offset, keywords, pageSize = MAX_BOOKS_PAGE_SIZE) => {
+  const effectivePageSize = pageSize > MAX_BOOKS_PAGE_SIZE ? MAX_BOOKS_PAGE_SIZE : pageSize;
   const { rows, rowCount } = await filterBooksFromKeywords(
     userId,
     offset,
-    BOOKS_PAGE_SIZE,
+    effectivePageSize,
     keywords,
   );
   return {
-    itemsPerPage: BOOKS_PAGE_SIZE,
+    itemsPerPage: effectivePageSize,
     total: parseInt(rowCount, 10),
     books: rows.map((row) => {
       const {

@@ -47,17 +47,17 @@ export const deleteLibrary = async (event) => {
 
 export const getBooksFromLibrary = async (event) => {
   const { userId, payload } = event;
-  const { libraryId, page } = payload;
+  const { libraryId, page, pageSize } = payload;
   const offset = page - 1;
-  const result = await BookManager.getBooksFromLibrary(userId, libraryId, offset);
+  const result = await BookManager.getBooksFromLibrary(userId, libraryId, offset, pageSize);
   return result;
 };
 
 export const searchBooks = async (event) => {
   const { userId, payload } = event;
-  const { page, keywords } = payload;
+  const { page, keywords, pageSize } = payload;
   const offset = page - 1;
-  const result = await BookManager.searchBooks(userId, offset, keywords);
+  const result = await BookManager.searchBooks(userId, offset, keywords, pageSize);
   return result;
 };
 
