@@ -21,6 +21,12 @@ export const MAX_BOOKS_PAGE_SIZE = 50;
 
 export const getBook = async (userId, bookId) => {
   const row = await readBook(userId, bookId);
+  if (row) {
+    const { language } = row;
+
+    return { ...row, language: fromPGLanguage(language) };
+  }
+
   return row;
 };
 
