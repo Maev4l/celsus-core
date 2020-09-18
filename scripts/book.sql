@@ -105,3 +105,6 @@ INSERT INTO "book"("id", "user_id", "library_id", "title", "lending_id") VALUES 
 
 -- Books for 'list-books-from-library' test
 INSERT INTO "book"("id", "user_id", "library_id", "title") VALUES ('106', 'user14', '104', 'Book106');
+
+-- Book for 'get-book' test
+INSERT INTO "book"("id", "user_id", "library_id", "title") VALUES ('107', 'user15', '106', 'Book107');

@@ -45,6 +45,13 @@ export const deleteLibrary = async (event) => {
   return deleted;
 };
 
+export const getBook = async (event) => {
+  const { userId, payload } = event;
+  const { id: bookId } = payload;
+  const result = await BookManager.getBook(userId, bookId);
+  return result;
+};
+
 export const getBooksFromLibrary = async (event) => {
   const { userId, payload } = event;
   const { libraryId, page, pageSize } = payload;

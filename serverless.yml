@@ -76,6 +76,9 @@ functions:
   postBook:
     handler: src/handler.postBook
     name: post-book
+  getBook:
+    handler: src/handler.getBook
+    name: get-book
   handleMessages:
     handler: src/handler.handleMessages
     name: handle-core-messages

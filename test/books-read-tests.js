@@ -1,7 +1,7 @@
 import { assert } from 'chai';
 import dotenv from 'dotenv';
 
-import { searchBooks, getBooksFromLibrary } from '../src/handler';
+import { searchBooks, getBooksFromLibrary, getBook } from '../src/handler';
 import { makeMockEvent } from './utils';
 
 dotenv.config();
@@ -9,6 +9,23 @@ dotenv.config();
 const { MAX_BOOKS_PAGE_SIZE } = require('../src/lib/book-manager');
 
 describe('Books Tests (READ - SEARCH)', async () => {
+  it('Returns a single book', async () => {
+    const event = makeMockEvent('user15', { id: '107' });
+
+    const { id, title } = await getBook(event);
+
+    assert.equal(id, '107');
+    assert.equal(title, 'Book107');
+  });
+
+  it('Fails with an unknown book', async () => {
+    const event = makeMockEvent('999', { id: '999' });
+
+    const result = await getBook(event);
+
+    assert.isNull(result);
+  });
+
   it('Returns list of books from a given library', async () => {
     const event = makeMockEvent('user14', { libraryId: '104', page: 1, pageSize: 10 });
 
