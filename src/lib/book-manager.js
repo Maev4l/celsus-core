@@ -48,38 +48,10 @@ export const getBooksFromLibrary = async (
     itemsPerPage: effectivePageSize,
     total: parseInt(rowCount, 10),
     books: rows.map((row) => {
-      const {
-        id,
-        libraryName,
-        title,
-        description,
-        isbn10,
-        isbn13,
-        thumbnail,
-        authors,
-        tags,
-        language,
-        bookSet,
-        bookSetOrder,
-        lendingId,
-      } = row;
+      const { language } = row;
       return {
-        id,
-        title,
-        description,
-        library: {
-          id: libraryId,
-          name: libraryName,
-        },
-        isbn10,
-        isbn13,
-        thumbnail,
-        authors,
-        tags,
+        ...row,
         language: fromPGLanguage(language),
-        bookSet,
-        bookSetOrder,
-        lendingId,
       };
     }),
   };
@@ -103,39 +75,10 @@ export const searchBooks = async (userId, offset, keywords, pageSize = MAX_BOOKS
     itemsPerPage: effectivePageSize,
     total: parseInt(rowCount, 10),
     books: rows.map((row) => {
-      const {
-        id,
-        libraryId,
-        libraryName,
-        title,
-        description,
-        isbn10,
-        isbn13,
-        thumbnail,
-        authors,
-        tags,
-        language,
-        bookSet,
-        bookSetOrder,
-        lendingId,
-      } = row;
+      const { language } = row;
       return {
-        id,
-        title,
-        description,
-        library: {
-          id: libraryId,
-          name: libraryName,
-        },
-        isbn10,
-        isbn13,
-        thumbnail,
-        authors,
-        tags,
+        ...row,
         language: fromPGLanguage(language),
-        bookSet,
-        bookSetOrder,
-        lendingId,
       };
     }),
   };
