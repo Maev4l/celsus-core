@@ -39,6 +39,17 @@ provider:
     PGSCHEMA: ${ssm:core_storage_schema_${self:provider.stage}~true}
     REGION: ${self:custom.config.region}
     LOG_LEVEL: info
+  tags:
+    application: 'celsus'
+    owner: 'serverless'
+  stackTags:
+    application: 'celsus'
+    owner: 'serverless'
+  deploymentBucket:
+    blockPublicAccess: true
+    tags:
+      application: 'celsus'
+      owner: 'serverless'
 
 package:
   exclude:
