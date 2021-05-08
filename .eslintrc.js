@@ -1,8 +1,8 @@
 module.exports = {
   extends: ['airbnb-base', 'prettier'],
   env: {
-    mocha: true,
     node: true,
+    mocha: true,
   },
   rules: {
     'class-methods-use-this': ['off'],

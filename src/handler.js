@@ -90,6 +90,18 @@ export const getBooksFromLibrary = async (event) => {
   }
 };
 
+export const getBookSetsFromLibrary = async (event) => {
+  try {
+    const { userId, payload } = event;
+    const { libraryId } = payload;
+    const result = await BookManager.getBookSetsFromLibrary(userId, libraryId);
+    return result;
+  } catch (e) {
+    logger.error(`Error getBookSetsFromLibrary: ${e.message}`);
+    throw e;
+  }
+};
+
 export const searchBooks = async (event) => {
   try {
     const { userId, payload } = event;

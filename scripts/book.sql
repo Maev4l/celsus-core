@@ -108,3 +108,10 @@ INSERT INTO "book"("id", "user_id", "library_id", "title") VALUES ('106', 'user1
 
 -- Book for 'get-book' test
 INSERT INTO "book"("id", "user_id", "library_id", "title") VALUES ('107', 'user15', '106', 'Book107');
+
+-- Books for 'get-booksets-from-library' test
+INSERT INTO "book"("id", "user_id", "library_id", "title", "book_set","book_set_order") VALUES ('108', 'user16', '107', 'Book108', 'Set1',1);
+INSERT INTO "book"("id", "user_id", "library_id", "title", "book_set","book_set_order") VALUES ('109', 'user16', '107', 'Book109', 'Set1',2);
+INSERT INTO "book"("id", "user_id", "library_id", "title", "book_set","book_set_order") VALUES ('110', 'user16', '107', 'Book110', 'Set2',1);
+INSERT INTO "book"("id", "user_id", "library_id", "title", "book_set","book_set_order") VALUES ('111', 'user16', '107', 'Book111', '',0);
+INSERT INTO "book"("id", "user_id", "library_id", "title", "book_set","book_set_order") VALUES ('112', 'user16', '107', 'Book112', NULL,0);

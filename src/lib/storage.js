@@ -146,7 +146,7 @@ export const listBooksFromLibrary = async (userId, libraryId, offset, pageSize) 
         JOIN "${schemaName}"."library" L on B."library_id"=$2
         WHERE B."user_id"=$1 AND L."id"=$2 
         ORDER BY B."title", B."id" 
-        LIMIT ${pageSize} OFFSET ${pageSize * offset};;`,
+        LIMIT ${pageSize} OFFSET ${pageSize * offset};`,
     values: [userId, libraryId],
   });
 
@@ -156,6 +156,22 @@ export const listBooksFromLibrary = async (userId, libraryId, offset, pageSize) 
 
     return { rows, rowCount };
   });
+};
+
+export const listBookSetsFromLibrary = async (userId, libraryId) => {
+  const query = new ParameterizedQuery({
+    text: `SELECT B."id", B."library_id" AS "libraryId", L."name" AS "libraryName", B."title", B."description", B."isbn10", B."isbn13", B."thumbnail",
+        array_to_json(B."authors") AS "authors", array_to_json(B."tags") AS tags, B."language",
+        B."book_set" AS "bookSet", B."book_set_order" AS "bookSetOrder", B."lending_id" AS "lendingId"
+        FROM "${schemaName}"."book" B
+        JOIN "${schemaName}"."library" L on B."library_id"=$2
+        WHERE B."user_id"=$1 AND L."id"=$2 AND B."book_set" <> '' AND B."book_set_order" > 0
+        ORDER BY B."book_set", B."title"`,
+    values: [userId, libraryId],
+  });
+
+  const rows = await database.any(query);
+  return rows;
 };
 
 export const filterBooksFromKeywords = async (userId, offset, pageSize, keywords) => {

@@ -14,6 +14,7 @@ import {
   transitionBookToLendingPending,
   transitionBookToNotLent,
   transitionBookToLendingConfirmed,
+  listBookSetsFromLibrary,
 } from './storage';
 import messaging from './messaging';
 
@@ -55,6 +56,39 @@ export const getBooksFromLibrary = async (
       };
     }),
   };
+};
+
+export const getBookSetsFromLibrary = async (userId, libraryId) => {
+  const rows = await listBookSetsFromLibrary(userId, libraryId);
+  /**
+   * {
+   *    bookSets: [
+   *      {
+   *        name: 'bookset'1,
+   *        books: [
+   *        ]
+   *      }
+   *    ]
+   * }
+   */
+  const map = new Map();
+  rows.forEach((row) => {
+    const { bookSet } = row;
+    const collection = map.get(bookSet);
+    if (!collection) {
+      map.set(bookSet, [row]);
+    } else {
+      collection.push(row);
+    }
+  });
+
+  const bookSets = [];
+  map.forEach((v, k) => {
+    bookSets.push({ name: k, books: v });
+  });
+
+  bookSets.sort((b1, b2) => b1.name.localeCompare(b2.name));
+  return { bookSets };
 };
 
 /**

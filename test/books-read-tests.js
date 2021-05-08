@@ -1,7 +1,7 @@
 import { assert } from 'chai';
 import dotenv from 'dotenv';
 
-import { searchBooks, getBooksFromLibrary, getBook } from '../src/handler';
+import { searchBooks, getBooksFromLibrary, getBook, getBookSetsFromLibrary } from '../src/handler';
 import { makeMockEvent } from './utils';
 
 dotenv.config();
@@ -225,5 +225,34 @@ describe('Books Tests (READ - SEARCH)', async () => {
     const event = makeMockEvent('user10', { page: 1, keywords: ['mère', 'chateau'] });
     const result = await searchBooks(event);
     assert.deepEqual(result, expected);
+  });
+
+  it('Returns list of booksets from a given library', async () => {
+    const event = makeMockEvent('user16', { libraryId: '107' });
+
+    const result = await getBookSetsFromLibrary(event);
+    const { bookSets } = result;
+
+    assert.strictEqual(2, bookSets.length);
+
+    const [bookSet1, bookSet2] = bookSets;
+    const { books: booksList1, name: name1 } = bookSet1;
+    assert.strictEqual(2, booksList1.length);
+    assert.equal(name1, 'Set1');
+    const [book11, book12] = booksList1;
+    assert.equal(book11.id, '108');
+    assert.equal(book11.title, 'Book108');
+    assert.equal(book11.libraryId, '107');
+    assert.equal(book12.id, '109');
+    assert.equal(book12.title, 'Book109');
+    assert.equal(book12.libraryId, '107');
+
+    const { books: booksList2, name: name2 } = bookSet2;
+    assert.strictEqual(1, booksList2.length);
+    assert.equal(name2, 'Set2');
+    const [book21] = booksList2;
+    assert.equal(book21.id, '110');
+    assert.equal(book21.title, 'Book110');
+    assert.equal(book21.libraryId, '107');
   });
 });

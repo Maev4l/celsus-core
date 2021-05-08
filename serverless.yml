@@ -78,6 +78,9 @@ functions:
   getBooksFromLibrary:
     handler: src/handler.getBooksFromLibrary
     name: get-books-from-library
+  getBookSetsFromLibrary:
+    handler: src/handler.getBookSetsFromLibrary
+    name: get-booksets-from-library
   searchBooks:
     handler: src/handler.searchBooks
     name: search-books

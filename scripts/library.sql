@@ -45,3 +45,6 @@ INSERT INTO "library" ("id", "user_id", "name", "description")	VALUES ('105', 'u
 
 -- Library for 'get-book' test
 INSERT INTO "library" ("id", "user_id", "name", "description")	VALUES ('106', 'user15', 'My Library Name', 'My Library description');
+
+-- Books for 'get-booksets-from-library' test
+INSERT INTO "library" ("id", "user_id", "name", "description")	VALUES ('107', 'user16', 'My Library Name', 'My Library description');
