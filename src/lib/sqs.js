@@ -1,13 +1,13 @@
 import AWS from 'aws-sdk';
 
+import infra from '../../infra.json';
 import loggerFactory from './logger';
 
 const logger = loggerFactory.getLogger('sqs');
 
-const CORE_QUEUE = process.env.CORE_QUEUE_URL;
+const { region, coreQueueUrl } = infra;
 
-const REGION = process.env.region;
-AWS.config.update({ region: REGION });
+AWS.config.update({ region });
 const sqsClient = new AWS.SQS({ sslEnabled: true, apiVersion: 'latest' });
 
 const sqs = {
@@ -33,7 +33,7 @@ const sqs = {
       MessageAttributes: {
         replyAddress: {
           DataType: 'String',
-          StringValue: CORE_QUEUE,
+          StringValue: coreQueueUrl,
         },
       },
     });

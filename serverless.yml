@@ -37,7 +37,6 @@ provider:
     PGPORT: ${ssm:core_storage_port_${self:provider.stage}~true}
     PGDATABASE: ${ssm:core_storage_database_${self:provider.stage}~true}
     PGSCHEMA: ${ssm:core_storage_schema_${self:provider.stage}~true}
-    REGION: ${self:custom.config.region}
     LOG_LEVEL: info
   tags:
     application: 'celsus'

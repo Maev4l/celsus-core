@@ -5,6 +5,7 @@ module.exports = {
     mocha: true,
   },
   rules: {
-    'class-methods-use-this': ['off'],
+    'class-methods-use-this': 'off',
+    'import/no-extraneous-dependencies': 'off',
   },
 };
