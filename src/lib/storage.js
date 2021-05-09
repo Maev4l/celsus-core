@@ -166,7 +166,7 @@ export const listBookSetsFromLibrary = async (userId, libraryId) => {
         FROM "${schemaName}"."book" B
         JOIN "${schemaName}"."library" L on B."library_id"=$2
         WHERE B."user_id"=$1 AND L."id"=$2 AND B."book_set" <> '' AND B."book_set_order" > 0
-        ORDER BY B."book_set", B."title"`,
+        ORDER BY B."book_set", B."book_set_order"`,
     values: [userId, libraryId],
   });
 
