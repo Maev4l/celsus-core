@@ -1,11 +1,10 @@
 import AWS from 'aws-sdk';
 
-import infra from '../../infra.json';
 import loggerFactory from './logger';
 
 const logger = loggerFactory.getLogger('sqs');
 
-const { region, coreQueueUrl } = infra;
+const { region, coreQueueUrl } = INFRA;
 
 AWS.config.update({ region });
 const sqsClient = new AWS.SQS({ sslEnabled: true, apiVersion: 'latest' });

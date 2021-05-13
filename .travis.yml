@@ -16,6 +16,5 @@ env:
     - PGDATABASE=postgres
     - PGSCHEMA=celsus_core
 script:
-  - npm run lint
-  - npm run test
+  - npm run build:ci
 after_script: npm run coverage
