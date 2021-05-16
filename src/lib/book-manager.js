@@ -15,7 +15,7 @@ import {
   transitionBookToNotLent,
   transitionBookToLendingConfirmed,
   listBookSetsFromLibrary,
-} from './storage';
+} from './database';
 import messaging from './messaging';
 
 export const MAX_BOOKS_PAGE_SIZE = 50;

@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { librarySchema as schema } from './schemas';
 import CelsusException from './exception';
 
-import { listLibraries, saveLibrary, modifyLibrary, removeLibrary, readLibrary } from './storage';
+import { listLibraries, saveLibrary, modifyLibrary, removeLibrary, readLibrary } from './database';
 
 export const getLibraries = async (userId) => {
   const libraries = await listLibraries(userId);

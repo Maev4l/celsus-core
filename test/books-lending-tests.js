@@ -9,8 +9,8 @@ import {
   LEND_BOOK_VALIDATION_STATUS,
 } from '../src/lib/utils';
 import { newMockMessage } from './utils';
-import { getDatabase } from '../src/lib/storage';
-import sqs from '../src/lib/sqs';
+import { getDatabase } from '../src/lib/database';
+import queue from '../src/lib/queue';
 
 dotenv.config();
 
@@ -23,7 +23,7 @@ describe('Books Tests (LENDING)', async () => {
 
   beforeEach(async () => {
     sinonSandbox = sinon.createSandbox();
-    stubSendMessage = sinonSandbox.stub(sqs, 'sendMessage');
+    stubSendMessage = sinonSandbox.stub(queue, 'sendMessage');
   });
   afterEach(async () => sinonSandbox.restore());
 

@@ -6,12 +6,12 @@ const logger = loggerFactory.getLogger('sqs');
 
 const { region, coreQueueUrl } = INFRA;
 
-const sqsClient = new SQSClient({ region, tls: true });
+const sqs = new SQSClient({ region, tls: true });
 
-const sqs = {
+const queue = {
   sendMessage: async (message, destination) => {
     try {
-      const { MessageId } = await sqsClient.send(
+      const { MessageId } = await sqs.send(
         new SendMessageCommand({
           QueueUrl: destination,
           MessageBody: JSON.stringify(message),
@@ -26,7 +26,7 @@ const sqs = {
   },
   sendMessageWithReply: async (message, destination) => {
     try {
-      const { MessageId } = await sqsClient.promise(
+      const { MessageId } = await sqs.promise(
         new SendMessageCommand({
           QueueUrl: destination,
           MessageBody: JSON.stringify(message),
@@ -47,4 +47,4 @@ const sqs = {
   },
 };
 
-export default sqs;
+export default queue;

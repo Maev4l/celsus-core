@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 import { handleMessages } from '../src/handler';
 import { INCOMING_OPERATIONS } from '../src/lib/utils';
 import { newMockMessage } from './utils';
-import { getDatabase } from '../src/lib/storage';
+import { getDatabase } from '../src/lib/database';
 
 dotenv.config();
 

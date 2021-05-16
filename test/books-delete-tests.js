@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 
 import { deleteBook } from '../src/handler';
 import { makeMockEvent } from './utils';
-import { getDatabase } from '../src/lib/storage';
+import { getDatabase } from '../src/lib/database';
 
 dotenv.config();
 

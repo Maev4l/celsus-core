@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 
 import { postBook } from '../src/handler';
 import { makeMockEvent } from './utils';
-import { fromPGLanguage, getDatabase } from '../src/lib/storage';
+import { fromPGLanguage, getDatabase } from '../src/lib/database';
 import { hashBook } from '../src/lib/utils';
 
 dotenv.config();
