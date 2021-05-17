@@ -3,7 +3,7 @@ const webpack = require('webpack');
 const nodeExternals = require('webpack-node-externals');
 
 const infra =
-  process.env.BUILD_MODE === 'CI' ? { region: 'mock-region' } : require('../infra.json');
+  process.env.BUILD_MODE === 'CI' ? { region: 'eu-central-1' } : require('../infra.json');
 
 module.exports = {
   entry: slsw.lib.entries,
