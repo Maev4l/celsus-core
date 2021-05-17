@@ -1,3 +1,3 @@
-const { region, imagesBucket } = INFRA;
+const region = process.env.REGION;
 
-export const saveImage = async (userId, folder, saveImage, width, height) => {};
+export const saveImage = async (userId, folder, image, width, height) => {};

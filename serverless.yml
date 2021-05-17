@@ -38,6 +38,9 @@ provider:
     PGDATABASE: ${ssm:core_storage_database_${self:provider.stage}~true}
     PGSCHEMA: ${ssm:core_storage_schema_${self:provider.stage}~true}
     LOG_LEVEL: info
+    REGION: ${self:custom.config.region}
+    QUEUE_URL: ${self:custom.config.coreQueueUrl}
+
   tags:
     application: 'celsus'
     owner: 'serverless'

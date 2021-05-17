@@ -4,7 +4,8 @@ import loggerFactory from './logger';
 
 const logger = loggerFactory.getLogger('sqs');
 
-const { region, coreQueueUrl } = INFRA;
+const region = process.env.REGION;
+const coreQueueUrl = process.env.QUEUE_URL;
 
 const sqs = new SQSClient({ region, tls: true });
 

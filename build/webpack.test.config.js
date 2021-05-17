@@ -2,7 +2,7 @@ const { merge } = require('webpack-merge');
 const path = require('path');
 const Dotenv = require('dotenv-webpack');
 
-const common = require('./webpack.base.config.js');
+const common = require('./webpack.base.config');
 
 module.exports = merge(common, {
   mode: 'development',
