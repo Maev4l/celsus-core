@@ -9,13 +9,24 @@ dotenv.config();
 const { MAX_BOOKS_PAGE_SIZE } = require('../src/lib/book-manager');
 
 describe('Books Tests (READ - SEARCH)', async () => {
-  it('Returns a single book', async () => {
+  it('Returns a single book without thumbnail', async () => {
     const event = makeMockEvent('user15', { id: '107' });
 
-    const { id, title } = await getBook(event);
+    const { id, title, thumbnail } = await getBook(event);
 
     assert.equal(id, '107');
     assert.equal(title, 'Book107');
+    assert.isNull(thumbnail);
+  });
+
+  it('Returns a single book with thumbnail', async () => {
+    const event = makeMockEvent('user15', { id: '113' });
+
+    const { id, title, thumbnail } = await getBook(event);
+
+    assert.equal(id, '113');
+    assert.equal(title, 'Book113');
+    assert.equal(thumbnail, 'ZDp2LDosdmN4OixieGJ2O3hjdmZ2bmZqdmZibg==');
   });
 
   it('Fails with an unknown book', async () => {
@@ -30,28 +41,36 @@ describe('Books Tests (READ - SEARCH)', async () => {
     const event = makeMockEvent('user14', { libraryId: '104', page: 1, pageSize: 10 });
 
     const { books, itemsPerPage, total } = await getBooksFromLibrary(event);
-    assert.strictEqual(1, books.length);
+    assert.strictEqual(books.length, 2);
 
-    const [book] = books;
+    const [book1, book2] = books;
 
-    const { id } = book;
-    assert.equal(id, '106');
+    const { id: id1, thumbnail: thumbnail1 } = book1;
+    const { id: id2, thumbnail: thumbnail2 } = book2;
+    assert.equal(id1, '106');
+    assert.isNull(thumbnail1);
+    assert.equal(id2, '114');
+    assert.equal(thumbnail2, 'S2Fib29tIQ==');
     assert.equal(itemsPerPage, 10);
-    assert.equal(total, 1);
+    assert.equal(total, 2);
   });
 
   it('Returns list of books from a given library when requested page size exceeds hard limit', async () => {
     const event = makeMockEvent('user14', { libraryId: '104', page: 1, pageSize: 200 });
 
     const { books, itemsPerPage, total } = await getBooksFromLibrary(event);
-    assert.strictEqual(1, books.length);
+    assert.strictEqual(books.length, 2);
 
-    const [book] = books;
+    const [book1, book2] = books;
 
-    const { id } = book;
-    assert.equal(id, '106');
+    const { id: id1, thumbnail: thumbnail1 } = book1;
+    const { id: id2, thumbnail: thumbnail2 } = book2;
+    assert.equal(id1, '106');
+    assert.isNull(thumbnail1);
+    assert.equal(id2, '114');
+    assert.equal(thumbnail2, 'S2Fib29tIQ==');
     assert.equal(itemsPerPage, MAX_BOOKS_PAGE_SIZE);
-    assert.equal(total, 1);
+    assert.equal(total, 2);
   });
 
   it('Returns list of books with a search simple criteria based on author', async () => {
@@ -70,7 +89,7 @@ describe('Books Tests (READ - SEARCH)', async () => {
           libraryId: '4ba98133-ebd1-4fed-b7b2-920745b9c429',
           libraryName: 'My Library Name',
           tags: ['Book tags'],
-          thumbnail: '',
+          thumbnail: null,
           title: 'La gloire de ma mère',
           bookSet: 'Set1',
           bookSetOrder: 1,
@@ -87,7 +106,7 @@ describe('Books Tests (READ - SEARCH)', async () => {
           libraryId: '4ba98133-ebd1-4fed-b7b2-920745b9c429',
           libraryName: 'My Library Name',
           tags: ['Book tags'],
-          thumbnail: '',
+          thumbnail: 'UGFnbm9s',
           title: 'Le château de ma mère',
           bookSet: 'Set1',
           bookSetOrder: 2,
@@ -118,7 +137,7 @@ describe('Books Tests (READ - SEARCH)', async () => {
           libraryId: '4ba98133-ebd1-4fed-b7b2-920745b9c429',
           libraryName: 'My Library Name',
           tags: ['Book tags'],
-          thumbnail: '',
+          thumbnail: null,
           title: 'La gloire de ma mère',
           bookSet: 'Set1',
           bookSetOrder: 1,
@@ -135,7 +154,7 @@ describe('Books Tests (READ - SEARCH)', async () => {
           libraryId: '4ba98133-ebd1-4fed-b7b2-920745b9c429',
           libraryName: 'My Library Name',
           tags: ['Book tags'],
-          thumbnail: '',
+          thumbnail: 'UGFnbm9s',
           title: 'Le château de ma mère',
           bookSet: 'Set1',
           bookSetOrder: 2,
@@ -166,7 +185,7 @@ describe('Books Tests (READ - SEARCH)', async () => {
           libraryId: '4ba98133-ebd1-4fed-b7b2-920745b9c429',
           libraryName: 'My Library Name',
           tags: ['Book tags'],
-          thumbnail: '',
+          thumbnail: null,
           title: 'La gloire de ma mère',
           bookSet: 'Set1',
           bookSetOrder: 1,
@@ -183,7 +202,7 @@ describe('Books Tests (READ - SEARCH)', async () => {
           libraryId: '4ba98133-ebd1-4fed-b7b2-920745b9c429',
           libraryName: 'My Library Name',
           tags: ['Book tags'],
-          thumbnail: '',
+          thumbnail: 'UGFnbm9s',
           title: 'Le château de ma mère',
           bookSet: 'Set1',
           bookSetOrder: 2,
@@ -213,7 +232,7 @@ describe('Books Tests (READ - SEARCH)', async () => {
           libraryId: '4ba98133-ebd1-4fed-b7b2-920745b9c429',
           libraryName: 'My Library Name',
           tags: ['Book tags'],
-          thumbnail: '',
+          thumbnail: 'UGFnbm9s',
           title: 'Le château de ma mère',
           bookSet: 'Set1',
           bookSetOrder: 2,
@@ -254,5 +273,6 @@ describe('Books Tests (READ - SEARCH)', async () => {
     assert.equal(book21.id, '110');
     assert.equal(book21.title, 'Book110');
     assert.equal(book21.libraryId, '107');
+    assert.equal(book21.thumbnail, 'Vm9ybG9u');
   });
 });

@@ -15,7 +15,6 @@ pgp.pg.types.setTypeParser(20 /* int8 */, (val) => parseInt(val, 10));
 const database = pgp({ capSQL: true });
 
 export const getDatabase = () => database;
-export const getDbSchemaName = () => process.env.PGSCHEMA || 'celsus_core';
 
 /** Convert Postgress Full Text Search language to web client language */
 export const fromPGLanguage = (pgLanguage) => {
@@ -41,7 +40,7 @@ export const toPGLanguage = (clientLanguage) => {
   }
 };
 
-const schemaName = getDbSchemaName();
+const schemaName = process.env.PGSCHEMA || 'celsus_core';
 
 export const listLibraries = async (userId) => {
   const query = new ParameterizedQuery({
@@ -120,7 +119,7 @@ export const readLibrary = async (userId, libraryId) => {
 
 export const readBook = async (userId, bookId) => {
   const query = new ParameterizedQuery({
-    text: `SELECT B."id", B."library_id" AS "libraryId", B."title", B."description", B."isbn10", B."isbn13", B."thumbnail",
+    text: `SELECT B."id", B."library_id" AS "libraryId", B."title", B."description", B."isbn10", B."isbn13",
     array_to_json(B."authors") AS "authors", array_to_json(B."tags") AS tags, B."language",
     B."book_set" AS "bookSet", B."book_set_order" AS "bookSetOrder", B."lending_id" AS "lendingId"
     FROM "${schemaName}"."book" B WHERE B."user_id"=$2 AND B."id"=$1;`,
@@ -139,7 +138,7 @@ export const listBooksFromLibrary = async (userId, libraryId, offset, pageSize) 
   });
 
   const query2 = new ParameterizedQuery({
-    text: `SELECT B."id", B."library_id" AS "libraryId", L."name" AS "libraryName", B."title", B."description", B."isbn10", B."isbn13", B."thumbnail",
+    text: `SELECT B."id", B."library_id" AS "libraryId", L."name" AS "libraryName", B."title", B."description", B."isbn10", B."isbn13",
         array_to_json(B."authors") AS "authors", array_to_json(B."tags") AS tags, B."language",
         B."book_set" AS "bookSet", B."book_set_order" AS "bookSetOrder", B."lending_id" AS "lendingId"
         FROM "${schemaName}"."book" B
@@ -160,7 +159,7 @@ export const listBooksFromLibrary = async (userId, libraryId, offset, pageSize) 
 
 export const listBookSetsFromLibrary = async (userId, libraryId) => {
   const query = new ParameterizedQuery({
-    text: `SELECT B."id", B."library_id" AS "libraryId", L."name" AS "libraryName", B."title", B."description", B."isbn10", B."isbn13", B."thumbnail",
+    text: `SELECT B."id", B."library_id" AS "libraryId", L."name" AS "libraryName", B."title", B."description", B."isbn10", B."isbn13",
         array_to_json(B."authors") AS "authors", array_to_json(B."tags") AS tags, B."language",
         B."book_set" AS "bookSet", B."book_set_order" AS "bookSetOrder", B."lending_id" AS "lendingId"
         FROM "${schemaName}"."book" B
@@ -177,7 +176,7 @@ export const listBookSetsFromLibrary = async (userId, libraryId) => {
 export const filterBooksFromKeywords = async (userId, offset, pageSize, keywords) => {
   const criterias = keywords.join('&');
   const query1 = new ParameterizedQuery({
-    text: `SELECT B."id", B."library_id" AS "libraryId", L."name" AS "libraryName", B."title", B."description", B."isbn10", B."isbn13", B."thumbnail",
+    text: `SELECT B."id", B."library_id" AS "libraryId", L."name" AS "libraryName", B."title", B."description", B."isbn10", B."isbn13", 
       array_to_json(B."authors") AS "authors", array_to_json(B."tags") AS tags, B."language",
       B."book_set" AS "bookSet", B."book_set_order" AS "bookSetOrder", B."lending_id" AS "lendingId"
       FROM "${schemaName}"."book" B
@@ -223,7 +222,6 @@ export const saveBook = async (userId, book) => {
     description,
     isbn10,
     isbn13,
-    thumbnail,
     authors,
     tags,
     hash,
@@ -242,8 +240,8 @@ export const saveBook = async (userId, book) => {
       return count;
     }
     const query2 = new ParameterizedQuery({
-      text: `INSERT INTO "${schemaName}"."book" ("id", "user_id", "library_id", "title", "description", "isbn10", "isbn13", "thumbnail", "authors", "tags", "language", "hash", "book_set", "book_set_order" )
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14);`,
+      text: `INSERT INTO "${schemaName}"."book" ("id", "user_id", "library_id", "title", "description", "isbn10", "isbn13", "authors", "tags", "language", "hash", "book_set", "book_set_order" )
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13);`,
       values: [
         id,
         userId,
@@ -252,7 +250,6 @@ export const saveBook = async (userId, book) => {
         description.trim(),
         isbn10.trim(),
         isbn13.trim(),
-        thumbnail.trim(),
         authors.map((author) => author.trim()),
         tags.map((tag) => tag.trim()),
         toPGLanguage(language.trim()),
@@ -275,7 +272,6 @@ export const modifyBook = async (userId, book) => {
     description,
     isbn10,
     isbn13,
-    thumbnail,
     authors,
     tags,
     hash,
@@ -295,8 +291,8 @@ export const modifyBook = async (userId, book) => {
     }
 
     const query2 = new ParameterizedQuery({
-      text: `UPDATE "${schemaName}"."book" SET "library_id"=$3, "title"=$4, "description"=$5, "isbn10"=$6, "isbn13"=$7, "thumbnail"=$8,
-      "authors"=$9, "tags"=$10, "hash"=$11, "language"=$12, "book_set"=$13, "book_set_order"=$14 WHERE "id"=$1 AND "user_id"=$2;`,
+      text: `UPDATE "${schemaName}"."book" SET "library_id"=$3, "title"=$4, "description"=$5, "isbn10"=$6, "isbn13"=$7,
+      "authors"=$8, "tags"=$9, "hash"=$10, "language"=$11, "book_set"=$12, "book_set_order"=$13 WHERE "id"=$1 AND "user_id"=$2;`,
       values: [
         id,
         userId,
@@ -305,7 +301,6 @@ export const modifyBook = async (userId, book) => {
         description.trim(),
         isbn10.trim(),
         isbn13.trim(),
-        thumbnail.trim(),
         authors.map((author) => author.trim()),
         tags.map((tag) => tag.trim()),
         hash,

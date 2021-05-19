@@ -3,13 +3,11 @@ import { assert } from 'chai';
 import dotenv from 'dotenv';
 
 import { deleteLibrary } from '../src/handler';
-import { makeMockEvent } from './utils';
-import { getDatabase } from '../src/lib/database';
+import { makeMockEvent, database } from './utils';
 
 dotenv.config();
 
 const schemaName = process.env.PGSCHEMA;
-const database = getDatabase();
 
 describe('Libraries Tests (DELETE)', async () => {
   it('Deletes an existing library', async () => {

@@ -2,16 +2,14 @@ import { assert } from 'chai';
 import dotenv from 'dotenv';
 
 import { deleteBook } from '../src/handler';
-import { makeMockEvent } from './utils';
-import { getDatabase } from '../src/lib/database';
+import { makeMockEvent, database, checkThumbnailExists } from './utils';
 
 dotenv.config();
 
 const schemaName = process.env.PGSCHEMA;
-const database = getDatabase();
 
 describe('Books Tests (DELETE)', async () => {
-  it('Deletes an existing book', async () => {
+  it('Deletes an existing book with thumbnail', async () => {
     const id = '4';
     const event = makeMockEvent('user5', { id });
 
@@ -28,6 +26,29 @@ describe('Books Tests (DELETE)', async () => {
       [id],
     );
     assert.strictEqual(rowsSearch.length, 0);
+    const { hash } = await checkThumbnailExists('user5', 4);
+    assert.isNull(hash);
+  });
+
+  it('Deletes an existing book without thumbnail', async () => {
+    const id = '5';
+    const event = makeMockEvent('user5', { id });
+
+    const deleted = await deleteBook(event);
+    assert.isTrue(deleted);
+
+    const rowsBooks = await database.any(`SELECT "id" FROM "${schemaName}"."book" WHERE "id"=$1;`, [
+      id,
+    ]);
+    assert.strictEqual(rowsBooks.length, 0);
+
+    const rowsSearch = await database.any(
+      `SELECT * FROM "${schemaName}"."books_search" WHERE "id"=$1;`,
+      [id],
+    );
+    assert.strictEqual(rowsSearch.length, 0);
+    const { hash } = await checkThumbnailExists('user5', 4);
+    assert.isNull(hash);
   });
 
   it('Fails when deleting an unknown book', async () => {

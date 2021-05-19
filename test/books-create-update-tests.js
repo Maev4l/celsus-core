@@ -2,14 +2,13 @@ import { assert } from 'chai';
 import dotenv from 'dotenv';
 
 import { postBook } from '../src/handler';
-import { makeMockEvent } from './utils';
-import { fromPGLanguage, getDatabase } from '../src/lib/database';
+import { makeMockEvent, database, checkThumbnailExists, computeHash } from './utils';
+import { fromPGLanguage } from '../src/lib/database';
 import { hashBook } from '../src/lib/utils';
 
 dotenv.config();
 
 const schemaName = process.env.PGSCHEMA;
-const database = getDatabase();
 
 describe('Books Tests (CREATE - UPDATE)', async () => {
   it('Adds a new book for user6', async () => {
@@ -18,7 +17,7 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
       title: 'new book',
       libraryId,
       description: 'new description',
-      thumbnail: '',
+      thumbnail: 'eHh4eA==',
       authors: ['author1', 'author2'],
       tags: [],
       isbn10: '',
@@ -47,6 +46,9 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
     assert.strictEqual(hashBook(newBook), expectedBook.hash);
     assert.strictEqual(newBook.language, fromPGLanguage(expectedBook.language));
     assert.strictEqual(newBook.bookSet, expectedBook.book_set);
+
+    const { hash } = await checkThumbnailExists('user6', id);
+    assert.strictEqual(`"${computeHash(newBook.thumbnail)}"`, hash);
 
     const rowsSearch = await database.any(
       `SELECT * FROM "${schemaName}"."books_search" WHERE "id"=$1;`,
@@ -172,7 +174,7 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
       title: 'new book updated',
       libraryId,
       description: 'new description updated',
-      thumbnail: '',
+      thumbnail: 'eHh4eA==',
       authors: ['author1', 'author2'],
       tags: [],
       isbn10: '',
@@ -201,6 +203,9 @@ describe('Books Tests (CREATE - UPDATE)', async () => {
     assert.strictEqual(expectedBook.hash, hashBook(updateBook));
     assert.strictEqual(fromPGLanguage(expectedBook.language), updateBook.language);
     assert.strictEqual(expectedBook.book_set, updateBook.bookSet);
+
+    const { hash } = await checkThumbnailExists('user7', id);
+    assert.strictEqual(hash, `"${computeHash(updateBook.thumbnail)}"`);
 
     const rowsSearch = await database.any(
       `SELECT * FROM "${schemaName}"."books_search" WHERE "id"=$1;`,

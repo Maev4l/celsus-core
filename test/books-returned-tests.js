@@ -4,13 +4,11 @@ import dotenv from 'dotenv';
 
 import { handleMessages } from '../src/handler';
 import { INCOMING_OPERATIONS } from '../src/lib/utils';
-import { newMockMessage } from './utils';
-import { getDatabase } from '../src/lib/database';
+import { newMockMessage, database } from './utils';
 
 dotenv.config();
 
 const schemaName = process.env.PGSCHEMA;
-const database = getDatabase();
 
 describe('Books Tests (LENDING)', async () => {
   it('Handles a returned book', async () => {

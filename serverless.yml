@@ -40,6 +40,8 @@ provider:
     LOG_LEVEL: info
     REGION: ${self:custom.config.region}
     QUEUE_URL: ${self:custom.config.coreQueueUrl}
+    IMAGES_BUCKET: ${self:custom.config.imagesBucket}
+    BOOK_THUMBNAILS_KEY: 'book-thumbnails'
 
   tags:
     application: 'celsus'

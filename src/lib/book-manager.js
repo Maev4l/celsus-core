@@ -16,6 +16,7 @@ import {
   transitionBookToLendingConfirmed,
   listBookSetsFromLibrary,
 } from './database';
+import { saveImage, deleteImage, getImage, getImages } from './bucket';
 import messaging from './messaging';
 
 export const MAX_BOOKS_PAGE_SIZE = 50;
@@ -25,7 +26,9 @@ export const getBook = async (userId, bookId) => {
   if (row) {
     const { language } = row;
 
-    return { ...row, language: fromPGLanguage(language) };
+    const thumbnail = await getImage(userId, bookId);
+
+    return { ...row, thumbnail, language: fromPGLanguage(language) };
   }
 
   return row;
@@ -45,16 +48,22 @@ export const getBooksFromLibrary = async (
     offset,
     effectivePageSize,
   );
+
+  const thumbnails = await getImages(
+    userId,
+    rows.map((r) => r.id),
+  );
+
+  const books = rows.map((row) => {
+    const { id, language } = row;
+    const { thumbnail } = thumbnails.find((t) => t.id === id);
+    return { ...row, thumbnail, language: fromPGLanguage(language) };
+  });
+
   return {
     itemsPerPage: effectivePageSize,
     total: parseInt(rowCount, 10),
-    books: rows.map((row) => {
-      const { language } = row;
-      return {
-        ...row,
-        language: fromPGLanguage(language),
-      };
-    }),
+    books,
   };
 };
 
@@ -71,6 +80,12 @@ export const getBookSetsFromLibrary = async (userId, libraryId) => {
    *    ]
    * }
    */
+
+  const thumbnails = await getImages(
+    userId,
+    rows.map((r) => r.id),
+  );
+
   const map = new Map();
   rows.forEach((row) => {
     const { bookSet } = row;
@@ -83,8 +98,15 @@ export const getBookSetsFromLibrary = async (userId, libraryId) => {
   });
 
   const bookSets = [];
-  map.forEach((v, k) => {
-    bookSets.push({ name: k, books: v });
+  map.forEach((books, bookSet) => {
+    bookSets.push({
+      name: bookSet,
+      books: books.map((book) => {
+        const { id, language } = book;
+        const { thumbnail } = thumbnails.find((t) => t.id === id);
+        return { ...book, thumbnail, language: fromPGLanguage(language) };
+      }),
+    });
   });
 
   bookSets.sort((b1, b2) => b1.name.localeCompare(b2.name));
@@ -105,21 +127,29 @@ export const searchBooks = async (userId, offset, keywords, pageSize = MAX_BOOKS
     effectivePageSize,
     keywords,
   );
+  const thumbnails = await getImages(
+    userId,
+    rows.map((r) => r.id),
+  );
+
+  const books = rows.map((row) => {
+    const { id, language } = row;
+    const { thumbnail } = thumbnails.find((t) => t.id === id);
+    return { ...row, thumbnail, language: fromPGLanguage(language) };
+  });
+
   return {
     itemsPerPage: effectivePageSize,
     total: parseInt(rowCount, 10),
-    books: rows.map((row) => {
-      const { language } = row;
-      return {
-        ...row,
-        language: fromPGLanguage(language),
-      };
-    }),
+    books,
   };
 };
 
 export const deleteBook = async (userId, bookId) => {
   const rowCount = await removeBook(userId, bookId);
+  if (rowCount === 1) {
+    await deleteImage(userId, bookId);
+  }
   return rowCount === 1;
 };
 
@@ -133,7 +163,7 @@ export const createBook = async (userId, book) => {
   const id = uuidv4();
   const hash = hashBook(book);
 
-  const { libraryId } = book;
+  const { libraryId, thumbnail } = book;
 
   const rowCount = await saveBook(userId, {
     ...book,
@@ -142,6 +172,10 @@ export const createBook = async (userId, book) => {
   });
   if (rowCount === 0) {
     throw new CelsusException(`Library (id: ${libraryId}) does not exists`);
+  }
+
+  if (thumbnail) {
+    await saveImage(userId, id, thumbnail.trim());
   }
 
   return { id };
@@ -153,12 +187,19 @@ export const updateBook = async (userId, book) => {
     const { message } = error.details[0];
     throw new CelsusException(message);
   }
-  const { libraryId } = book;
+
+  const { libraryId, thumbnail, id } = book;
+
   const hash = hashBook(book);
   const rowCount = await modifyBook(userId, { ...book, hash });
   if (rowCount === 0) {
     throw new CelsusException(`Library (id: ${libraryId}) does not exists`);
   }
+
+  if (thumbnail) {
+    await saveImage(userId, id, thumbnail.trim());
+  }
+
   return rowCount === 1;
 };
 

@@ -8,14 +8,13 @@ import {
   OUTGOING_OPERATIONS,
   LEND_BOOK_VALIDATION_STATUS,
 } from '../src/lib/utils';
-import { newMockMessage } from './utils';
-import { getDatabase } from '../src/lib/database';
+import { newMockMessage, database } from './utils';
+
 import queue from '../src/lib/queue';
 
 dotenv.config();
 
 const schemaName = process.env.PGSCHEMA;
-const database = getDatabase();
 
 describe('Books Tests (LENDING)', async () => {
   let sinonSandbox;
