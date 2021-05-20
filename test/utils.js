@@ -56,7 +56,7 @@ export const newMockMessage = (message, replyAddress) => {
   return mockMessage;
 };
 
-const s3 = new S3Client({ region: REGION, endpoint: CLOUD_SERVICES_ENDPOINT });
+const s3 = new S3Client({ region: REGION, endpoint: CLOUD_SERVICES_ENDPOINT, maxAttempts: 10 });
 
 export const createBucket = async (bucket = IMAGES_BUCKET) => {
   await s3.send(new CreateBucketCommand({ Bucket: bucket }));

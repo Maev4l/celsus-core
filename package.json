@@ -9,7 +9,7 @@
     "deploy:dev": "yarn download-infra:dev && npx sls deploy",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
     "download-infra:dev": "aws s3 cp s3://global-tf-states/celsus/dev/infra.json infra.json",
-    "build:ci": "BUILD_MODE=CI nyc mochapack --webpack-config ./build/webpack.test.config.js ./test/*"
+    "build:ci": "BUILD_MODE=CI nyc mochapack --timeout 10000 --webpack-config ./build/webpack.test.config.js ./test/*"
   },
   "author": "",
   "license": "ISC",

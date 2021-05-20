@@ -8,15 +8,20 @@ import childProcess from 'child_process';
 
 import { createBucket, removeBucket, provisionBucket } from './utils';
 
-before('Initialize database & localstack', async () => {
-  const cmd = `psql --host ${process.env.PGHOST} --dbname ${process.env.PGDATABASE} --username ${process.env.PGUSER} --port ${process.env.PGPORT} --file scripts/initialize.sql`;
-  childProcess.execSync(cmd);
-  await createBucket();
-  await provisionBucket();
+before('Initialize database & localstack', (done) => {
+  createBucket()
+    .then(() => provisionBucket())
+    .then(() => {
+      const cmd = `psql --host ${process.env.PGHOST} --dbname ${process.env.PGDATABASE} --username ${process.env.PGUSER} --port ${process.env.PGPORT} --file scripts/initialize.sql`;
+      childProcess.execSync(cmd);
+      done();
+    });
 });
 
-after('Clean up database & localstack', async () => {
-  const cmd = `psql --host ${process.env.PGHOST} --dbname ${process.env.PGDATABASE} --username ${process.env.PGUSER} --port ${process.env.PGPORT} --command 'DROP SCHEMA "${process.env.PGSCHEMA}" CASCADE'`;
-  childProcess.execSync(cmd);
-  await removeBucket();
+after('Clean up database & localstack', (done) => {
+  removeBucket().then(() => {
+    const cmd = `psql --host ${process.env.PGHOST} --dbname ${process.env.PGDATABASE} --username ${process.env.PGUSER} --port ${process.env.PGPORT} --command 'DROP SCHEMA "${process.env.PGSCHEMA}" CASCADE'`;
+    childProcess.execSync(cmd);
+    done();
+  });
 });

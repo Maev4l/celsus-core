@@ -11,6 +11,7 @@ jobs:
         environment:
           DEFAULT_REGION: eu-central-1
           SERVICES: s3
+          DEBUG: 1
       - image: postgres:10.3-alpine
         environment:
           POSTGRES_PASSWORD: ''
