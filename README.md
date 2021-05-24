@@ -19,7 +19,7 @@ Install PostgreSQL client: `brew install libpq`
 
 Get Docker image:
 `docker pull localstack/localstack`
-`docker run --name localstack -p 4566-4599:4566-4599 -e SERVICES=s3 -e DEFAULT_REGION=eu-central-1 localstack/localstack`
+`docker run --name localstack -d -p 4566-4599:4566-4599 -e SERVICES=s3 -e DEFAULT_REGION=eu-central-1 localstack/localstack`
 
 Configure AWS CLI:
 `aws configure --profile localstack`
