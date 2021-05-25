@@ -1,10 +1,8 @@
 import { assert } from 'chai';
-import dotenv from 'dotenv';
 
+import './config';
 import { deleteBook } from '../src/handler';
 import { makeMockEvent, database, checkThumbnailExists } from './utils';
-
-dotenv.config();
 
 const schemaName = process.env.PGSCHEMA;
 

@@ -1,10 +1,8 @@
 import { assert } from 'chai';
-import dotenv from 'dotenv';
 
+import './config';
 import { searchBooks, getBooksFromLibrary, getBook, getBookSetsFromLibrary } from '../src/handler';
 import { makeMockEvent } from './utils';
-
-dotenv.config();
 
 const { MAX_BOOKS_PAGE_SIZE } = require('../src/lib/book-manager');
 

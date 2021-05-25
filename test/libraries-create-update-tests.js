@@ -1,11 +1,9 @@
 import { assert } from 'chai';
 
-import dotenv from 'dotenv';
-
+import './config';
 import { postLibrary } from '../src/handler';
 import { makeMockEvent, database } from './utils';
 
-dotenv.config();
 const schemaName = process.env.PGSCHEMA;
 
 describe('Libraries Tests (CREATE - UPDATE)', async () => {
