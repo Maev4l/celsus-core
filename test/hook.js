@@ -5,7 +5,7 @@
  */
 
 import childProcess from 'child_process';
-
+import './config';
 import { createBucket, removeBucket, provisionBucket } from './utils';
 
 before('Initialize database & localstack', (done) => {

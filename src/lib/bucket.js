@@ -17,6 +17,9 @@ const s3 = endpoint ? new S3Client({ region, endpoint }) : new S3Client({ region
 export const makeKey = (userId, bookId) => `${bookThumbnailsKey}/user.${userId}/book.${bookId}`;
 
 export const saveImage = async (userId, bookId, imageb64) => {
+  console.log(
+    `====> region: ${process.env.REGION} - endpoint: ${process.env.CLOUD_SERVICES_ENDPOINT} - db: ${process.env.PGHOST}`,
+  );
   const key = makeKey(userId, bookId);
 
   let existingImageHash = null;

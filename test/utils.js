@@ -10,6 +10,7 @@ import {
 import crypto from 'crypto';
 import pgpromise from 'pg-promise';
 
+import './config';
 import books from '../scripts/books.json';
 import { makeKey } from '../src/lib/bucket';
 

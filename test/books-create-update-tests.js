@@ -1,12 +1,10 @@
 import { assert } from 'chai';
-import dotenv from 'dotenv';
 
+import './config';
 import { postBook } from '../src/handler';
 import { makeMockEvent, database, checkThumbnailExists, computeHash } from './utils';
 import { fromPGLanguage } from '../src/lib/database';
 import { hashBook } from '../src/lib/utils';
-
-dotenv.config();
 
 const schemaName = process.env.PGSCHEMA;
 

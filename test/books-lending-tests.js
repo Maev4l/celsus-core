@@ -1,7 +1,7 @@
 import { assert } from 'chai';
 import sinon from 'sinon';
-import dotenv from 'dotenv';
 
+import './config';
 import { handleMessages } from '../src/handler';
 import {
   INCOMING_OPERATIONS,
@@ -11,8 +11,6 @@ import {
 import { newMockMessage, database } from './utils';
 
 import queue from '../src/lib/queue';
-
-dotenv.config();
 
 const schemaName = process.env.PGSCHEMA;
 

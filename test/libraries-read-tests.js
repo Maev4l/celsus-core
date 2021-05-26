@@ -1,10 +1,8 @@
 import { assert } from 'chai';
-import dotenv from 'dotenv';
 
+import './config';
 import { getLibrary, getLibraries } from '../src/handler';
 import { makeMockEvent } from './utils';
-
-dotenv.config();
 
 describe('Libraries Tests (READ)', async () => {
   it('Returns list of libraries with no books', async () => {
