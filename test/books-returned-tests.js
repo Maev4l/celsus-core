@@ -1,6 +1,5 @@
 import { assert } from 'chai';
 
-import './config';
 import { handleMessages } from '../src/handler';
 import { INCOMING_OPERATIONS } from '../src/lib/utils';
 import { newMockMessage, database } from './utils';

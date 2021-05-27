@@ -1,7 +1,6 @@
 import { assert } from 'chai';
 import sinon from 'sinon';
 
-import './config';
 import { handleMessages } from '../src/handler';
 import {
   INCOMING_OPERATIONS,

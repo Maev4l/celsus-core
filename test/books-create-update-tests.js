@@ -1,6 +1,5 @@
 import { assert } from 'chai';
 
-import './config';
 import { postBook } from '../src/handler';
 import { makeMockEvent, database, checkThumbnailExists, computeHash } from './utils';
 import { fromPGLanguage } from '../src/lib/database';

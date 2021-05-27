@@ -1,6 +1,5 @@
 import { assert } from 'chai';
 
-import './config';
 import { deleteBook } from '../src/handler';
 import { makeMockEvent, database, checkThumbnailExists } from './utils';
 

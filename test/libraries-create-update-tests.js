@@ -1,6 +1,5 @@
 import { assert } from 'chai';
 
-import './config';
 import { postLibrary } from '../src/handler';
 import { makeMockEvent, database } from './utils';
 

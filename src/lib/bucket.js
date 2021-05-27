@@ -10,16 +10,17 @@ import crypto from 'crypto';
 const region = process.env.REGION;
 const bucket = process.env.IMAGES_BUCKET;
 const bookThumbnailsKey = process.env.BOOK_THUMBNAILS_KEY;
-const endpoint = process.env.CLOUD_SERVICES_ENDPOINT;
 
-const s3 = endpoint ? new S3Client({ region, endpoint }) : new S3Client({ region });
+const createS3Client = () => new S3Client({ region });
+
+let s3 = createS3Client();
+
+// eslint-disable-next-line no-return-assign
+export const setS3Client = (client) => (s3 = client);
 
 export const makeKey = (userId, bookId) => `${bookThumbnailsKey}/user.${userId}/book.${bookId}`;
 
 export const saveImage = async (userId, bookId, imageb64) => {
-  console.log(
-    `====> region: ${process.env.REGION} - endpoint: ${process.env.CLOUD_SERVICES_ENDPOINT} - db: ${process.env.PGHOST}`,
-  );
   const key = makeKey(userId, bookId);
 
   let existingImageHash = null;

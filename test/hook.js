@@ -5,10 +5,11 @@
  */
 
 import childProcess from 'child_process';
-import './config';
-import { createBucket, removeBucket, provisionBucket } from './utils';
+
+import { createBucket, removeBucket, provisionBucket, injectS3Client } from './utils';
 
 before('Initialize database & localstack', (done) => {
+  injectS3Client();
   createBucket()
     .then(() => provisionBucket())
     .then(() => {

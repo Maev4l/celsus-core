@@ -1,6 +1,5 @@
 import { assert } from 'chai';
 
-import './config';
 import { searchBooks, getBooksFromLibrary, getBook, getBookSetsFromLibrary } from '../src/handler';
 import { makeMockEvent } from './utils';
 
