@@ -32,13 +32,21 @@ pipeline {
                                     sh "yarn install"
                                     sh "./wait-localstack.sh localstack-${n}"
                                     sh "yarn build:ci"
-                                    sh "yarn coverage"
+                                    
                                 }
                             }
                         }
                     }
                 }
             }
+        }
+        stage ('Coverage') {
+            agent { docker '671123374425.dkr.ecr.eu-central-1.amazonaws.com/jenkins/nodejs:14' }
+            steps {
+                sh "yarn install"
+                sh "yarn coverage"
+            }
+            when { branch 'master' }
         }
     }
 }
