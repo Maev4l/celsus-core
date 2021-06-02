@@ -32,8 +32,12 @@ pipeline {
                                     
                                     sh "yarn install"
                                     sh "./wait-localstack.sh localstack-${n}"
+
                                     sh "yarn build:ci"
-                                    sh "yarn coverage"
+
+                                    if (env.GIT_BRANCH == 'master') {
+                                        sh "yarn coverage"
+                                    }
                                 }
                             }
                         }
